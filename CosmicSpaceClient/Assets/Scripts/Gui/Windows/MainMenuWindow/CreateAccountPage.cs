@@ -1,15 +1,33 @@
-﻿using UnityEngine.UI;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class CreateAccountPage : GameWindow
 {
+    [Header("Inputs")]
     public InputField UsernameInputField;
     public InputField PasswordInputField;
     public InputField EmailInputField;
     public Toggle RulesToggle;
-
     public Button RegisterButton;
     public Button SignInButton;
-    
+
+    [Header("Label for language")]
+    public Text WindowName;
+    public Text UsernamePlaceholder;
+    public Text PasswordPlaceholder;
+    public Text EmailPlaceholder;
+    public Text RulesLabel;
+    public Text SignInButtonLabel;
+    public Text RegisterButtonLabel;
+
+    private void Start()
+    {
+        SetLanguage();
+
+        ButtonListener(RegisterButton, RegisterButton_Clicked, true);
+        ButtonListener(SignInButton, SignInButton_Clicked, true);
+    }
+
     void RegisterButton_Clicked()
     {
         //if (UsernameInputField == null || PasswordInputField == null || EmailInputField == null || RulesToggle == null)
@@ -49,15 +67,13 @@ public class CreateAccountPage : GameWindow
 
     void SetLanguage()
     {
-
-    }
-
-    private void OnEnable()
-    {
-        SetLanguage();
-
-        ButtonListener(RegisterButton, RegisterButton_Clicked, true);
-        ButtonListener(SignInButton, SignInButton_Clicked, true);
+        SetText(WindowName, GameSettings.UserLanguage.CREATE_ACCOUNT);
+        SetText(UsernamePlaceholder, GameSettings.UserLanguage.USERNAME);
+        SetText(PasswordPlaceholder, GameSettings.UserLanguage.PASSWORD);
+        SetText(EmailPlaceholder, GameSettings.UserLanguage.EMAIL);
+        SetText(RulesLabel, GameSettings.UserLanguage.RULES);
+        SetText(SignInButtonLabel, GameSettings.UserLanguage.SIGN_IN);
+        SetText(RegisterButtonLabel, GameSettings.UserLanguage.REGISTER);
     }
 
     private void OnDisable()

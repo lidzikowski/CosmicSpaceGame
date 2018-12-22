@@ -10,11 +10,20 @@ public class MainMenuWindow : GameWindow
         CreateAccountPage
     }
 
+    [Header("Page in window")]
     public GameObject SignInPageGameObject;
     public GameObject CreateAccountPageGameObject;
 
+    [Header("Label for language")]
     public Text GameVersionText;
     public Text ServerStatusText;
+    
+    private void Start()
+    {
+        SetLanguage();
+
+        ShowPage(Pages.SignInPage);
+    }
 
     public void ShowPage(Pages page)
     {
@@ -29,15 +38,9 @@ public class MainMenuWindow : GameWindow
             CreateAccountPageGameObject?.SetActive(false);
     }
 
-    private void OnEnable()
-    {
-        SetLanguage();
-
-        ShowPage(Pages.SignInPage);
-    }
-
     void SetLanguage()
     {
-
+        SetText(GameVersionText, string.Format(GameSettings.UserLanguage.GAME_VERSION, Application.version));
+        SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, "???"));
     }
 }

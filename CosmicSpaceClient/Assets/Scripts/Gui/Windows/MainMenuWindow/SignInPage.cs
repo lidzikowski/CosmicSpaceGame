@@ -1,14 +1,31 @@
-﻿using UnityEngine.UI;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class SignInPage : GameWindow
 {
+    [Header("Inputs")]
     public InputField UsernameInputField;
     public InputField PasswordInputField;
     public Toggle RememberToggle;
-
     public Button LogInButton;
     public Button CreateAccountButton;
-    
+
+    [Header("Label for language")]
+    public Text WindowName;
+    public Text UsernamePlaceholder;
+    public Text PasswordPlaceholder;
+    public Text RememberLabel;
+    public Text LogInButtonLabel;
+    public Text CreateAccountButtonLabel;
+
+    private void Start()
+    {
+        SetLanguage();
+
+        ButtonListener(LogInButton, LogInButton_Clicked, true);
+        ButtonListener(CreateAccountButton, CreateAccountButton_Clicked, true);
+    }
+
     void LogInButton_Clicked()
     {
         //if (UsernameInputField == null || PasswordInputField == null || RememberToggle == null)
@@ -42,15 +59,12 @@ public class SignInPage : GameWindow
 
     void SetLanguage()
     {
-
-    }
-
-    private void OnEnable()
-    {
-        SetLanguage();
-
-        ButtonListener(LogInButton, LogInButton_Clicked, true);
-        ButtonListener(CreateAccountButton, CreateAccountButton_Clicked, true);
+        SetText(WindowName, GameSettings.UserLanguage.SIGN_IN);
+        SetText(UsernamePlaceholder, GameSettings.UserLanguage.USERNAME);
+        SetText(PasswordPlaceholder, GameSettings.UserLanguage.PASSWORD);
+        SetText(RememberLabel, GameSettings.UserLanguage.REMEMBER);
+        SetText(LogInButtonLabel, GameSettings.UserLanguage.LOG_IN);
+        SetText(CreateAccountButtonLabel, GameSettings.UserLanguage.CREATE_ACCOUNT);
     }
 
     private void OnDisable()

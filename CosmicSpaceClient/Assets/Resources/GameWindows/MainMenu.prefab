@@ -311,7 +311,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8040241830593306227
 RectTransform:
   m_ObjectHideFlags: 0
@@ -355,6 +355,12 @@ MonoBehaviour:
   RememberToggle: {fileID: 8040241830926989450}
   LogInButton: {fileID: 8040241831481554391}
   CreateAccountButton: {fileID: 8040241830560772227}
+  WindowName: {fileID: 8040241830567083440}
+  UsernamePlaceholder: {fileID: 8040241831049055888}
+  PasswordPlaceholder: {fileID: 8040241831420973777}
+  RememberLabel: {fileID: 8040241831662072769}
+  LogInButtonLabel: {fileID: 8040241830521285426}
+  CreateAccountButtonLabel: {fileID: 8040241832251189242}
 --- !u!1 &8040241830627287349
 GameObject:
   m_ObjectHideFlags: 0
@@ -2712,7 +2718,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8040241831898118193
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2758,6 +2764,13 @@ MonoBehaviour:
   RulesToggle: {fileID: 8040241830707190946}
   RegisterButton: {fileID: 8040241831631309864}
   SignInButton: {fileID: 8040241832369716138}
+  WindowName: {fileID: 8040241830735591561}
+  UsernamePlaceholder: {fileID: 8040241831733020918}
+  PasswordPlaceholder: {fileID: 8040241830930476486}
+  EmailPlaceholder: {fileID: 8040241832329121228}
+  RulesLabel: {fileID: 8040241830733227528}
+  SignInButtonLabel: {fileID: 8040241830428915245}
+  RegisterButtonLabel: {fileID: 8040241831063679588}
 --- !u!1 &8040241831971122792
 GameObject:
   m_ObjectHideFlags: 0

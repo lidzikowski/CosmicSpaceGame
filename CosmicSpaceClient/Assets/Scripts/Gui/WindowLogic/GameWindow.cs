@@ -21,4 +21,12 @@ public abstract class GameWindow : MonoBehaviour
 
         button.onClick.AddListener(function);
     }
+
+    public static void SetText(Text label, string message)
+    {
+        if (label == null)
+            return;
+
+        label.text = message;
+    }
 }

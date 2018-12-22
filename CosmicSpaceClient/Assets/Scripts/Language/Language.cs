@@ -2,22 +2,25 @@
 {
     #region StartWindow
     #region SignInWindow
-    public static string SIGN_IN = "Sign In";
-    public static string USERNAME = "Username";
-    public static string PASSWORD = "Password";
-    public static string REMEMBER = "Remember me.";
-    public static string LOG_IN = "Log In";
-    public static string CREATE_ACCOUNT = "Create account";
+    public string SIGN_IN = "Sign In";
+    public string USERNAME = "Username";
+    public string PASSWORD = "Password";
+    public string REMEMBER = "Remember me.";
+    public string LOG_IN = "Log In";
+    public string CREATE_ACCOUNT = "Create account";
     #endregion
 
     #region CreateAccountWindow
-    public static string EMAIL = "Email";
-    public static string RULES = "Accept rules.";
-    public static string REGISTER = "Register";
+    public string EMAIL = "Email";
+    public string RULES = "Accept rules.";
+    public string REGISTER = "Register";
     #endregion
 
     #region Newsletter
-    public static string NEWSLETTER = "Newsletter";
+    public string NEWSLETTER = "Newsletter";
     #endregion
+
+    public string GAME_VERSION = "v. {0}";
+    public string SERVER_STATUS = "Server is {0}";
     #endregion
 }
