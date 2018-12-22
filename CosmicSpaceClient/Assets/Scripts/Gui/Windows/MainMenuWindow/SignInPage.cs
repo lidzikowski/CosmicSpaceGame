@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class SignInWindow : MonoBehaviour
+public class SignInPage : GameWindow
 {
     public InputField UsernameInputField;
     public InputField PasswordInputField;
@@ -11,23 +8,14 @@ public class SignInWindow : MonoBehaviour
 
     public Button LogInButton;
     public Button CreateAccountButton;
-    public GameObject CreateAccountGameObject;
-
-    void Start()
-    {
-        SetLanguage();
-
-        LogInButton?.onClick.AddListener(LogInButton_Clicked);
-        CreateAccountButton?.onClick.AddListener(CreateAccountButton_Clicked);
-    }
-
+    
     void LogInButton_Clicked()
     {
-        if (UsernameInputField == null || PasswordInputField == null || RememberToggle == null)
-            return;
+        //if (UsernameInputField == null || PasswordInputField == null || RememberToggle == null)
+        //    return;
 
-        string username = UsernameInputField.text;
-        string password = PasswordInputField.text;
+        string username = UsernameInputField?.text;
+        string password = PasswordInputField?.text;
 
         if(!Validation.Text(username, 3, 20, true))
         {
@@ -49,16 +37,20 @@ public class SignInWindow : MonoBehaviour
 
     void CreateAccountButton_Clicked()
     {
-        if (CreateAccountGameObject == null)
-            return;
-
-        CreateAccountGameObject.SetActive(true);
-        gameObject.SetActive(false);
+        (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.CreateAccountPage);
     }
 
     void SetLanguage()
     {
 
+    }
+
+    private void OnEnable()
+    {
+        SetLanguage();
+
+        ButtonListener(LogInButton, LogInButton_Clicked, true);
+        ButtonListener(CreateAccountButton, CreateAccountButton_Clicked, true);
     }
 
     private void OnDisable()

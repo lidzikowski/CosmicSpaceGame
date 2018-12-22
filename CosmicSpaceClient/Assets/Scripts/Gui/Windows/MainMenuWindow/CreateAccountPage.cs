@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class CreateAccountWindow : MonoBehaviour
+public class CreateAccountPage : GameWindow
 {
     public InputField UsernameInputField;
     public InputField PasswordInputField;
@@ -12,24 +9,15 @@ public class CreateAccountWindow : MonoBehaviour
 
     public Button RegisterButton;
     public Button SignInButton;
-    public GameObject SignInGameObject;
-
-    void Start()
-    {
-        SetLanguage();
-
-        RegisterButton?.onClick.AddListener(RegisterButton_Clicked);
-        SignInButton?.onClick.AddListener(SignInButton_Clicked);
-    }
-
+    
     void RegisterButton_Clicked()
     {
-        if (UsernameInputField == null || PasswordInputField == null || EmailInputField == null || RulesToggle == null)
-            return;
+        //if (UsernameInputField == null || PasswordInputField == null || EmailInputField == null || RulesToggle == null)
+        //    return;
 
-        string username = UsernameInputField.text;
-        string password = PasswordInputField.text;
-        string email = EmailInputField.text;
+        string username = UsernameInputField?.text;
+        string password = PasswordInputField?.text;
+        string email = EmailInputField?.text;
 
         if (!Validation.Text(username, 3, 20, true))
         {
@@ -56,16 +44,20 @@ public class CreateAccountWindow : MonoBehaviour
 
     void SignInButton_Clicked()
     {
-        if (SignInGameObject == null)
-            return;
-
-        SignInGameObject.SetActive(true);
-        gameObject.SetActive(false);
+        (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.SignInPage);
     }
 
     void SetLanguage()
     {
 
+    }
+
+    private void OnEnable()
+    {
+        SetLanguage();
+
+        ButtonListener(RegisterButton, RegisterButton_Clicked, true);
+        ButtonListener(SignInButton, SignInButton_Clicked, true);
     }
 
     private void OnDisable()
