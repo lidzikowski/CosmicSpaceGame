@@ -20,9 +20,9 @@ public class CreateAccountPage : GameWindow
     public Text SignInButtonLabel;
     public Text RegisterButtonLabel;
 
-    private void Start()
+    public override void Start()
     {
-        SetLanguage();
+        base.Start();
 
         ButtonListener(RegisterButton, RegisterButton_Clicked, true);
         ButtonListener(SignInButton, SignInButton_Clicked, true);
@@ -65,7 +65,7 @@ public class CreateAccountPage : GameWindow
         (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.SignInPage);
     }
 
-    void SetLanguage()
+    public override void ChangeLanguage()
     {
         SetText(WindowName, GameSettings.UserLanguage.CREATE_ACCOUNT);
         SetText(UsernamePlaceholder, GameSettings.UserLanguage.USERNAME);

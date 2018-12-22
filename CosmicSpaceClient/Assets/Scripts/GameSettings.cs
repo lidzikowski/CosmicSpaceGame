@@ -2,9 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void ChangeLanguage();
+
 public class GameSettings : MonoBehaviour
 {
-    public static Language UserLanguage;
+    private static Language userLanguage;
+    public static Language UserLanguage
+    {
+        get => userLanguage;
+        set
+        {
+            userLanguage = value;
+            GuiScript.RefreshAllActiveWindow();
+        }
+    }
 
     IEnumerator Start()
     {
@@ -15,7 +26,6 @@ public class GameSettings : MonoBehaviour
 
         yield return new WaitUntil(() => GuiScript.Ready);
         GuiScript.OpenWindow(WindowTypes.MainMenu);
-
 
     }
 }

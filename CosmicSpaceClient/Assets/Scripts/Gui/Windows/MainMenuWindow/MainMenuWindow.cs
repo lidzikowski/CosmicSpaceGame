@@ -17,11 +17,9 @@ public class MainMenuWindow : GameWindow
     [Header("Label for language")]
     public Text GameVersionText;
     public Text ServerStatusText;
-    
-    private void Start()
-    {
-        SetLanguage();
 
+    public override void Start()
+    {
         ShowPage(Pages.SignInPage);
     }
 
@@ -36,11 +34,16 @@ public class MainMenuWindow : GameWindow
             CreateAccountPageGameObject?.SetActive(true);
         else
             CreateAccountPageGameObject?.SetActive(false);
+
+        Refresh();
     }
 
-    void SetLanguage()
+    public override void ChangeLanguage()
     {
         SetText(GameVersionText, string.Format(GameSettings.UserLanguage.GAME_VERSION, Application.version));
         SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, "???"));
+
+        //SignInPageGameObject?.GetComponent<SignInPage>().ChangeLanguage();
+        //CreateAccountPageGameObject?.GetComponent<CreateAccountPage>().ChangeLanguage();
     }
 }

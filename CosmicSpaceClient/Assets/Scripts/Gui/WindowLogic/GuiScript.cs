@@ -41,6 +41,14 @@ public class GuiScript : MonoBehaviour
         }
     }
 
+    public static void RefreshAllActiveWindow()
+    {
+        foreach (WindowInstance window in Windows.Values.Where(o => o.Active))
+        {
+            window.Script.Refresh();
+        }
+    }
+
     private static void InstantiateWindow(WindowTypes windowType, bool showWindow, bool closeAllWindow = false)
     {
         WindowInstance window = Windows[windowType];

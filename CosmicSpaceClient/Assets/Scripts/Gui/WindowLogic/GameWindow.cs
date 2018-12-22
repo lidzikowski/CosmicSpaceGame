@@ -9,7 +9,15 @@ public abstract class GameWindow : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public virtual void Refresh() { }
+    public virtual void Start()
+    {
+        Refresh();
+    }
+
+    public virtual void Refresh()
+    {
+        ChangeLanguage();
+    }
 
     public static void ButtonListener(Button button, UnityAction function, bool removeAll = false)
     {
@@ -29,4 +37,6 @@ public abstract class GameWindow : MonoBehaviour
 
         label.text = message;
     }
+
+    public virtual void ChangeLanguage() { }
 }
