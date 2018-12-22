@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CosmicSpaceCommunication;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class SignInPage : GameWindow
@@ -48,13 +49,29 @@ public class SignInPage : GameWindow
         {
             // Zapisz dane logowania na komputerze
         }
-
-        // Logowanie do serwera
+        
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.LogIn,
+            Data = new CosmicSpaceCommunication.Account.LogInUser()
+            {
+                Username = GameData.HashString(username),
+                Password = GameData.HashString(password)
+            }
+        });
     }
 
     void CreateAccountButton_Clicked()
     {
         (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.CreateAccountPage);
+    }
+
+    public override void Refresh()
+    {
+        base.Refresh();
+        
+        LogInButton.interactable = Client.SocketConnected;
+        CreateAccountButton.interactable = Client.SocketConnected;
     }
 
     public override void ChangeLanguage()

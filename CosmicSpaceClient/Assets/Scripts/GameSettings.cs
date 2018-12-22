@@ -26,6 +26,5 @@ public class GameSettings : MonoBehaviour
 
         yield return new WaitUntil(() => GuiScript.Ready);
         GuiScript.OpenWindow(WindowTypes.MainMenu);
-
     }
 }

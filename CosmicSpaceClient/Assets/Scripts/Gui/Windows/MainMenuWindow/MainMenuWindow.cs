@@ -34,16 +34,14 @@ public class MainMenuWindow : GameWindow
             CreateAccountPageGameObject?.SetActive(true);
         else
             CreateAccountPageGameObject?.SetActive(false);
-
-        Refresh();
     }
 
     public override void ChangeLanguage()
     {
         SetText(GameVersionText, string.Format(GameSettings.UserLanguage.GAME_VERSION, Application.version));
-        SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, "???"));
+        SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, Client.SocketConnected ? "ONLINE" : "OFFLINE"));
 
-        //SignInPageGameObject?.GetComponent<SignInPage>().ChangeLanguage();
-        //CreateAccountPageGameObject?.GetComponent<CreateAccountPage>().ChangeLanguage();
+        SignInPageGameObject?.GetComponent<GameWindow>().Refresh();
+        CreateAccountPageGameObject?.GetComponent<GameWindow>().Refresh();
     }
 }

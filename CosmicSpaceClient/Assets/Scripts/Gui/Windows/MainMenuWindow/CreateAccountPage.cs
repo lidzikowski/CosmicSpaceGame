@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CosmicSpaceCommunication;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class CreateAccountPage : GameWindow
@@ -56,13 +57,32 @@ public class CreateAccountPage : GameWindow
         {
             // Regulamin nie zostal zaakceptowany
         }
-
-        // Rejestracja
+        
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.Register,
+            Data = new CosmicSpaceCommunication.Account.RegisterUser()
+            {
+                Username = GameData.HashString(username),
+                Password = GameData.HashString(password),
+                Email = email,
+                EmailNewsletter = false,
+                Rules = RulesToggle.isOn
+            }
+        });
     }
 
     void SignInButton_Clicked()
     {
         (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.SignInPage);
+    }
+
+    public override void Refresh()
+    {
+        base.Refresh();
+        
+        RegisterButton.interactable = Client.SocketConnected;
+        SignInButton.interactable = Client.SocketConnected;
     }
 
     public override void ChangeLanguage()
