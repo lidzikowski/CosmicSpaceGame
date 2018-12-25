@@ -6,6 +6,12 @@ namespace CosmicSpaceCommunication
     public enum Commands
     {
         LogIn = 100,
-        Register = 110
+
+        Register = 110,
+        AccountOccupied = 111,
+
+        ServerClosed = 120,
+
+
     }
 }

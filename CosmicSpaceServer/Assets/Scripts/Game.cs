@@ -27,7 +27,7 @@ public class Game : WebSocketBehavior
     {
         if (!e.IsBinary)
             return;
-
+        
         try
         {
             CommandData commandData = GameData.Deserialize(e.RawData);
@@ -35,12 +35,12 @@ public class Game : WebSocketBehavior
             {
                 case Commands.LogIn:
                     LogInUser logInUser = (LogInUser)commandData.Data;
-                    LoginUser(logInUser);
+                    LoginUser(logInUser, GetHeaders());
                     break;
 
                 case Commands.Register:
                     RegisterUser registerUser = (RegisterUser)commandData.Data;
-                    RegisterUser(registerUser);
+                    RegisterUser(registerUser, GetHeaders());
                     break;
             }
         }
@@ -50,52 +50,64 @@ public class Game : WebSocketBehavior
         }
     }
 
-    private static void LoginUser(LogInUser logInUser)
+
+
+    private Headers GetHeaders()
     {
-        //Server.Database.Users.FirstOrDefault(
-        //    o => o.Username == logInUser.Username &&
-        //    o.Password == logInUser.Password
-        //    );
+        return new Headers()
+        {
+            SocketId = ID,
+            UserAgent = Headers["User-Agent"],
+            Host = Headers["Host"]
+        };
     }
 
-    private static void RegisterUser(RegisterUser registerUser)
+
+
+    private static void LoginUser(LogInUser logInUser, Headers headers)
+    {
+        ulong? userId = Database.LoginUser(logInUser);
+        if (userId != null)
+        {
+            Database.LogUser(headers, Commands.LogIn, true, userId);
+            
+            Pilot pilot = Database.GetPilot((ulong)userId);
+            pilot.Headers = headers;
+
+            if (Server.Pilots.ContainsKey(pilot.Id))
+                Server.Pilots[pilot.Id].Headers = pilot.Headers;
+            else
+                Server.Pilots.Add(pilot.Id, pilot);
+        }
+        else
+        {
+            Database.LogUser(headers, Commands.LogIn, false, Database.GetPilot(logInUser));
+        }
+    }
+
+    private static void RegisterUser(RegisterUser registerUser, Headers headers)
     {
         if (Database.OccupiedAccount(registerUser))
         {
             if (Database.RegisterUser(registerUser))
             {
-                // Konto utworzone = Proces logowania
-                Debug.Log("zarejestrowano " + registerUser.Username);
+                Database.LogUser(headers, Commands.Register, true, Database.GetPilot(registerUser));
+                
+                LoginUser(registerUser, headers);
             }
             else
             {
-                // Odpowiedz = problem w zakladaniu konta
+                Database.LogUser(headers, Commands.Register, false, Database.GetPilot(registerUser));
             }
         }
         else
         {
-            // Odpowiedz = uzytkownik / email zajety
+            Pilot.Send(new CommandData()
+            {
+                Command = Commands.AccountOccupied
+            }, headers);
         }
-
-        //if (user != null)
-        //{
-        //    // Uzytkownik jest w bazie = zajety
-        //    Debug.Log("zajety");
-        //}
-        //else
-        //{
-        //    db.Users.Add(new Users()
-        //    {
-        //        Username = registerUser.Username,
-        //        Password = registerUser.Password,
-        //        Email = registerUser.Email,
-        //        Rules = registerUser.Rules,
-        //        EmailNewsletter = true,
-        //        RegisterDate = DateTime.Now
-        //    });
-        //    db.SaveChanges();
-        //    Debug.Log("dodano");
-        //    // Dodano do bazy
-        //}
     }
+
+
 }

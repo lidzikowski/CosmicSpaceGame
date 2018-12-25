@@ -8,6 +8,7 @@ public class CreateAccountPage : GameWindow
     public InputField UsernameInputField;
     public InputField PasswordInputField;
     public InputField EmailInputField;
+    public Toggle NewsletterToggle;
     public Toggle RulesToggle;
     public Button RegisterButton;
     public Button SignInButton;
@@ -17,6 +18,7 @@ public class CreateAccountPage : GameWindow
     public Text UsernamePlaceholder;
     public Text PasswordPlaceholder;
     public Text EmailPlaceholder;
+    public Text NewsletterLabel;
     public Text RulesLabel;
     public Text SignInButtonLabel;
     public Text RegisterButtonLabel;
@@ -66,7 +68,7 @@ public class CreateAccountPage : GameWindow
                 Username = GameData.HashString(username),
                 Password = GameData.HashString(password),
                 Email = email,
-                EmailNewsletter = false,
+                EmailNewsletter = NewsletterToggle.isOn,
                 Rules = RulesToggle.isOn
             }
         });
@@ -91,6 +93,7 @@ public class CreateAccountPage : GameWindow
         SetText(UsernamePlaceholder, GameSettings.UserLanguage.USERNAME);
         SetText(PasswordPlaceholder, GameSettings.UserLanguage.PASSWORD);
         SetText(EmailPlaceholder, GameSettings.UserLanguage.EMAIL);
+        SetText(NewsletterLabel, GameSettings.UserLanguage.NEWSLETTER);
         SetText(RulesLabel, GameSettings.UserLanguage.RULES);
         SetText(SignInButtonLabel, GameSettings.UserLanguage.SIGN_IN);
         SetText(RegisterButtonLabel, GameSettings.UserLanguage.REGISTER);

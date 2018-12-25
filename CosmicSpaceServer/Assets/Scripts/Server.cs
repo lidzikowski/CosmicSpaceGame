@@ -3,10 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp.Server;
 using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Resources;
 
 public class Server : MonoBehaviour
 {
     public static WebSocketServer WebSocket;
+
+
+
+    public static Dictionary<int, Ship> Ships;
+    public static Dictionary<int, Map> Maps;
+    public static Dictionary<ulong, Pilot> Pilots;
+
+
 
     void Start()
     {
@@ -15,29 +24,42 @@ public class Server : MonoBehaviour
 
         Application.targetFrameRate = 60;
 
-        CreateSocketServer();
+        GameResourcesFromDatabase();
 
-        //Database.Test();
-        //return;
-
-        Debug.Log(Database.OccupiedAccount(new CosmicSpaceCommunication.Account.RegisterUser()
-        {
-            Username = "test",
-            Email = "test"
-        }));
+        CreateWebSocket();
     }
 
-    void CreateSocketServer()
+    private void GameResourcesFromDatabase()
     {
+        Ships = Database.GetShips();
+        Debug.Log($"Ships: {Ships.Count}");
+
+        Maps = Database.GetMaps();
+        Debug.Log($"Maps: {Maps.Count}");
+    }
+
+    void CreateWebSocket()
+    {
+        Pilots = new Dictionary<ulong, Pilot>();
+
         WebSocket = new WebSocketServer(GameData.ServerIP);
         WebSocket.AddWebSocketService<Game>("/Game");
         WebSocket.Start();
 
-        Debug.Log($"Status serwera: {WebSocket.IsListening}");
+        Debug.Log($"Server: {(WebSocket.IsListening ? "ONLINE" : "OFFLINE")}");
     }
 
     private void OnApplicationQuit()
     {
+        foreach (KeyValuePair<ulong, Pilot> pilot in Pilots)
+        {
+            pilot.Value.Send(new CommandData()
+            {
+                Command = Commands.ServerClosed,
+                Data = "{OnApplicationQuit}"
+            });
+        }
+
         WebSocket.Stop();
     }
 }

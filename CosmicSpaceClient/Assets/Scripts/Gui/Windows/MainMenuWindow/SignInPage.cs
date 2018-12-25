@@ -9,7 +9,6 @@ public class SignInPage : GameWindow
     public InputField PasswordInputField;
     public Toggle RememberToggle;
     public Button LogInButton;
-    public Button CreateAccountButton;
 
     [Header("Label for language")]
     public Text WindowName;
@@ -17,14 +16,12 @@ public class SignInPage : GameWindow
     public Text PasswordPlaceholder;
     public Text RememberLabel;
     public Text LogInButtonLabel;
-    public Text CreateAccountButtonLabel;
 
     public override void Start()
     {
         base.Start();
 
         ButtonListener(LogInButton, LogInButton_Clicked, true);
-        ButtonListener(CreateAccountButton, CreateAccountButton_Clicked, true);
     }
 
     void LogInButton_Clicked()
@@ -71,7 +68,6 @@ public class SignInPage : GameWindow
         base.Refresh();
         
         LogInButton.interactable = Client.SocketConnected;
-        CreateAccountButton.interactable = Client.SocketConnected;
     }
 
     public override void ChangeLanguage()
@@ -81,7 +77,6 @@ public class SignInPage : GameWindow
         SetText(PasswordPlaceholder, GameSettings.UserLanguage.PASSWORD);
         SetText(RememberLabel, GameSettings.UserLanguage.REMEMBER);
         SetText(LogInButtonLabel, GameSettings.UserLanguage.LOG_IN);
-        SetText(CreateAccountButtonLabel, GameSettings.UserLanguage.CREATE_ACCOUNT);
     }
 
     private void OnDisable()

@@ -20,12 +20,10 @@ public class Client : MonoBehaviour
             if (value)
             {
                 socketConnected = true;
-                //MainThread.Instance().Enqueue(() => Gui.ShowWarning("Test", "Polaczono"));
             }
             else
             {
                 socketConnected = false;
-                //MainThread.Instance().Enqueue(() => Gui.ShowWarning("Test", "Rozlaczono"));
             }
             
             MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
@@ -48,16 +46,16 @@ public class Client : MonoBehaviour
         Socket.OnMessage += Socket_OnMessage;
     }
 
-    float timer = 5;
+    float timer = 10;
     void Update()
     {
         if (SocketConnected)
             return;
 
-        if (timer > 5)
+        if (timer > 10)
         {
-            Socket.Connect();
             timer = 0;
+            Socket.Connect();
         }
         else
             timer += Time.deltaTime;
@@ -65,41 +63,53 @@ public class Client : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        // WIADOMOSC NA SERWER = LOGAM SIE.
+
         Socket.Close();
     }
 
     private void Socket_OnMessage(object sender, MessageEventArgs e)
     {
-        Debug.Log($"OnMessage {System.Environment.NewLine} {e.IsBinary} {System.Environment.NewLine} {e.RawData} {System.Environment.NewLine} {e.Data}");
+        if (!e.IsBinary)
+            return;
 
-        //CommandData commandData = null;
-        //try
-        //{
-        //    commandData = JsonConvert.DeserializeObject<CommandData>(e.Data);
-        //}
-        //catch (Exception exception)
-        //{
-        //    Debug.Log(e.Data);
-        //    Debug.Log(exception.Message);
-        //}
-        //finally
-        //{
-        //    switch (commandData.Command)
-        //    {
-        //        // Error system:
-        //        case (Command.Message):
-        //            MessageData messageData = JsonConvert.DeserializeObject<MessageData>(commandData.Data);
-        //            MainThread.Instance().Enqueue(() => ErrorMethod(messageData));
-        //            break;
-        //        // Error system:
-        //        case (Command.GameDataSync):
-        //            GameDataSync gameData = JsonConvert.DeserializeObject<GameDataSync>(commandData.Data);
-        //            MainThread.Instance().Enqueue(() => CreateGameWorld(gameData));
-        //            break;
+        CommandData commandData = null;
 
+        try
+        {
+            commandData = GameData.Deserialize(e.RawData);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log(ex.Message);
+        }
+        finally
+        {
+            if (commandData != null)
+                SocketMessage(commandData);
+        }
+    }
 
-        //    }
-        //}
+    private void SocketMessage(CommandData commandData)
+    {
+        if (commandData.Command == Commands.LogIn)
+        {
+            bool status = (bool)commandData.Data;
+            Debug.Log($"LOG_IN_STATUS: {status}");
+        }
+        else if (commandData.Command == Commands.Register)
+        {
+            bool status = (bool)commandData.Data;
+            Debug.Log($"REGISTER_STATUS: {status}");
+        }
+        else if (commandData.Command == Commands.AccountOccupied)
+        {
+            Debug.Log($"ACCOUNT_OCCUPIED");
+        }
+        else if (commandData.Command == Commands.ServerClosed)
+        {
+            Debug.Log($"SERVER_CLOSED");
+        }
     }
 
     private void Socket_OnError(object sender, ErrorEventArgs e)
@@ -119,8 +129,6 @@ public class Client : MonoBehaviour
     private void Socket_OnOpen(object sender, System.EventArgs e)
     {
         SocketConnected = true;
-
-        Debug.Log("OnOpen");
     }
 
     public static void SendToSocket(CommandData commandData)

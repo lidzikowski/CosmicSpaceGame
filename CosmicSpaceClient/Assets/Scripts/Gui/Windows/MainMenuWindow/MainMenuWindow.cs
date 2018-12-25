@@ -13,6 +13,13 @@ public class MainMenuWindow : GameWindow
     [Header("Page in window")]
     public GameObject SignInPageGameObject;
     public GameObject CreateAccountPageGameObject;
+    public GameObject SocialMediaGameObject;
+    public GameObject NewsletterGameObject;
+    public GameObject RulesGameObject;
+
+    [Header("Create account button")]
+    public Button CreateAccountButton;
+    public Text CreateAccountLabel;
 
     [Header("Label for language")]
     public Text GameVersionText;
@@ -20,28 +27,40 @@ public class MainMenuWindow : GameWindow
 
     public override void Start()
     {
+        base.Start();
+
+        ButtonListener(CreateAccountButton, CreateAccountButton_Clicked);
         ShowPage(Pages.SignInPage);
     }
 
     public void ShowPage(Pages page)
     {
-        if (page == Pages.SignInPage)
-            SignInPageGameObject?.SetActive(true);
-        else
-            SignInPageGameObject?.SetActive(false);
+        bool signIn = page == Pages.SignInPage;
+        SignInPageGameObject?.SetActive(signIn);
+        SocialMediaGameObject?.SetActive(signIn);
+        NewsletterGameObject?.SetActive(signIn);
 
-        if (page == Pages.CreateAccountPage)
-            CreateAccountPageGameObject?.SetActive(true);
-        else
-            CreateAccountPageGameObject?.SetActive(false);
+        bool register = page == Pages.CreateAccountPage;
+        CreateAccountPageGameObject?.SetActive(register);
+        RulesGameObject?.SetActive(register);
+        CreateAccountButton?.gameObject.SetActive(!register);
     }
 
     public override void ChangeLanguage()
     {
+        if (GameSettings.UserLanguage == null)
+            return;
+
         SetText(GameVersionText, string.Format(GameSettings.UserLanguage.GAME_VERSION, Application.version));
         SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, Client.SocketConnected ? "ONLINE" : "OFFLINE"));
+        SetText(CreateAccountLabel, GameSettings.UserLanguage.CREATE_ACCOUNT);
 
         SignInPageGameObject?.GetComponent<GameWindow>().Refresh();
         CreateAccountPageGameObject?.GetComponent<GameWindow>().Refresh();
+    }
+
+    void CreateAccountButton_Clicked()
+    {
+        ShowPage(Pages.CreateAccountPage);
     }
 }
