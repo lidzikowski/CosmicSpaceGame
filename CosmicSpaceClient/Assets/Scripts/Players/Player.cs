@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
@@ -23,10 +24,46 @@ public class Player : MonoBehaviour
         if (Client.Pilot == null)
             return;
 
-
+        MouseControl();
     }
 
+    protected void MouseControl()
+    {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
 
+        if (Input.GetMouseButtonDown(0))
+            Controller();
+        else if (Input.GetMouseButton(0))
+            Controller(false);
+    }
+
+    private void Controller(bool press = true)
+    {
+        Vector3 mousePosition = Input.mousePosition;
+        Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (!press)
+                return;
+
+            if (hit.transform.tag == "LocalPlayer")
+                return;
+
+            if (hit.transform.tag == "Player" || hit.transform.tag == "Enemy")
+            {
+                //Attack = false;
+                //Target = hit.transform.gameObject;
+            }
+        }
+        else
+        {
+            float x = (mousePosition.x - Screen.width / 2) / 20;
+            float y = (mousePosition.y - Screen.height / 2) / 20;
+            LocalPlayerShipLogic.TargetPosition = new Vector2(LocalPlayerShipLogic.Position.x + x, LocalPlayerShipLogic.Position.y + y);
+        }
+    }
 
     public void InitLocalPlayer()
     {
@@ -35,6 +72,7 @@ public class Player : MonoBehaviour
         GameObject ship = Instantiate(
             PlayerPrefab, 
             LocalPlayerTransform);
+        ship.tag = "LocalPlayer";
 
         LocalPlayerShipLogic = ship.GetComponent<ShipLogic>();
 
