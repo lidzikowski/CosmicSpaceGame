@@ -77,7 +77,7 @@ public class Player : MonoBehaviour
         LocalPlayerShipLogic = ship.GetComponent<ShipLogic>();
 
         LocalPlayerShipLogic.InitShip(
-            Client.Pilot.Ship.Name, 
+            Client.Pilot.Ship, 
             Client.Pilot.Nickname, 
             Color.blue);
 

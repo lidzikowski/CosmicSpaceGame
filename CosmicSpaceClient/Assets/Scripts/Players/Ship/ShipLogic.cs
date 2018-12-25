@@ -15,6 +15,7 @@ public class ShipLogic : MonoBehaviour
     [Header("Ship name")]
     public TextMesh ModelNameText;
 
+    
 
     public Vector2 Position
     {
@@ -27,10 +28,12 @@ public class ShipLogic : MonoBehaviour
         get => targetPosition;
         set
         {
+            if (targetPosition == value)
+                return;
+
             targetPosition = value;
 
             Debug.Log(value);
-            // DO SERWERA INFO
         }
     }
 
@@ -75,25 +78,13 @@ public class ShipLogic : MonoBehaviour
         Fly();
     }
 
-    public void Fly()
-    {
-        if (TargetPosition != (Vector2)ModelTransform.position)
-        {
-            ModelTransform.position = Vector3.MoveTowards(ModelTransform.position, TargetPosition, Time.deltaTime * Speed / 10);
-            if (!GearsStatus)
-                GearsStatus = true;
-        }
-        else if (GearsStatus)
-            GearsStatus = false;
-    }
-
     public void Rotate()
     {
         if (TargetGameObject != null && Attack)
-            RotateAngle = Mathf.Atan2(TargetGameObject.transform.position.y - ModelTransform.position.y, TargetGameObject.transform.position.x - ModelTransform.position.x) * Mathf.Rad2Deg + 90;
+            RotateAngle = Mathf.Atan2(TargetGameObject.transform.position.y - Position.y, TargetGameObject.transform.position.x - Position.x) * Mathf.Rad2Deg + 90;
         else
         {
-            float angle = Mathf.Atan2(TargetPosition.y - ModelTransform.position.y, TargetPosition.x - ModelTransform.position.x);
+            float angle = Mathf.Atan2(TargetPosition.y - Position.y, TargetPosition.x - Position.x);
             if (angle == 0)
                 return;
             RotateAngle = angle * Mathf.Rad2Deg + 180;
@@ -102,7 +93,19 @@ public class ShipLogic : MonoBehaviour
         RotationTransform.rotation = Quaternion.Lerp(RotationTransform.rotation, Quaternion.Euler(RotateAngle, -90, 90), Time.deltaTime * 10);
     }
 
-    public void InitShip(string shipName, string modelName, Color nameColor)
+    public void Fly()
+    {
+        if (TargetPosition != Position)
+        {
+            Position = Vector3.MoveTowards(Position, TargetPosition, Time.deltaTime * Speed / 10);
+            if (!GearsStatus)
+                GearsStatus = true;
+        }
+        else if (GearsStatus)
+            GearsStatus = false;
+    }
+
+    public void InitShip(Ship ship, string modelName, Color nameColor)
     {
         if (ModelNameText != null)
         {
@@ -115,7 +118,9 @@ public class ShipLogic : MonoBehaviour
             Destroy(t.gameObject);
         }
 
-        Instantiate(Resources.Load<GameObject>("Ships/" + shipName), ModelTransform);
+        Ship = ship;
+
+        Instantiate(Resources.Load<GameObject>("Ships/" + ship.Name), ModelTransform);
     }
     
     private List<GameObject> ChildInChild(string parent)
