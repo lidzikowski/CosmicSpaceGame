@@ -1,16 +1,18 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player;
 using System.Data;
 using UnityEngine;
 
-public partial class Pilot : CosmicSpaceCommunication.Game.Player.Pilot
+public partial class PilotServer
 {
+    public Pilot Pilot { get; set; }
     public Vector2 Postion
     {
-        get => new Vector2(PositionX, PositionY);
+        get => new Vector2(Pilot.PositionX, Pilot.PositionY);
         set
         {
-            PositionX = value.x;
-            PositionY = value.y;
+            Pilot.PositionX = value.x;
+            Pilot.PositionY = value.y;
         }
     }
 
@@ -24,8 +26,15 @@ public partial class Pilot : CosmicSpaceCommunication.Game.Player.Pilot
                 return;
 
             headers = value;
-            // zdarzenie logowania na mape gry / wylogowanie
-            // Odpowiedz do klienta = logowanie na mape
+
+            if (value == null)
+                return;
+
+            Send(new CommandData()
+            {
+                Command = Commands.UserData,
+                Data = Pilot
+            });
         }
     }
     
@@ -38,7 +47,7 @@ public partial class Pilot : CosmicSpaceCommunication.Game.Player.Pilot
 
         try
         {
-            Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), headers.SocketId);
+            Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), Headers.SocketId);
         }
         catch (System.Exception ex)
         {

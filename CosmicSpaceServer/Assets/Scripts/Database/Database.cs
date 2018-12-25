@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication.Account;
+using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
@@ -32,7 +33,8 @@ public class Database
         getmaps,
         getships,
         loguser,
-        getplayerid
+        getplayerid,
+        ocuppiednickname
     }
 
     private static DataTable ExecuteCommand(Commands command, Dictionary<string, object> parameters)
@@ -90,7 +92,7 @@ public class Database
             { "inhost", headers.Host },
             { "inuserid", userid == null ? System.DBNull.Value : (object)userid }
         });
-        Pilot.Send(new CosmicSpaceCommunication.CommandData()
+        PilotServer.Send(new CosmicSpaceCommunication.CommandData()
         {
             Command = command,
             Data = result
@@ -183,6 +185,21 @@ public class Database
     }
 
     /// <summary>
+    /// Prawda = Mozna uzyc podanego nicku
+    /// </summary>
+    public static bool OcuppiedNickname(string nickname)
+    {
+        DataTable dt = ExecuteCommand(Commands.ocuppiednickname, new Dictionary<string, object>()
+        {
+            { "innickname", nickname }
+        });
+
+        if (dt != null)
+            return int.Parse(dt.Rows[0][0].ToString()) == 0;
+        return false;
+    }
+
+    /// <summary>
     /// Prawda = konto zostalo zarejestrowane
     /// </summary>
     public static bool RegisterUser(RegisterUser registerUser)
@@ -193,7 +210,8 @@ public class Database
             { "inpassword", registerUser.Password },
             { "inemail", registerUser.Email },
             { "innewsletter", registerUser.EmailNewsletter },
-            { "inrules", registerUser.Rules }
+            { "inrules", registerUser.Rules },
+            { "innickname", registerUser.Nickname }
         });
 
         if (dt != null)
@@ -236,7 +254,7 @@ public class Database
         {
             foreach(DataRow row in dt.Rows)
             {
-                return Pilot.GetPilot(row);
+                return PilotServer.GetPilot(row);
             }
         }
         return null;

@@ -9,9 +9,9 @@ namespace CosmicSpaceCommunication
 
         Register = 110,
         AccountOccupied = 111,
+        NicknameOccupied = 112,
 
-        ServerClosed = 120,
-
+        UserData = 200,
 
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Account;
-using System.Linq;
+using CosmicSpaceCommunication.Game.Player;
 
 public class Game : WebSocketBehavior
 {
@@ -70,14 +70,17 @@ public class Game : WebSocketBehavior
         if (userId != null)
         {
             Database.LogUser(headers, Commands.LogIn, true, userId);
-            
-            Pilot pilot = Database.GetPilot((ulong)userId);
-            pilot.Headers = headers;
 
-            if (Server.Pilots.ContainsKey(pilot.Id))
-                Server.Pilots[pilot.Id].Headers = pilot.Headers;
+            PilotServer pilotServer = new PilotServer()
+            {
+                Pilot = Database.GetPilot((ulong)userId)
+            };
+            pilotServer.Headers = headers;
+
+            if (Server.Pilots.ContainsKey(pilotServer.Pilot.Id))
+                Server.Pilots[pilotServer.Pilot.Id].Headers = pilotServer.Headers;
             else
-                Server.Pilots.Add(pilot.Id, pilot);
+                Server.Pilots.Add(pilotServer.Pilot.Id, pilotServer);
         }
         else
         {
@@ -89,20 +92,30 @@ public class Game : WebSocketBehavior
     {
         if (Database.OccupiedAccount(registerUser))
         {
-            if (Database.RegisterUser(registerUser))
+            if (Database.OcuppiedNickname(registerUser.Nickname))
             {
-                Database.LogUser(headers, Commands.Register, true, Database.GetPilot(registerUser));
-                
-                LoginUser(registerUser, headers);
+                if (Database.RegisterUser(registerUser))
+                {
+                    Database.LogUser(headers, Commands.Register, true, Database.GetPilot(registerUser));
+
+                    LoginUser(registerUser, headers);
+                }
+                else
+                {
+                    Database.LogUser(headers, Commands.Register, false, Database.GetPilot(registerUser));
+                }
             }
             else
             {
-                Database.LogUser(headers, Commands.Register, false, Database.GetPilot(registerUser));
+                PilotServer.Send(new CommandData()
+                {
+                    Command = Commands.NicknameOccupied
+                }, headers);
             }
         }
         else
         {
-            Pilot.Send(new CommandData()
+            PilotServer.Send(new CommandData()
             {
                 Command = Commands.AccountOccupied
             }, headers);

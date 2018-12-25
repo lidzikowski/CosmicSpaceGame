@@ -12,6 +12,7 @@
 
     #region CreateAccountWindow
     public string EMAIL = "Email";
+    public string NICKNAME = "Pilot name";
     public string RULES = "Accept rules.";
     public string REGISTER = "Register";
     #endregion

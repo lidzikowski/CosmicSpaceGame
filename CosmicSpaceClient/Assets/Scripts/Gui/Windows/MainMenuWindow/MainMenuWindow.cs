@@ -46,6 +46,13 @@ public class MainMenuWindow : GameWindow
         CreateAccountButton?.gameObject.SetActive(!register);
     }
 
+    public override void Refresh()
+    {
+        base.Refresh();
+
+        CreateAccountButton.interactable = Client.SocketConnected;
+    }
+
     public override void ChangeLanguage()
     {
         if (GameSettings.UserLanguage == null)

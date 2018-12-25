@@ -3,10 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player;
 
 public class Client : MonoBehaviour
 {
     public static WebSocket Socket;
+
+    public static Pilot pilot;
+    public static Pilot Pilot
+    {
+        get => pilot;
+        set
+        {
+            if (pilot == value)
+                return;
+
+            pilot = value;
+
+            GuiScript.CloseAllWindow();
+            if (value == null)
+            {
+                GuiScript.OpenWindow(WindowTypes.MainMenu);
+            }
+            else
+            {
+                GuiScript.OpenWindow(WindowTypes.UserInterface);
+            }
+        }
+    }
 
     private static bool socketConnected = false;
     public static bool SocketConnected
@@ -14,7 +38,7 @@ public class Client : MonoBehaviour
         get => socketConnected;
         set
         {
-            if (value == socketConnected)
+            if (socketConnected == value)
                 return;
 
             if (value)
@@ -24,11 +48,14 @@ public class Client : MonoBehaviour
             else
             {
                 socketConnected = false;
+                Pilot = null;
             }
             
             MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
         }
     }
+
+
 
     void Start()
     {
@@ -46,26 +73,28 @@ public class Client : MonoBehaviour
         Socket.OnMessage += Socket_OnMessage;
     }
 
-    float timer = 10;
+    float timer = 5;
     void Update()
     {
         if (SocketConnected)
             return;
 
-        if (timer > 10)
+        if (timer > 5)
         {
             timer = 0;
-            Socket.Connect();
+            MainThread.Instance().Enqueue(() => Socket.Connect());
         }
         else
             timer += Time.deltaTime;
     }
 
+
+
     private void OnApplicationQuit()
     {
         // WIADOMOSC NA SERWER = LOGAM SIE.
 
-        Socket.Close();
+        MainThread.Instance().Enqueue(() => Socket.Close());
     }
 
     private void Socket_OnMessage(object sender, MessageEventArgs e)
@@ -86,7 +115,7 @@ public class Client : MonoBehaviour
         finally
         {
             if (commandData != null)
-                SocketMessage(commandData);
+                MainThread.Instance().Enqueue(() => SocketMessage(commandData));
         }
     }
 
@@ -106,29 +135,34 @@ public class Client : MonoBehaviour
         {
             Debug.Log($"ACCOUNT_OCCUPIED");
         }
-        else if (commandData.Command == Commands.ServerClosed)
+        else if (commandData.Command == Commands.NicknameOccupied)
         {
-            Debug.Log($"SERVER_CLOSED");
+            Debug.Log($"NICKNAME_OCCUPIED");
+        }
+        else if (commandData.Command == Commands.UserData)
+        {
+            Pilot = (Pilot)commandData.Data;
         }
     }
 
     private void Socket_OnError(object sender, ErrorEventArgs e)
     {
-        SocketConnected = false;
+        MainThread.Instance().Enqueue(() => SocketConnected = false);
+
 
         Debug.Log($"OnError {System.Environment.NewLine} {e.Exception} {System.Environment.NewLine} {e.Message}");
     }
 
     private void Socket_OnClose(object sender, CloseEventArgs e)
     {
-        SocketConnected = false;
+        MainThread.Instance().Enqueue(() => SocketConnected = false);
 
         Debug.Log($"OnClose {System.Environment.NewLine} {e.Code} {System.Environment.NewLine} {e.WasClean} {System.Environment.NewLine} {e.Reason}");
     }
 
     private void Socket_OnOpen(object sender, System.EventArgs e)
     {
-        SocketConnected = true;
+        MainThread.Instance().Enqueue(() => SocketConnected = true);
     }
 
     public static void SendToSocket(CommandData commandData)

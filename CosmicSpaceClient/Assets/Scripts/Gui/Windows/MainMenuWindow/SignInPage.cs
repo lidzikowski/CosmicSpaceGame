@@ -32,21 +32,31 @@ public class SignInPage : GameWindow
         string username = UsernameInputField?.text;
         string password = PasswordInputField?.text;
 
-        if(!Validation.Text(username, 3, 20, true))
+        if (!Validation.Text(username, civility: true))
         {
-            // Niepoprawna nazwa uzytkownika
+            Debug.Log("Niepoprawna nazwa uzytkownika " + username);
+            return;
         }
 
         if(!Validation.Text(password))
         {
-            // Niepoprawne haslo
+            Debug.Log("Niepoprawne haslo");
+            return;
         }
 
         if(RememberToggle.isOn)
         {
-            // Zapisz dane logowania na komputerze
+            PlayerPrefs.SetString("CosmicSpaceUsername", username);
+            PlayerPrefs.SetString("CosmicSpacePassword", password);
+            PlayerPrefs.SetInt("CosmicSpaceRemember", 1);
         }
-        
+        else
+        {
+            PlayerPrefs.SetString("CosmicSpaceUsername", string.Empty);
+            PlayerPrefs.SetString("CosmicSpacePassword", string.Empty);
+            PlayerPrefs.SetInt("CosmicSpaceRemember", 0);
+        }
+
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.LogIn,
@@ -77,6 +87,13 @@ public class SignInPage : GameWindow
         SetText(PasswordPlaceholder, GameSettings.UserLanguage.PASSWORD);
         SetText(RememberLabel, GameSettings.UserLanguage.REMEMBER);
         SetText(LogInButtonLabel, GameSettings.UserLanguage.LOG_IN);
+    }
+
+    private void OnEnable()
+    {
+        UsernameInputField.text = PlayerPrefs.GetString("CosmicSpaceUsername");
+        PasswordInputField.text = PlayerPrefs.GetString("CosmicSpacePassword");
+        RememberToggle.isOn = PlayerPrefs.GetInt("CosmicSpaceRemember") == 1;
     }
 
     private void OnDisable()

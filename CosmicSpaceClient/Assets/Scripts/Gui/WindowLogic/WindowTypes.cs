@@ -1,4 +1,5 @@
 ﻿public enum WindowTypes
 {
-    MainMenu
+    MainMenu,
+    UserInterface
 }

@@ -13,7 +13,7 @@ public class Server : MonoBehaviour
 
     public static Dictionary<int, Ship> Ships;
     public static Dictionary<int, Map> Maps;
-    public static Dictionary<ulong, Pilot> Pilots;
+    public static Dictionary<ulong, PilotServer> Pilots;
 
 
 
@@ -40,7 +40,7 @@ public class Server : MonoBehaviour
 
     void CreateWebSocket()
     {
-        Pilots = new Dictionary<ulong, Pilot>();
+        Pilots = new Dictionary<ulong, PilotServer>();
 
         WebSocket = new WebSocketServer(GameData.ServerIP);
         WebSocket.AddWebSocketService<Game>("/Game");
@@ -51,15 +51,11 @@ public class Server : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        foreach (KeyValuePair<ulong, Pilot> pilot in Pilots)
-        {
-            pilot.Value.Send(new CommandData()
-            {
-                Command = Commands.ServerClosed,
-                Data = "{OnApplicationQuit}"
-            });
-        }
-
         WebSocket.Stop();
+
+        foreach (KeyValuePair<ulong, PilotServer> pilot in Pilots)
+        {
+            // Zapis do bazy danych
+        }
     }
 }
