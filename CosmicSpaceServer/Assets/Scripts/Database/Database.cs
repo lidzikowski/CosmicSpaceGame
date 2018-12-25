@@ -121,7 +121,6 @@ public class Database
                 {
                     Id = Row<int>(row["mapid"]),
                     Name = Row<string>(row["mapname"]),
-                    Description = Row<string>(row["description"]),
                     RequiredLevel = Row<int>(row["requiredlevel"]),
 
                     IsPvp = Row<bool>(row["ispvp"])
@@ -148,7 +147,6 @@ public class Database
                 {
                     Id = Row<int>(row["shipid"]),
                     Name = Row<string>(row["shipname"]),
-                    Description = Row<string>(row["description"]),
                     RequiredLevel = Row<int>(row["requiredlevel"]),
 
                     ScrapPrice = Row<double>(row["scrapprice"]),
@@ -156,6 +154,8 @@ public class Database
                     Lasers = Row<int>(row["lasers"]),
                     Generators = Row<int>(row["generators"]),
                     Extras = Row<int>(row["extras"]),
+                    Speed = Row<int>(row["speed"]),
+                    Cargo = Row<int>(row["cargo"])
                 });
 
             }

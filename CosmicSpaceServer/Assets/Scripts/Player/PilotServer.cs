@@ -75,10 +75,11 @@ public partial class PilotServer
             Map = Server.Maps[Database.Row<int>(row["mapid"])],
             PositionX = Database.Row<float>(row["positionx"]),
             PositionY = Database.Row<float>(row["positiony"]),
+            Ship = Server.Ships[Database.Row<int>(row["shipid"])],
             Experience = Database.Row<ulong>(row["experience"]),
             Level = Database.Row<int>(row["level"]),
             Scrap = Database.Row<double>(row["scrap"]),
-            Metal = Database.Row<double>(row["metal"])
+            Metal = Database.Row<double>(row["metal"]),
         };
     }
 }

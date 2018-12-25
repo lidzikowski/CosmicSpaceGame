@@ -8,5 +8,7 @@
         public int Lasers { get; set; }
         public int Generators { get; set; }
         public int Extras { get; set; }
+        public int Speed { get; set; }
+        public int Cargo { get; set; }
     }
 }
