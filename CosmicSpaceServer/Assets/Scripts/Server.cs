@@ -13,6 +13,10 @@ public class Server : MonoBehaviour
 
     public static Dictionary<int, Ship> Ships;
     public static Dictionary<int, Map> Maps;
+
+    private int mapId = 1000; // Instancje
+    public static Dictionary<int, MapServer> MapsServer;
+
     public static Dictionary<ulong, PilotServer> Pilots;
 
 
@@ -32,10 +36,20 @@ public class Server : MonoBehaviour
     private void GameResourcesFromDatabase()
     {
         Ships = Database.GetShips();
-        Debug.Log($"Ships: {Ships.Count}");
 
         Maps = Database.GetMaps();
-        Debug.Log($"Maps: {Maps.Count}");
+        GameObject maps = new GameObject() { name = $"Maps [{Maps.Count}]" };
+        Instantiate(maps, transform);
+
+        MapsServer = new Dictionary<int, MapServer>();
+        foreach (Map map in Maps.Values)
+        {
+            GameObject go = new GameObject() { name = $"{map.Id} -> {map.Name}" };
+            go.transform.parent = maps.transform;
+            go.AddComponent<MapServer>();
+
+            MapsServer.Add(map.Id, go.GetComponent<MapServer>());
+        }
     }
 
     void CreateWebSocket()

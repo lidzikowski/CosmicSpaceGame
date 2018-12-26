@@ -1,4 +1,6 @@
-﻿using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -28,12 +30,26 @@ public class ShipLogic : MonoBehaviour
         get => targetPosition;
         set
         {
-            if (targetPosition == value)
+            Vector2 position = new Vector2(float.Parse(value.x.ToString("F2")), float.Parse(value.y.ToString("F2")));
+
+            if (targetPosition == position)
                 return;
 
-            targetPosition = value;
+            targetPosition = position;
 
-            Debug.Log(value);
+            if (!LocalPlayer)
+                return;
+
+            Client.SendToSocket(new CommandData()
+            {
+                Command = Commands.PlayerNewPosition,
+                Data = new NewPosition()
+                {
+                    PlayerId = Client.Pilot.Id,
+                    PositionX = position.x,
+                    PositionY = position.y
+                }
+            });
         }
     }
 
@@ -69,6 +85,8 @@ public class ShipLogic : MonoBehaviour
 
     public Ship Ship;
     public int Speed => Ship.Speed;
+
+    public bool LocalPlayer = false;
 
 
 

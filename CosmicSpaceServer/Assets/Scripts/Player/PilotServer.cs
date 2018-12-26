@@ -3,18 +3,28 @@ using CosmicSpaceCommunication.Game.Player;
 using System.Data;
 using UnityEngine;
 
-public partial class PilotServer
+public delegate void ChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition);
+
+public class PilotServer
 {
     public Pilot Pilot { get; set; }
-    public Vector2 Postion
+    public int Speed => Pilot.Ship.Speed;
+
+    public Vector2 Position
     {
         get => new Vector2(Pilot.PositionX, Pilot.PositionY);
         set
         {
+            if (value == TargetPostion)
+                return;
+
             Pilot.PositionX = value.x;
             Pilot.PositionY = value.y;
+
+            OnChangePosition?.Invoke(Pilot, value, TargetPostion);
         }
     }
+    public Vector2 TargetPostion;
 
     private Headers headers;
     public Headers Headers
@@ -37,7 +47,25 @@ public partial class PilotServer
             });
         }
     }
-    
+
+    public event ChangePosition OnChangePosition;
+
+
+
+    public void Update()
+    {
+        Fly();
+    }
+
+
+
+    public void Fly()
+    {
+        if (TargetPostion == Position)
+            return;
+        Position = Vector3.MoveTowards(Position, TargetPostion, Time.deltaTime * Speed / 10);
+    }
+
 
 
     public void Send(CommandData commandData)

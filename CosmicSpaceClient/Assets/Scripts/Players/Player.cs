@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,7 +13,9 @@ public class Player : MonoBehaviour
     public Transform PlayersTransform;
     public GameObject PlayerPrefab;
 
-    private ShipLogic LocalPlayerShipLogic;
+    private ShipLogic LocalShipController;
+
+    public static Dictionary<ulong, ShipLogic> PlayersController = new Dictionary<ulong, ShipLogic>();
 
 
 
@@ -26,6 +31,8 @@ public class Player : MonoBehaviour
 
         MouseControl();
     }
+
+
 
     protected void MouseControl()
     {
@@ -61,27 +68,90 @@ public class Player : MonoBehaviour
         {
             float x = (mousePosition.x - Screen.width / 2) / 20;
             float y = (mousePosition.y - Screen.height / 2) / 20;
-            LocalPlayerShipLogic.TargetPosition = new Vector2(LocalPlayerShipLogic.Position.x + x, LocalPlayerShipLogic.Position.y + y);
+            LocalShipController.TargetPosition = new Vector2(LocalShipController.Position.x + x, LocalShipController.Position.y + y);
         }
     }
 
+
+
     public void InitLocalPlayer()
     {
-        ClearGameArea();
-
-        GameObject ship = Instantiate(
-            PlayerPrefab, 
-            LocalPlayerTransform);
-        ship.tag = "LocalPlayer";
-
-        LocalPlayerShipLogic = ship.GetComponent<ShipLogic>();
-
-        LocalPlayerShipLogic.InitShip(
-            Client.Pilot.Ship, 
-            Client.Pilot.Nickname, 
+        ShipLogic shipController = CreatePlayer(
+            LocalPlayerTransform,
+            "LocalPlayer",
+            new Vector2(Client.Pilot.PositionX, Client.Pilot.PositionY),
+            Client.Pilot.Ship,
+            Client.Pilot.Nickname,
             Color.blue);
+        shipController.LocalPlayer = true;
+        LocalShipController = shipController;
 
-        PlayerCamera.TargetGameObject = ship;
+        PlayerCamera.TargetGameObject = shipController.gameObject;
+    }
+
+    public void InitPlayer(PlayerJoin player)
+    {
+        ShipLogic shipController = CreatePlayer(
+            PlayersTransform,
+            "Player",
+            new Vector2(player.PositionX, player.PositionY),
+            player.Ship,
+            player.Nickname,
+            Color.red);
+        
+        PlayersController.Add(player.PlayerId, shipController);
+    }
+
+    private ShipLogic CreatePlayer(Transform spawnTransform, string tag, Vector2 position, Ship ship, string nickname, Color nicknameColor)
+    {
+        GameObject go = Instantiate(
+            PlayerPrefab,
+            spawnTransform);
+        go.tag = tag;
+        go.transform.position = position;
+
+        ShipLogic shipController = go.GetComponent<ShipLogic>();
+        shipController.TargetPosition = shipController.Position;
+
+        shipController.InitShip(
+            ship,
+            nickname,
+            nicknameColor);
+        return shipController;
+    }
+    
+    public void LeavePlayer(ulong playerId)
+    {
+        if (!PlayersController.ContainsKey(playerId))
+            return;
+
+        Destroy(PlayersController[playerId].gameObject);
+        PlayersController.Remove(playerId);
+    }
+
+
+
+    public void PlayerChangePosition(NewPosition newPosition)
+    {
+        if (newPosition == null)
+            return;
+
+        Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
+        Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
+
+        if (newPosition.PlayerId == Client.Pilot.Id)
+        {
+            LocalShipController.Position = position;
+            LocalShipController.TargetPosition = targetPosition;
+        }
+        else
+        {
+            if (!PlayersController.ContainsKey(newPosition.PlayerId))
+                return;
+            
+            PlayersController[newPosition.PlayerId].Position = position;
+            PlayersController[newPosition.PlayerId].TargetPosition = targetPosition;
+        }
     }
 
     public void ClearGameArea()
@@ -91,5 +161,7 @@ public class Player : MonoBehaviour
 
         foreach (Transform t in PlayersTransform)
             Destroy(t.gameObject);
+
+        PlayersController.Clear();
     }
 }

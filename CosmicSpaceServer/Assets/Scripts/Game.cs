@@ -5,22 +5,36 @@ using System;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Account;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using System.Linq;
 
 public class Game : WebSocketBehavior
 {
     protected override void OnOpen()
     {
-        Debug.Log("OnOpen");
+        //Debug.Log("OnOpen");
     }
 
     protected override void OnClose(CloseEventArgs e)
     {
-        Debug.Log($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
+        PilotDisconnect();
     }
 
     protected override void OnError(ErrorEventArgs e)
     {
-        Debug.Log($"OnError {Environment.NewLine} {e.Exception} {Environment.NewLine} {e.Message}");
+        PilotDisconnect();
+        Debug.LogError($"{e.Exception} {Environment.NewLine} {e.Message}");
+    }
+
+    private void PilotDisconnect()
+    {
+        PilotServer pilotServer = Server.Pilots.Values.FirstOrDefault(o => o.Headers.SocketId == ID);
+
+        if (pilotServer == null)
+            return;
+
+        Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
+        Server.Pilots.Remove(pilotServer.Pilot.Id);
     }
 
     protected override void OnMessage(MessageEventArgs e)
@@ -35,12 +49,21 @@ public class Game : WebSocketBehavior
             {
                 case Commands.LogIn:
                     LogInUser logInUser = (LogInUser)commandData.Data;
-                    LoginUser(logInUser, GetHeaders());
+                    LoginUser(logInUser);
                     break;
 
                 case Commands.Register:
                     RegisterUser registerUser = (RegisterUser)commandData.Data;
-                    RegisterUser(registerUser, GetHeaders());
+                    RegisterUser(registerUser);
+                    break;
+
+                case Commands.PlayerLeave:
+                    PilotDisconnect();
+                    break;
+
+                case Commands.PlayerNewPosition:
+                    NewPosition newPosition = (NewPosition)commandData.Data;
+                    PilotChangePosition(newPosition);
                     break;
             }
         }
@@ -64,31 +87,38 @@ public class Game : WebSocketBehavior
 
 
 
-    private static void LoginUser(LogInUser logInUser, Headers headers)
+    private void LoginUser(LogInUser logInUser)
     {
         ulong? userId = Database.LoginUser(logInUser);
         if (userId != null)
         {
-            Database.LogUser(headers, Commands.LogIn, true, userId);
+            Database.LogUser(GetHeaders(), Commands.LogIn, true, userId);
 
             PilotServer pilotServer = new PilotServer()
             {
                 Pilot = Database.GetPilot((ulong)userId)
             };
-            pilotServer.Headers = headers;
+            pilotServer.Headers = GetHeaders();
+            pilotServer.TargetPostion = pilotServer.Position;
 
             if (Server.Pilots.ContainsKey(pilotServer.Pilot.Id))
+            {
                 Server.Pilots[pilotServer.Pilot.Id].Headers = pilotServer.Headers;
+
+            }
             else
+            {
                 Server.Pilots.Add(pilotServer.Pilot.Id, pilotServer);
+                Server.MapsServer[pilotServer.Pilot.Map.Id].Join(pilotServer);
+            }
         }
         else
         {
-            Database.LogUser(headers, Commands.LogIn, false, Database.GetPilot(logInUser));
+            Database.LogUser(GetHeaders(), Commands.LogIn, false, Database.GetPilot(logInUser));
         }
     }
 
-    private static void RegisterUser(RegisterUser registerUser, Headers headers)
+    private void RegisterUser(RegisterUser registerUser)
     {
         if (Database.OccupiedAccount(registerUser))
         {
@@ -96,13 +126,13 @@ public class Game : WebSocketBehavior
             {
                 if (Database.RegisterUser(registerUser))
                 {
-                    Database.LogUser(headers, Commands.Register, true, Database.GetPilot(registerUser));
+                    Database.LogUser(GetHeaders(), Commands.Register, true, Database.GetPilot(registerUser));
 
-                    LoginUser(registerUser, headers);
+                    LoginUser(registerUser);
                 }
                 else
                 {
-                    Database.LogUser(headers, Commands.Register, false, Database.GetPilot(registerUser));
+                    Database.LogUser(GetHeaders(), Commands.Register, false, Database.GetPilot(registerUser));
                 }
             }
             else
@@ -110,7 +140,7 @@ public class Game : WebSocketBehavior
                 PilotServer.Send(new CommandData()
                 {
                     Command = Commands.NicknameOccupied
-                }, headers);
+                }, GetHeaders());
             }
         }
         else
@@ -118,9 +148,19 @@ public class Game : WebSocketBehavior
             PilotServer.Send(new CommandData()
             {
                 Command = Commands.AccountOccupied
-            }, headers);
+            }, GetHeaders());
         }
     }
+    
+    private void PilotChangePosition(NewPosition newPosition)
+    {
+        PilotServer pilotServer = Server.Pilots.Values.FirstOrDefault(
+            o => o.Headers.SocketId == GetHeaders().SocketId);
 
+        if (pilotServer == null)
+            return;
+
+        pilotServer.TargetPostion = new Vector2(newPosition.PositionX, newPosition.PositionY);
+    }
 
 }

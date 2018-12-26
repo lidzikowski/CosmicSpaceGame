@@ -4,12 +4,14 @@ using UnityEngine;
 using WebSocketSharp;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
 
 public class Client : MonoBehaviour
 {
     public static WebSocket Socket;
 
-    public static Pilot pilot;
+    private static Pilot pilot;
     public static Pilot Pilot
     {
         get => pilot;
@@ -96,7 +98,10 @@ public class Client : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        // WIADOMOSC NA SERWER = LOGAM SIE.
+        SendToSocket(new CommandData()
+        {
+            Command = Commands.PlayerLeave
+        });
 
         MainThread.Instance().Enqueue(() => Socket.Close());
     }
@@ -146,6 +151,18 @@ public class Client : MonoBehaviour
         else if (commandData.Command == Commands.UserData)
         {
             Pilot = (Pilot)commandData.Data;
+        }
+        else if (commandData.Command == Commands.PlayerJoin)
+        {
+            GetComponent<Player>().InitPlayer((PlayerJoin)commandData.Data);
+        }
+        else if (commandData.Command == Commands.PlayerLeave)
+        {
+            GetComponent<Player>().LeavePlayer((ulong)commandData.Data);
+        }
+        else if (commandData.Command == Commands.PlayerNewPosition)
+        {
+            GetComponent<Player>().PlayerChangePosition((NewPosition)commandData.Data);
         }
     }
 

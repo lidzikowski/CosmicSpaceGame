@@ -13,5 +13,10 @@ namespace CosmicSpaceCommunication
 
         UserData = 200,
 
+        PlayerJoin = 300,
+        PlayerLeave = 301,
+        PlayerNewPosition = 310,
+        EnemyNewPosition = 311,
+
     }
 }

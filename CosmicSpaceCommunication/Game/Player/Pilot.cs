@@ -3,7 +3,7 @@
 namespace CosmicSpaceCommunication.Game.Player
 {
     [System.Serializable]
-    public partial class Pilot
+    public class Pilot
     {
         public ulong Id { get; set; }
         public string Nickname { get; set; }
