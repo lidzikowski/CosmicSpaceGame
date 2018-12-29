@@ -130,6 +130,7 @@ public class Client : MonoBehaviour
 
     private void SocketMessage(CommandData commandData)
     {
+        // LOGOWANIE / REJESTRACJA
         if (commandData.Command == Commands.LogIn)
         {
             bool status = (bool)commandData.Data;
@@ -148,10 +149,16 @@ public class Client : MonoBehaviour
         {
             Debug.Log($"NICKNAME_OCCUPIED");
         }
+
+
+        // INICJALIZACJA ZALOGOWANEGO GRACZA
         else if (commandData.Command == Commands.UserData)
         {
             Pilot = (Pilot)commandData.Data;
         }
+
+
+        // DOLACZENIE / ODLACZENIE GRACZA OD SERWERA
         else if (commandData.Command == Commands.PlayerJoin)
         {
             GetComponent<Player>().InitPlayer((PlayerJoin)commandData.Data);
@@ -160,10 +167,27 @@ public class Client : MonoBehaviour
         {
             GetComponent<Player>().LeavePlayer((ulong)commandData.Data);
         }
+
+
+        // ZDARZENIE NA ZMIANE POZYCJI GRACZA
         else if (commandData.Command == Commands.PlayerNewPosition)
         {
             GetComponent<Player>().PlayerChangePosition((NewPosition)commandData.Data);
         }
+
+
+        // ZDARZENIE NA ZMIANE HITPOINTS / SHIELDS GRACZA
+        else if (commandData.Command == Commands.PlayerChangeHitpoints)
+        {
+            GetComponent<Player>().PlayerHitpointsOrShields((NewHitpointsOrShields)commandData.Data, true);
+        }
+        else if (commandData.Command == Commands.PlayerChangeShields)
+        {
+            GetComponent<Player>().PlayerHitpointsOrShields((NewHitpointsOrShields)commandData.Data, false);
+        }
+
+
+
     }
 
     private void Socket_OnError(object sender, ErrorEventArgs e)

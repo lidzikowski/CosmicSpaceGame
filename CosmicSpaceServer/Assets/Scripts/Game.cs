@@ -33,6 +33,8 @@ public class Game : WebSocketBehavior
         if (pilotServer == null)
             return;
 
+        Database.SavePlayerData(pilotServer.Pilot);
+
         Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
         Server.Pilots.Remove(pilotServer.Pilot.Id);
     }
@@ -87,16 +89,16 @@ public class Game : WebSocketBehavior
 
 
 
-    private void LoginUser(LogInUser logInUser)
+    private async void LoginUser(LogInUser logInUser)
     {
-        ulong? userId = Database.LoginUser(logInUser);
+        ulong? userId = await Database.LoginUser(logInUser);
         if (userId != null)
         {
             Database.LogUser(GetHeaders(), Commands.LogIn, true, userId);
 
             PilotServer pilotServer = new PilotServer()
             {
-                Pilot = Database.GetPilot((ulong)userId)
+                Pilot = await Database.GetPilot((ulong)userId)
             };
             pilotServer.Headers = GetHeaders();
             pilotServer.TargetPostion = pilotServer.Position;
@@ -114,25 +116,25 @@ public class Game : WebSocketBehavior
         }
         else
         {
-            Database.LogUser(GetHeaders(), Commands.LogIn, false, Database.GetPilot(logInUser));
+            Database.LogUser(GetHeaders(), Commands.LogIn, false, await Database.GetPilot(logInUser));
         }
     }
 
-    private void RegisterUser(RegisterUser registerUser)
+    private async void RegisterUser(RegisterUser registerUser)
     {
-        if (Database.OccupiedAccount(registerUser))
+        if (await Database.OccupiedAccount(registerUser))
         {
-            if (Database.OcuppiedNickname(registerUser.Nickname))
+            if (await Database.OcuppiedNickname(registerUser.Nickname))
             {
-                if (Database.RegisterUser(registerUser))
+                if (await Database.RegisterUser(registerUser))
                 {
-                    Database.LogUser(GetHeaders(), Commands.Register, true, Database.GetPilot(registerUser));
+                    Database.LogUser(GetHeaders(), Commands.Register, true, await Database.GetPilot(registerUser));
 
                     LoginUser(registerUser);
                 }
                 else
                 {
-                    Database.LogUser(GetHeaders(), Commands.Register, false, Database.GetPilot(registerUser));
+                    Database.LogUser(GetHeaders(), Commands.Register, false, await Database.GetPilot(registerUser));
                 }
             }
             else

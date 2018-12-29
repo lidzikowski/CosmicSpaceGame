@@ -22,7 +22,7 @@ public class MapServer : MonoBehaviour
 
 
 
-    private void Pilot_OnChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition)
+    private void Pilot_OnChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition, int speed)
     {
         foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Pilot.Id != pilot.Id))
         {
@@ -35,11 +35,48 @@ public class MapServer : MonoBehaviour
                     PositionX = position.x,
                     PositionY = position.y,
                     TargetPositionX = targetPosition.x,
-                    TargetPositionY = targetPosition.y
+                    TargetPositionY = targetPosition.y,
+                    Speed = speed
                 }
             });
         }
     }
+    
+    private void Pilot_OnChangeHitpoints(Pilot pilot, ulong hitpoints, ulong maxHitpoints)
+    {
+        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.PlayerChangeHitpoints,
+                Data = new NewHitpointsOrShields()
+                {
+                    PlayerId = pilot.Id,
+                    Value = hitpoints,
+                    MaxValue = maxHitpoints
+                }
+            });
+        }
+    }
+
+    private void Pilot_OnChangeShields(Pilot pilot, ulong shields, ulong maxShields)
+    {
+        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.PlayerChangeShields,
+                Data = new NewHitpointsOrShields()
+                {
+                    PlayerId = pilot.Id,
+                    Value = shields,
+                    MaxValue = maxShields
+                }
+            });
+        }
+    }
+
+
 
     public void Join(PilotServer pilot)
     {
@@ -62,6 +99,9 @@ public class MapServer : MonoBehaviour
         }
 
         pilot.OnChangePosition += Pilot_OnChangePosition;
+        pilot.OnChangeHitpoints += Pilot_OnChangeHitpoints;
+        pilot.OnChangeShields += Pilot_OnChangeShields;
+
         PilotsOnMap.Add(pilot.Pilot.Id, pilot);
     }
 
@@ -78,8 +118,11 @@ public class MapServer : MonoBehaviour
                 Data = pilot.Pilot.Id
             });
         }
-        
+
         pilot.OnChangePosition -= Pilot_OnChangePosition;
+        pilot.OnChangeHitpoints -= Pilot_OnChangeHitpoints;
+        pilot.OnChangeShields -= Pilot_OnChangeShields;
+        
         PilotsOnMap.Remove(pilot.Pilot.Id);
     }
 }

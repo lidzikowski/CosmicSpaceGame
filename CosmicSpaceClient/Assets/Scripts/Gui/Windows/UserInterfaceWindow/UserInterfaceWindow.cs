@@ -17,9 +17,9 @@ public class UserInterfaceWindow : GameWindow
     {
         base.Refresh();
 
-        if (Client.Pilot == null)
+        if (Client.Pilot == null || Player.LocalShipController == null)
             return;
 
-        Test.text = Client.Pilot.Nickname;
+        Test.text = $"{Client.Pilot.Nickname} {Player.LocalShipController.Hitpoints} {Player.LocalShipController.Shields}";
     }
 }

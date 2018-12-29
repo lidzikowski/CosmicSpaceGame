@@ -17,8 +17,8 @@ public class ShipLogic : MonoBehaviour
     [Header("Ship name")]
     public TextMesh ModelNameText;
 
-    
 
+    #region Position / New Position / Ship / Speed / Gear status
     public Vector2 Position
     {
         get => transform.position;
@@ -53,8 +53,8 @@ public class ShipLogic : MonoBehaviour
         }
     }
 
-    public GameObject TargetGameObject;
-    public bool Attack = false;
+    public Ship Ship { get; set; }
+    public int Speed { get; set; }
 
     protected bool gearsStatus;
     public bool GearsStatus
@@ -82,9 +82,101 @@ public class ShipLogic : MonoBehaviour
             //}
         }
     }
+    #endregion
 
-    public Ship Ship;
-    public int Speed => Ship.Speed;
+    #region Target
+    public GameObject TargetGameObject;
+    public bool Attack = false;
+    #endregion
+
+    #region Hitpoints / Shields
+    private ulong localHitpoints;
+    private ulong hitpoints
+    {
+        get
+        {
+            if(LocalPlayer)
+                return Client.Pilot.Hitpoints;
+            return localHitpoints;
+        }
+        set
+        {
+            if (LocalPlayer)
+            {
+                Client.Pilot.Hitpoints = value;
+                return;
+            }
+            localHitpoints = value;
+        }
+    }
+    public ulong Hitpoints
+    {
+        get => hitpoints;
+        set
+        {
+            var x = hitpoints;
+            OnChangeHitpointsOrShields(ref x, ref value);
+            hitpoints = x;
+        }
+    }
+
+    private ulong maxHitpoints;
+    public ulong MaxHitpoints
+    {
+        get => maxHitpoints;
+        set => OnChangeHitpointsOrShields(ref maxHitpoints, ref value);
+    }
+    
+    private ulong localShields;
+    private ulong shields
+    {
+        get
+        {
+            if (LocalPlayer)
+                return Client.Pilot.Shields;
+            return localShields;
+        }
+        set
+        {
+            if (LocalPlayer)
+            {
+                Client.Pilot.Shields = value;
+                return;
+            }
+            localShields = value;
+        }
+    }
+    public ulong Shields
+    {
+        get => shields;
+        set
+        {
+            var x = shields;
+            OnChangeHitpointsOrShields(ref x, ref value);
+            shields = x;
+        }
+    }
+
+    private ulong maxShields;
+    public ulong MaxShields
+    {
+        get => maxShields;
+        set => OnChangeHitpointsOrShields(ref maxShields, ref value);
+    }
+    
+    private void OnChangeHitpointsOrShields(ref ulong variable, ref ulong value)
+    {
+        if (variable == value)
+            return;
+
+        variable = value;
+
+        // REFRESH INTERFACE
+        GuiScript.RefreshAllActiveWindow();
+    }
+    #endregion
+
+
 
     public bool LocalPlayer = false;
 

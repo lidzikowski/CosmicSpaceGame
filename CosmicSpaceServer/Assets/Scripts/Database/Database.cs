@@ -4,6 +4,7 @@ using CosmicSpaceCommunication.Game.Resources;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class Database
@@ -34,10 +35,11 @@ public class Database
         getships,
         loguser,
         getplayerid,
-        ocuppiednickname
+        ocuppiednickname,
+        saveplayerdata
     }
 
-    private static DataTable ExecuteCommand(Commands command, Dictionary<string, object> parameters)
+    private static async Task<DataTable> ExecuteCommand(Commands command, Dictionary<string, object> parameters)
     {
         try
         {
@@ -108,9 +110,9 @@ public class Database
     /// <summary>
     /// Pobranie wszystkich map z bazy danych
     /// </summary>
-    public static Dictionary<int, Map> GetMaps()
+    public static async Task<Dictionary<int, Map>> GetMaps()
     {
-        DataTable dt = ExecuteCommand(Commands.getmaps, new Dictionary<string, object>());
+        DataTable dt = await ExecuteCommand(Commands.getmaps, new Dictionary<string, object>());
 
         if (dt != null)
         {
@@ -134,9 +136,9 @@ public class Database
     /// <summary>
     /// Pobranie wszystkich statkow z bazy danych
     /// </summary>
-    public static Dictionary<int, Ship> GetShips()
+    public static async Task<Dictionary<int, Ship>> GetShips()
     {
-        DataTable dt = ExecuteCommand(Commands.getships, new Dictionary<string, object>());
+        DataTable dt = await ExecuteCommand(Commands.getships, new Dictionary<string, object>());
 
         if (dt != null)
         {
@@ -155,7 +157,8 @@ public class Database
                     Generators = Row<int>(row["generators"]),
                     Extras = Row<int>(row["extras"]),
                     Speed = Row<int>(row["speed"]),
-                    Cargo = Row<int>(row["cargo"])
+                    Cargo = Row<int>(row["cargo"]),
+                    Hitpoints = Row<ulong>(row["hitpoints"])
                 });
 
             }
@@ -171,9 +174,9 @@ public class Database
     /// <summary>
     /// Prawda = Mozna rejestrowac
     /// </summary>
-    public static bool OccupiedAccount(RegisterUser registerUser)
+    public static async Task<bool> OccupiedAccount(RegisterUser registerUser)
     {
-        DataTable dt = ExecuteCommand(Commands.occupiedaccount, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.occupiedaccount, new Dictionary<string, object>()
         {
             { "inusername", registerUser.Username },
             { "inemail", registerUser.Email }
@@ -187,9 +190,9 @@ public class Database
     /// <summary>
     /// Prawda = Mozna uzyc podanego nicku
     /// </summary>
-    public static bool OcuppiedNickname(string nickname)
+    public static async Task<bool> OcuppiedNickname(string nickname)
     {
-        DataTable dt = ExecuteCommand(Commands.ocuppiednickname, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.ocuppiednickname, new Dictionary<string, object>()
         {
             { "innickname", nickname }
         });
@@ -202,9 +205,9 @@ public class Database
     /// <summary>
     /// Prawda = konto zostalo zarejestrowane
     /// </summary>
-    public static bool RegisterUser(RegisterUser registerUser)
+    public static async Task<bool> RegisterUser(RegisterUser registerUser)
     {
-        DataTable dt = ExecuteCommand(Commands.registeruser, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.registeruser, new Dictionary<string, object>()
         {
             { "inusername", registerUser.Username },
             { "inpassword", registerUser.Password },
@@ -227,9 +230,9 @@ public class Database
     /// Zwraca null jezeli niepoprawne dane logowania lub id logujacego uzytkownika
     /// </summary>
     /// <returns></returns>
-    public static ulong? LoginUser(LogInUser logInUser)
+    public static async Task<ulong?> LoginUser(LogInUser logInUser)
     {
-        DataTable dt = ExecuteCommand(Commands.loginuser, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.loginuser, new Dictionary<string, object>()
         {
             { "inusername", logInUser.Username },
             { "inpassword", logInUser.Password }
@@ -243,9 +246,9 @@ public class Database
     /// <summary>
     /// Pobranie informacji z bazy danych o graczu
     /// </summary>
-    public static Pilot GetPilot(ulong userId)
+    public static async Task<Pilot> GetPilot(ulong userId)
     {
-        DataTable dt = ExecuteCommand(Commands.getplayerdata, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.getplayerdata, new Dictionary<string, object>()
         {
             { "inuserid", userId }
         });
@@ -263,9 +266,9 @@ public class Database
     /// <summary>
     /// Pobranie id uzytkownika posiadajacego wskazana nazwe uzytkownika
     /// </summary>
-    public static ulong? GetPilot(LogInUser logInUser)
+    public static async Task<ulong?> GetPilot(LogInUser logInUser)
     {
-        DataTable dt = ExecuteCommand(Commands.getplayerid, new Dictionary<string, object>()
+        DataTable dt = await ExecuteCommand(Commands.getplayerid, new Dictionary<string, object>()
         {
             { "inusername", logInUser.Username }
         });
@@ -277,6 +280,24 @@ public class Database
 
     #endregion
 
-
+    #region Zapis stanu gracza
+    public static async void SavePlayerData(Pilot pilot)
+    {
+        DataTable dt = await ExecuteCommand(Commands.saveplayerdata, new Dictionary<string, object>()
+        {
+            { "inuserid", pilot.Id },
+            { "inmapid", pilot.Map.Id },
+            { "inpositionx", pilot.PositionX },
+            { "inpositiony", pilot.PositionY },
+            { "inshipid", pilot.Ship.Id },
+            { "inexperience", pilot.Experience },
+            { "inlevel", pilot.Level },
+            { "inscrap", pilot.Scrap },
+            { "inmetal", pilot.Metal },
+            { "inhitpoints", pilot.Hitpoints },
+            { "inshields", pilot.Shields },
+        });
+    }
+    #endregion
 
 }

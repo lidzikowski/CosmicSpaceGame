@@ -9,5 +9,6 @@ namespace CosmicSpaceCommunication.Game.Player.ClientToServer
         public float PositionY { get; set; }
         public float TargetPositionX { get; set; }
         public float TargetPositionY { get; set; }
+        public int Speed { get; set; }
     }
 }

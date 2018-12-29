@@ -33,11 +33,11 @@ public class Server : MonoBehaviour
         CreateWebSocket();
     }
 
-    private void GameResourcesFromDatabase()
+    private async void GameResourcesFromDatabase()
     {
-        Ships = Database.GetShips();
+        Ships = await Database.GetShips();
 
-        Maps = Database.GetMaps();
+        Maps = await Database.GetMaps();
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);
 

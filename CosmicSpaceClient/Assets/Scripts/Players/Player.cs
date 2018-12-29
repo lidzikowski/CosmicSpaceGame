@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     public Transform PlayersTransform;
     public GameObject PlayerPrefab;
 
-    private ShipLogic LocalShipController;
+    public static ShipLogic LocalShipController;
     public static Dictionary<ulong, ShipLogic> PlayersController = new Dictionary<ulong, ShipLogic>();
 
     [Header("Map and background")]
@@ -105,7 +105,7 @@ public class Player : MonoBehaviour
             player.Ship,
             player.Nickname,
             Color.blue);
-        
+
         PlayersController.Add(player.PlayerId, shipController);
     }
 
@@ -119,6 +119,7 @@ public class Player : MonoBehaviour
 
         ShipLogic shipController = go.GetComponent<ShipLogic>();
         shipController.TargetPosition = shipController.Position;
+        shipController.Speed = ship.Speed;
 
         shipController.InitShip(
             ship,
@@ -175,6 +176,7 @@ public class Player : MonoBehaviour
         {
             LocalShipController.Position = position;
             LocalShipController.TargetPosition = targetPosition;
+            LocalShipController.Speed = newPosition.Speed;
         }
         else
         {
@@ -183,8 +185,45 @@ public class Player : MonoBehaviour
             
             PlayersController[newPosition.PlayerId].Position = position;
             PlayersController[newPosition.PlayerId].TargetPosition = targetPosition;
+            PlayersController[newPosition.PlayerId].Speed = newPosition.Speed;
         }
     }
+
+    public void PlayerHitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
+    {
+        if (newValue == null)
+            return;
+        
+        if (newValue.PlayerId == Client.Pilot.Id)
+        {
+            if(hitpoints)
+            {
+                LocalShipController.Hitpoints = newValue.Value;
+                LocalShipController.MaxHitpoints = newValue.MaxValue;
+            }
+            else
+            {
+                LocalShipController.Shields = newValue.Value;
+                LocalShipController.MaxShields = newValue.MaxValue;
+            }
+            return;
+        }
+
+        if (!PlayersController.ContainsKey(newValue.PlayerId))
+            return;
+
+        if (hitpoints)
+        {
+            PlayersController[newValue.PlayerId].Hitpoints = newValue.Value;
+            PlayersController[newValue.PlayerId].MaxHitpoints = newValue.MaxValue;
+        }
+        else
+        {
+            PlayersController[newValue.PlayerId].Shields = newValue.Value;
+            PlayersController[newValue.PlayerId].MaxShields = newValue.MaxValue;
+        }
+    }
+
 
     public void ClearGameArea()
     {

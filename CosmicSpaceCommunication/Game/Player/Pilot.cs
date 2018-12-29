@@ -15,5 +15,7 @@ namespace CosmicSpaceCommunication.Game.Player
         public int Level { get; set; }
         public double Scrap { get; set; }
         public double Metal { get; set; }
+        public ulong Hitpoints { get; set; }
+        public ulong Shields { get; set; }
     }
 }

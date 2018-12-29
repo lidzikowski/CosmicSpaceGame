@@ -15,8 +15,11 @@ namespace CosmicSpaceCommunication
 
         PlayerJoin = 300,
         PlayerLeave = 301,
+        
         PlayerNewPosition = 310,
-        EnemyNewPosition = 311,
+        PlayerChangeHitpoints = 311,
+        PlayerChangeShields = 312,
+
 
     }
 }

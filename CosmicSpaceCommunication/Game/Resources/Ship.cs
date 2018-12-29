@@ -10,5 +10,6 @@
         public int Extras { get; set; }
         public int Speed { get; set; }
         public int Cargo { get; set; }
+        public ulong Hitpoints { get; set; }
     }
 }
