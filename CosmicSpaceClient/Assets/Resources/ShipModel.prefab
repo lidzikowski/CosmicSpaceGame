@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6499379949531810920}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: -1}
+  m_LocalPosition: {x: 0, y: -6, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6499379950660276472}
@@ -79,13 +79,13 @@ TextMesh:
   m_GameObject: {fileID: 6499379949531810920}
   m_Text: '{NICKNAME}'
   m_OffsetZ: 0
-  m_CharacterSize: 1
+  m_CharacterSize: 0.35
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
-  m_FontSize: 0
-  m_FontStyle: 1
+  m_FontSize: 50
+  m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   m_Color:
@@ -184,6 +184,9 @@ MonoBehaviour:
   RotationTransform: {fileID: 6499379950373497034}
   ModelTransform: {fileID: 6499379950828206855}
   ModelNameText: {fileID: 6499379949531810926}
+  TargetGameObject: {fileID: 0}
+  Attack: 0
+  LocalPlayer: 0
 --- !u!1 &6499379950828206854
 GameObject:
   m_ObjectHideFlags: 0

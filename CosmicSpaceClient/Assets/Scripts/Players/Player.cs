@@ -82,7 +82,7 @@ public class Player : MonoBehaviour
             new Vector2(Client.Pilot.PositionX, Client.Pilot.PositionY),
             Client.Pilot.Ship,
             Client.Pilot.Nickname,
-            Color.blue);
+            Color.white);
         shipController.LocalPlayer = true;
         LocalShipController = shipController;
 
@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
             new Vector2(player.PositionX, player.PositionY),
             player.Ship,
             player.Nickname,
-            Color.red);
+            Color.blue);
         
         PlayersController.Add(player.PlayerId, shipController);
     }
