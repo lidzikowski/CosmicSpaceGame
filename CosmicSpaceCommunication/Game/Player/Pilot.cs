@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 
 namespace CosmicSpaceCommunication.Game.Player
 {
@@ -17,5 +18,8 @@ namespace CosmicSpaceCommunication.Game.Player
         public double Metal { get; set; }
         public ulong Hitpoints { get; set; }
         public ulong Shields { get; set; }
+
+        public List<ulong> Ammunitions { get; set; }
+        public List<ulong> Rockets { get; set; }
     }
 }

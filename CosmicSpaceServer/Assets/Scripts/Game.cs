@@ -63,9 +63,14 @@ public class Game : WebSocketBehavior
                     PilotDisconnect();
                     break;
 
-                case Commands.PlayerNewPosition:
+                case Commands.NewPosition:
                     NewPosition newPosition = (NewPosition)commandData.Data;
-                    PilotChangePosition(newPosition);
+
+                    if (newPosition == null)
+                        return;
+
+                    if (newPosition.IsPlayer)
+                        PilotChangePosition(newPosition);
                     break;
             }
         }
@@ -100,8 +105,8 @@ public class Game : WebSocketBehavior
             {
                 Pilot = await Database.GetPilot((ulong)userId)
             };
-            pilotServer.Headers = GetHeaders();
             pilotServer.TargetPostion = pilotServer.Position;
+            pilotServer.Headers = GetHeaders();
 
             if (Server.Pilots.ContainsKey(pilotServer.Pilot.Id))
             {

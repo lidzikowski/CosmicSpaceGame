@@ -170,20 +170,38 @@ public class Client : MonoBehaviour
 
 
         // ZDARZENIE NA ZMIANE POZYCJI GRACZA
-        else if (commandData.Command == Commands.PlayerNewPosition)
+        else if (commandData.Command == Commands.NewPosition)
         {
-            GetComponent<Player>().PlayerChangePosition((NewPosition)commandData.Data);
+            NewPosition newPosition = (NewPosition)commandData.Data;
+
+            if (newPosition == null)
+                return;
+
+            if (newPosition.IsPlayer)
+                GetComponent<Player>().PlayerChangePosition(newPosition);
         }
 
 
         // ZDARZENIE NA ZMIANE HITPOINTS / SHIELDS GRACZA
-        else if (commandData.Command == Commands.PlayerChangeHitpoints)
+        else if (commandData.Command == Commands.ChangeHitpoints)
         {
-            GetComponent<Player>().PlayerHitpointsOrShields((NewHitpointsOrShields)commandData.Data, true);
+            NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
+
+            if (newValue == null)
+                return;
+
+            if (newValue.IsPlayer)
+                GetComponent<Player>().PlayerHitpointsOrShields(newValue, true);
         }
-        else if (commandData.Command == Commands.PlayerChangeShields)
+        else if (commandData.Command == Commands.ChangeShields)
         {
-            GetComponent<Player>().PlayerHitpointsOrShields((NewHitpointsOrShields)commandData.Data, false);
+            NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
+
+            if (newValue == null)
+                return;
+
+            if (newValue.IsPlayer)
+                GetComponent<Player>().PlayerHitpointsOrShields(newValue, false);
         }
 
 

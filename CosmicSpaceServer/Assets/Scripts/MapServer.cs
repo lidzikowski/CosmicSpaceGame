@@ -28,10 +28,11 @@ public class MapServer : MonoBehaviour
         {
             pilotServer.Send(new CommandData()
             {
-                Command = Commands.PlayerNewPosition,
+                Command = Commands.NewPosition,
                 Data = new NewPosition()
                 {
                     PlayerId = pilot.Id,
+                    IsPlayer = true,
                     PositionX = position.x,
                     PositionY = position.y,
                     TargetPositionX = targetPosition.x,
@@ -48,10 +49,11 @@ public class MapServer : MonoBehaviour
         {
             pilotServer.Send(new CommandData()
             {
-                Command = Commands.PlayerChangeHitpoints,
+                Command = Commands.ChangeHitpoints,
                 Data = new NewHitpointsOrShields()
                 {
                     PlayerId = pilot.Id,
+                    IsPlayer = true,
                     Value = hitpoints,
                     MaxValue = maxHitpoints
                 }
@@ -65,10 +67,11 @@ public class MapServer : MonoBehaviour
         {
             pilotServer.Send(new CommandData()
             {
-                Command = Commands.PlayerChangeShields,
+                Command = Commands.ChangeShields,
                 Data = new NewHitpointsOrShields()
                 {
                     PlayerId = pilot.Id,
+                    IsPlayer = true,
                     Value = shields,
                     MaxValue = maxShields
                 }

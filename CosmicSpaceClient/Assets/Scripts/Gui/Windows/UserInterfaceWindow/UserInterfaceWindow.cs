@@ -21,5 +21,6 @@ public class UserInterfaceWindow : GameWindow
             return;
 
         Test.text = $"{Client.Pilot.Nickname} {Player.LocalShipController.Hitpoints} {Player.LocalShipController.Shields}";
+        Test.text += $"{System.Environment.NewLine} {Client.Pilot.Ammunitions.Count} {Client.Pilot.Ammunitions[0]}";
     }
 }

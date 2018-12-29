@@ -2,6 +2,7 @@
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
 using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using UnityEngine;
 public class Database
 {
     #region ConnectionString
-    private static string connectionString = new MySqlConnectionStringBuilder()
+    private static readonly string connectionString = new MySqlConnectionStringBuilder()
     {
         Server = "127.0.0.1",
         Port = 3306,
@@ -27,16 +28,23 @@ public class Database
 
     public enum Commands
     {
-        occupiedaccount,
-        registeruser,
-        loginuser,
-        getplayerdata,
         getmaps,
         getships,
-        loguser,
-        getplayerid,
+        getammunitions,
+        getrockets,
+
+        occupiedaccount,
         ocuppiednickname,
-        saveplayerdata
+        registeruser,
+        loginuser,
+        loguser,
+
+        saveplayerdata,
+
+        getplayerid,
+        getplayerdata,
+        getpilotresources,
+
     }
 
     private static async Task<DataTable> ExecuteCommand(Commands command, Dictionary<string, object> parameters)
@@ -76,23 +84,32 @@ public class Database
     /// </summary>
     public static T Row<T>(object obj)
     {
-        if (System.Convert.IsDBNull(obj))
-            return default(T);
-        return (T)System.Convert.ChangeType(obj, typeof(T));
+        var t = typeof(T);
+
+        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+        {
+            if (t == null)
+                return default;
+            t = Nullable.GetUnderlyingType(t);
+        }
+
+        if (Convert.IsDBNull(obj))
+            return default;
+        return (T)Convert.ChangeType(obj, t);
     }
 
     /// <summary>
     /// Logi do bazy danych z operacji
     /// </summary>
-    public static void LogUser(Headers headers, CosmicSpaceCommunication.Commands command, bool result, ulong? userid)
+    public static async void LogUser(Headers headers, CosmicSpaceCommunication.Commands command, bool result, ulong? userid)
     {
-        ExecuteCommand(Commands.loguser, new Dictionary<string, object>()
+        await ExecuteCommand(Commands.loguser, new Dictionary<string, object>()
         {
             { "inaction", command.ToString() },
             { "inresult", result },
             { "inuseragent", headers.UserAgent },
             { "inhost", headers.Host },
-            { "inuserid", userid == null ? System.DBNull.Value : (object)userid }
+            { "inuserid", userid == null ? DBNull.Value : (object)userid }
         });
         PilotServer.Send(new CosmicSpaceCommunication.CommandData()
         {
@@ -151,8 +168,8 @@ public class Database
                     Name = Row<string>(row["shipname"]),
                     RequiredLevel = Row<int>(row["requiredlevel"]),
 
-                    ScrapPrice = Row<double>(row["scrapprice"]),
-                    MetalPrice = Row<double>(row["metalprice"]),
+                    ScrapPrice = Row<double?>(row["scrapprice"]),
+                    MetalPrice = Row<double?>(row["metalprice"]),
                     Lasers = Row<int>(row["lasers"]),
                     Generators = Row<int>(row["generators"]),
                     Extras = Row<int>(row["extras"]),
@@ -167,7 +184,92 @@ public class Database
         return null;
     }
 
-    #endregion
+    /// <summary>
+    /// Pobranie wszystkiej amunicji z bazy danych
+    /// </summary>
+    public static async Task<Dictionary<int, Ammunition>> GetAmmunitions()
+    {
+        DataTable dt = await ExecuteCommand(Commands.getammunitions, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<int, Ammunition> ammunitions = new Dictionary<int, Ammunition>();
+            foreach (DataRow row in dt.Rows)
+            {
+                ammunitions.Add(Row<int>(row["ammunitionid"]), new Ammunition()
+                {
+                    Id = Row<int>(row["ammunitionid"]),
+                    Name = Row<string>(row["ammunitionname"]),
+
+                    MultiplierPlayer = Row<float?>(row["multiplierplayer"]),
+                    MultiplierEnemy = Row<float?>(row["multiplierenemy"]),
+                    ScrapPrice = Row<double?>(row["scrapprice"]),
+                    MetalPrice = Row<double?>(row["metalprice"]),
+                    SkillId = Row<int?>(row["skillid"]),
+                });
+            }
+            return ammunitions;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Pobranie wszystkich rakiet z bazy danych
+    /// </summary>
+    public static async Task<Dictionary<int, Rocket>> GetRockets()
+    {
+        DataTable dt = await ExecuteCommand(Commands.getrockets, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<int, Rocket> rockets = new Dictionary<int, Rocket>();
+            foreach (DataRow row in dt.Rows)
+            {
+                rockets.Add(Row<int>(row["rocketid"]), new Rocket()
+                {
+                    Id = Row<int>(row["rocketid"]),
+                    Name = Row<string>(row["rocketname"]),
+                    
+                    ScrapPrice = Row<double?>(row["scrapprice"]),
+                    MetalPrice = Row<double?>(row["metalprice"]),
+                    SkillId = Row<int?>(row["skillid"]),
+                    Damage = Row<int>(row["damage"]),
+                });
+
+            }
+            return rockets;
+        }
+        return null;
+    }
+
+    public static async Task<PilotResources> GetPilotResources(ulong userId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getpilotresources, new Dictionary<string, object>()
+        {
+            { "inuserId", userId }
+        });
+
+        if (dt != null)
+        {
+            foreach (DataRow row in dt.Rows)
+            {
+                PilotResources pilotResources = new PilotResources();
+
+                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition0"]));
+                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition1"]));
+                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition2"]));
+                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition3"]));
+
+                pilotResources.Rockets.Add(Row<ulong>(row["rocket0"]));
+                pilotResources.Rockets.Add(Row<ulong>(row["rocket1"]));
+                pilotResources.Rockets.Add(Row<ulong>(row["rocket2"]));
+
+                return pilotResources;
+            }
+        }
+        return null;
+    }
+        #endregion
 
     #region Proces rejestracji
 
@@ -257,7 +359,7 @@ public class Database
         {
             foreach(DataRow row in dt.Rows)
             {
-                return PilotServer.GetPilot(row);
+                return await PilotServer.GetPilot(row);
             }
         }
         return null;
@@ -296,6 +398,14 @@ public class Database
             { "inmetal", pilot.Metal },
             { "inhitpoints", pilot.Hitpoints },
             { "inshields", pilot.Shields },
+
+            { "inammunition0", pilot.Ammunitions[0] },
+            { "inammunition1", pilot.Ammunitions[1] },
+            { "inammunition2", pilot.Ammunitions[2] },
+            { "inammunition3", pilot.Ammunitions[3] },
+            { "inrocket0", pilot.Rockets[0] },
+            { "inrocket1", pilot.Rockets[1] },
+            { "inrocket2", pilot.Rockets[2] },
         });
     }
     #endregion

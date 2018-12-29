@@ -1,6 +1,8 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public delegate void ChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition, int speed);
@@ -172,9 +174,9 @@ public class PilotServer
         }
     }
 
-    public static Pilot GetPilot(DataRow row)
+    public static async Task<Pilot> GetPilot(DataRow row)
     {
-        return new Pilot()
+        Pilot pilot = new Pilot()
         {
             Id = Database.Row<ulong>(row["userid"]),
             Nickname = Database.Row<string>(row["nickname"]),
@@ -189,5 +191,12 @@ public class PilotServer
             Hitpoints = Database.Row<ulong>(row["hitpoints"]),
             Shields = Database.Row<ulong>(row["shields"]),
         };
+        
+        PilotResources resources = await Database.GetPilotResources(pilot.Id);
+
+        pilot.Ammunitions = resources.Ammunitions;
+        pilot.Rockets = resources.Rockets;
+        
+        return pilot;
     }
 }

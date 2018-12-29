@@ -42,10 +42,11 @@ public class ShipLogic : MonoBehaviour
 
             Client.SendToSocket(new CommandData()
             {
-                Command = Commands.PlayerNewPosition,
+                Command = Commands.NewPosition,
                 Data = new NewPosition()
                 {
                     PlayerId = Client.Pilot.Id,
+                    IsPlayer = true,
                     PositionX = position.x,
                     PositionY = position.y
                 }
@@ -85,7 +86,36 @@ public class ShipLogic : MonoBehaviour
     #endregion
 
     #region Target
-    public GameObject TargetGameObject;
+    private GameObject targetGameObject;
+    public GameObject TargetGameObject
+    {
+        get => targetGameObject;
+        set
+        {
+            if (targetGameObject == value)
+                return;
+
+            targetGameObject = value;
+            
+            if (!LocalPlayer)
+                return;
+
+            bool isNull = value == null;
+            bool? targetIsPlayer = !isNull ? value.tag == "Player" : (bool?)null;
+
+            Client.SendToSocket(new CommandData()
+            {
+                Command = Commands.SelectTarget,
+                Data = new NewTarget()
+                {
+                    PlayerId = Client.Pilot.Id,
+                    AttackerIsPlayer = true,
+                    TargetIsPlayer = targetIsPlayer,
+                    TargetId = null //////////////
+                }
+            });
+        }
+    }
     public bool Attack = false;
     #endregion
 

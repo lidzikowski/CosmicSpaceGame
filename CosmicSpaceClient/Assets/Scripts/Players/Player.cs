@@ -166,9 +166,6 @@ public class Player : MonoBehaviour
 
     public void PlayerChangePosition(NewPosition newPosition)
     {
-        if (newPosition == null)
-            return;
-
         Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
         Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
 
@@ -191,9 +188,6 @@ public class Player : MonoBehaviour
 
     public void PlayerHitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
     {
-        if (newValue == null)
-            return;
-        
         if (newValue.PlayerId == Client.Pilot.Id)
         {
             if(hitpoints)

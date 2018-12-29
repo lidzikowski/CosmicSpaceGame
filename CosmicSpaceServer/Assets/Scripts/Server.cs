@@ -13,6 +13,8 @@ public class Server : MonoBehaviour
 
     public static Dictionary<int, Ship> Ships;
     public static Dictionary<int, Map> Maps;
+    public static Dictionary<int, Ammunition> Ammunitions;
+    public static Dictionary<int, Rocket> Rockets;
 
     private int mapId = 1000; // Instancje
     public static Dictionary<int, MapServer> MapsServer;
@@ -28,16 +30,19 @@ public class Server : MonoBehaviour
 
         Application.targetFrameRate = 60;
 
-        GameResourcesFromDatabase();
+        StartCoroutine("GameResourcesFromDatabase");
 
         CreateWebSocket();
     }
+
+
 
     private async void GameResourcesFromDatabase()
     {
         Ships = await Database.GetShips();
 
         Maps = await Database.GetMaps();
+
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);
 
@@ -50,7 +55,13 @@ public class Server : MonoBehaviour
 
             MapsServer.Add(map.Id, go.GetComponent<MapServer>());
         }
+
+        Ammunitions = await Database.GetAmmunitions();
+
+        Rockets = await Database.GetRockets();
     }
+
+
 
     void CreateWebSocket()
     {
