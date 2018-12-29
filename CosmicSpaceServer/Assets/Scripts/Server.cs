@@ -38,7 +38,7 @@ public class Server : MonoBehaviour
         Ships = Database.GetShips();
 
         Maps = Database.GetMaps();
-        GameObject maps = new GameObject() { name = $"Maps [{Maps.Count}]" };
+        GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);
 
         MapsServer = new Dictionary<int, MapServer>();

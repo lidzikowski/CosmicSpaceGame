@@ -1,0 +1,3 @@
+These scenes make use of a shader to attempt to seamlessly merge multiple images. If you want more or less images you will have to edit the shader and make your own version!
+
+Currently there is no clean or easy way to make this shader dynamic that I know of except possibly with a texture atlas (See our other product Mip Map Maker). I may experiment with this for a future update

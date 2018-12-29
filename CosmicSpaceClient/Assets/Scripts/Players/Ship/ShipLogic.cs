@@ -96,11 +96,13 @@ public class ShipLogic : MonoBehaviour
         Fly();
     }
 
+
+
     public void Rotate()
     {
         if (TargetGameObject != null && Attack)
             RotateAngle = Mathf.Atan2(TargetGameObject.transform.position.y - Position.y, TargetGameObject.transform.position.x - Position.x) * Mathf.Rad2Deg + 90;
-        else
+        else if (TargetPosition != Position)
         {
             float angle = Mathf.Atan2(TargetPosition.y - Position.y, TargetPosition.x - Position.x);
             if (angle == 0)
@@ -115,7 +117,7 @@ public class ShipLogic : MonoBehaviour
     {
         if (TargetPosition != Position)
         {
-            Position = Vector3.MoveTowards(Position, TargetPosition, Time.deltaTime * Speed / 10);
+            Position = Vector3.MoveTowards(Position, TargetPosition, Time.deltaTime * Speed);
             if (!GearsStatus)
                 GearsStatus = true;
         }

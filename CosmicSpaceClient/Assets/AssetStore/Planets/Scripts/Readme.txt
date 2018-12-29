@@ -1,0 +1,1 @@
+This script is only used to rotate the stars corona to make it feel animated.

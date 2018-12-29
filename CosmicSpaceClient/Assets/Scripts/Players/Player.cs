@@ -3,19 +3,24 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
-    [Header("Players")]
+    [Header("Local player and players")]
     public Transform LocalPlayerTransform;
     public Transform PlayersTransform;
     public GameObject PlayerPrefab;
 
     private ShipLogic LocalShipController;
-
     public static Dictionary<ulong, ShipLogic> PlayersController = new Dictionary<ulong, ShipLogic>();
+
+    [Header("Map and background")]
+    public Transform BackgroundTransform;
+    public GameObject StarsGameObject;
+    public List<GameObject> MapsGameObject = new List<GameObject>();
 
 
 
@@ -87,6 +92,8 @@ public class Player : MonoBehaviour
         LocalShipController = shipController;
 
         PlayerCamera.TargetGameObject = shipController.gameObject;
+
+        CreateBackground(Client.Pilot.Map);
     }
 
     public void InitPlayer(PlayerJoin player)
@@ -131,6 +138,31 @@ public class Player : MonoBehaviour
 
 
 
+    public void CreateBackground(Map map)
+    {
+        foreach (Transform t in BackgroundTransform)
+            Destroy(t.gameObject);
+
+        // Create stars - settings
+        if (true)
+        {
+            GameObject stars = Instantiate(StarsGameObject, BackgroundTransform);
+            #pragma warning disable CS0618 // Type or member is obsolete
+            stars.GetComponent<ParticleSystem>().maxParticles = 2000;
+            #pragma warning restore CS0618 // Type or member is obsolete
+        }
+
+        // Create background - settings
+        if (true)
+        {
+            GameObject background = MapsGameObject.FirstOrDefault(o => o?.GetComponent<Background>().MapId == map.Id);
+            if (background != null)
+                Instantiate(background, BackgroundTransform);
+        }
+    }
+
+
+
     public void PlayerChangePosition(NewPosition newPosition)
     {
         if (newPosition == null)
@@ -160,6 +192,9 @@ public class Player : MonoBehaviour
             Destroy(t.gameObject);
 
         foreach (Transform t in PlayersTransform)
+            Destroy(t.gameObject);
+
+        foreach (Transform t in BackgroundTransform)
             Destroy(t.gameObject);
 
         PlayersController.Clear();

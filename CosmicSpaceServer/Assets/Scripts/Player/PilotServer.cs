@@ -63,7 +63,7 @@ public class PilotServer
     {
         if (TargetPostion == Position)
             return;
-        Position = Vector3.MoveTowards(Position, TargetPostion, Time.deltaTime * Speed / 10);
+        Position = Vector3.MoveTowards(Position, TargetPostion, Time.deltaTime * Speed);
     }
 
 
