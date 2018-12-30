@@ -1,50 +1,279 @@
-﻿using UnityEngine;
-
-public delegate void ChangePosition(Opponent opponent, Vector2 position, Vector2 targetPosition, int speed);
-public delegate void ChangeHitpoints(Opponent opponent, ulong hitpoints, ulong maxHitpoints);
-public delegate void ChangeShields(Opponent opponent, ulong shields, ulong maxShields);
-public delegate void SelectTarget(Opponent opponent, Opponent targetOpponent);
-public delegate void Attack(Opponent opponent, Opponent targetOpponent, bool attack);
-public delegate void GetDamage(Opponent whoGet, Opponent whoSet, ulong? damage, int ammunition, bool type);
-public delegate void Dead(Opponent whoDead, Opponent whoOpponent);
-
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public abstract class Opponent
 {
     protected static readonly float UPDATE_TIME = 1;
     protected static readonly float REPAIR_EVERY_UPDATE = 5;
+    protected static readonly float SHOT_DISTANCE = 50;
 
 
-    #region Id
-    public abstract ulong Id { get; }
-    public abstract string Name { get; }
+    #region OpponentsInArea / PilotsInArea / Join / Leave
+    public virtual List<Opponent> OpponentsInArea { get; set; } = new List<Opponent>();
+    public IEnumerable<Opponent> PilotsInArea => OpponentsInArea.Where(o => o.IsPlayer);
+
+    public virtual bool AddOpponentInArea(Opponent opponent, bool relation = true)
+    {
+        if (!OpponentsInArea.Contains(opponent))
+        {
+            OpponentsInArea.Add(opponent);
+
+            Join(opponent);
+
+            if (relation)
+                opponent.AddOpponentInArea(this, false);
+
+            return true;
+        }
+        return false;
+    }
+    protected void Join(Opponent joinOpponent)
+    {
+        if (!IsPlayer) // Ten obiekt jest pilotem
+            return;
+
+        if (joinOpponent.IsPlayer) // PILOT
+        {
+            PilotServer pilot = this as PilotServer;
+
+            pilot.Send(new CommandData()
+            {
+                Command = Commands.PlayerJoin,
+                Data = PlayerJoin.Create((joinOpponent as PilotServer).Pilot)
+            });
+        }
+        else // ENEMY
+        {
+
+        }
+    }
+
+    public virtual bool RemoveOpponentInArea(Opponent opponent, bool relation = true)
+    {
+        if (OpponentsInArea.Contains(opponent))
+        {
+            OpponentsInArea.Remove(opponent);
+
+            Leave(opponent);
+
+            if (relation)
+                opponent.RemoveOpponentInArea(this, false);
+            return true;
+        }
+        return false;
+    }
+    protected void Leave(Opponent leaveOpponent)
+    {
+        if (!IsPlayer) // Ten obiekt jest pilotem
+            return;
+        
+        if (Target == leaveOpponent)
+            Target = null;
+
+        if (leaveOpponent.IsPlayer) // PILOT
+        {
+            PilotServer pilot = this as PilotServer;
+
+            pilot.Send(new CommandData()
+            {
+                Command = Commands.PlayerLeave,
+                Data = leaveOpponent.Id
+            });
+        }
+        else // ENEMY
+        {
+
+        }
+    }
+
+
+    protected void SendToPilotsInArea(CommandData commandData)
+    {
+        foreach (PilotServer pilot in PilotsInArea)
+        {
+            pilot.Send(commandData);
+        }
+    }
+    protected void SendToPilotsInArea(CommandData commandData, bool andPilot)
+    {
+        foreach (PilotServer pilot in PilotsInArea)
+        {
+            pilot.Send(commandData);
+        }
+        if (IsPlayer && andPilot)
+            (this as PilotServer).Send(commandData);
+    }
     #endregion
 
-    public bool IsPlayer => this is PilotServer;
-    public virtual bool IsDead { get; set; } = false;
 
+
+    #region Id / Name / IsPlayer
+    public abstract ulong Id { get; }
+    public abstract string Name { get; }
+    public bool IsPlayer => this is PilotServer;
+    #endregion
+    
+    #region IsDead
+    protected virtual bool isDead { get; set; }
+    public bool IsDead
+    {
+        get => isDead;
+        set
+        {
+            if (isDead == value)
+                return;
+
+            isDead = value;
+
+            if(value)
+            {
+                OnDead();
+                Debug.Log(Name + " zginal od " + DeadOpponent.Name);
+            }
+            else
+            {
+                // ZYJE
+                Debug.Log(Name + " zmartwychwstal");
+            }
+        }
+    }
+    protected Opponent DeadOpponent { get; set; }
+    protected void OnDead()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.Dead,
+            Data = new SomeoneDead()
+            {
+                WhoId = Id,
+                WhoIsPlayer = IsPlayer,
+
+                ById = DeadOpponent.Id,
+                ByIsPlayer = DeadOpponent.IsPlayer,
+                ByName = DeadOpponent.Name
+            }
+        }, true);
+
+        //if(IsPlayer)
+        //{
+        //    PilotServer pilot = this as PilotServer;
+        //    Server.MapsServer[pilot.Pilot.Map.Id].Leave(pilot);
+        //}
+    }
+    #endregion
+    
+    #region Ammunition / Rocket
     public virtual int? Ammunition { get; set; }
     public virtual int? Rocket { get; set; }
+    #endregion
 
     #region Position / TargetPosition
-    public abstract Vector2 Position { get; set; }
-    public Vector2 TargetPostion { get; set; }
+    protected virtual Vector2 position { get; set; }
+    public Vector2 Position
+    {
+        get => position;
+        set
+        {
+            if (position == value)
+                return;
 
-    public virtual event ChangePosition OnChangePosition;
+            position = value;
+
+            OnChangePosition();
+        }
+    }
+    public Vector2 TargetPostion { get; set; }
+    
+    protected void OnChangePosition()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.NewPosition,
+            Data = new NewPosition()
+            {
+                PlayerId = Id,
+                IsPlayer = IsPlayer,
+                PositionX = Position.x,
+                PositionY = Position.y,
+                TargetPositionX = TargetPostion.x,
+                TargetPositionY = TargetPostion.y,
+                Speed = Speed
+            }
+        });
+    }
     #endregion
 
     #region Hitpoints
-    public abstract ulong Hitpoints { get; set; }
+    protected virtual ulong hitpoints { get; set; }
+    public virtual ulong Hitpoints
+    {
+        get => hitpoints;
+        set
+        {
+            if (hitpoints == value)
+                return;
+
+            hitpoints = value;
+
+            OnChangeHitpoints();
+        }
+    }
+
     public abstract ulong MaxHitpoints { get; }
     public virtual bool CanRepearHitpoints => Hitpoints != MaxHitpoints;
-    public virtual event ChangeHitpoints OnChangeHitpoints;
+    protected void OnChangeHitpoints()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.ChangeHitpoints,
+            Data = new NewHitpointsOrShields()
+            {
+                PlayerId = Id,
+                IsPlayer = IsPlayer,
+                Value = Hitpoints,
+                MaxValue = MaxHitpoints
+            }
+        }, true);
+    }
     #endregion
 
     #region Shields
-    public abstract ulong Shields { get; set; }
+    protected virtual ulong shields { get; set; }
+    public ulong Shields
+    {
+        get => shields;
+        set
+        {
+            if (shields == value)
+                return;
+
+            shields = value;
+
+            OnChangeShields();
+        }
+    }
     public abstract ulong MaxShields { get; }
     public virtual bool CanRepearShields => Shields != MaxShields;
-    public virtual event ChangeShields OnChangeShields;
+
+    protected void OnChangeShields()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.ChangeShields,
+            Data = new NewHitpointsOrShields()
+            {
+                PlayerId = Id,
+                IsPlayer = IsPlayer,
+                Value = Shields,
+                MaxValue = MaxShields
+            }
+        }, true);
+    }
+
     #endregion
 
     #region Speed
@@ -53,7 +282,7 @@ public abstract class Opponent
 
     #region Target
     protected virtual Opponent target { get; set; }
-    public virtual Opponent Target
+    public Opponent Target
     {
         get => target;
         set
@@ -64,22 +293,48 @@ public abstract class Opponent
             target = value;
 
             if (value == null)
-            {
                 Attack = false;
-                return;
-            }
 
-            OnSelectTarget?.Invoke(this, value);
+            OnSelectTarget();
         }
     }
-    public virtual event SelectTarget OnSelectTarget;
+    protected bool TargetIsNull => Target == null;
+    protected bool TargetIsDead => !TargetIsNull ? Target.IsDead : false;
+    protected ulong? TargetId => !TargetIsNull ? Target.Id : (ulong?)null; 
+    protected bool? TargetIsPlayer => !TargetIsNull ? Target.IsPlayer : (bool?)null; 
+    protected void OnSelectTarget()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.SelectTarget,
+            Data = new NewTarget()
+            {
+                PlayerId = Id,
+                AttackerIsPlayer = IsPlayer,
+                TargetId = TargetId,
+                TargetIsPlayer = TargetIsPlayer
+            }
+        });
+    }
     #endregion
 
     #region Attack
     protected virtual bool attack { get; set; }
     public virtual bool Attack
     {
-        get => attack;
+        get
+        {
+            if(attack)
+            {
+                if (TargetIsNull || TargetIsDead)
+                {
+                    Attack = false;
+                    return attack;
+                }
+                return attack;
+            }
+            return attack;
+        }
         set
         {
             if (attack == value)
@@ -87,10 +342,27 @@ public abstract class Opponent
 
             attack = value;
 
-            OnAttackTarget?.Invoke(this, Target, attack);
+            OnAttackTarget();
         }
     }
-    public virtual event Attack OnAttackTarget;
+    protected void OnAttackTarget()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.AttackTarget,
+            Data = new AttackTarget()
+            {
+                PlayerId = Id,
+                AttackerIsPlayer = IsPlayer,
+                TargetId = TargetId,
+                TargetIsPlayer = TargetIsPlayer,
+
+                Attack = Attack,
+                SelectedAmmunition = Ammunition,
+                SelectedRocket = Rocket
+            }
+        });
+    }
     #endregion
 
     #region Damage
@@ -99,32 +371,52 @@ public abstract class Opponent
 
     #region TakeDamage
     protected float LastTakeDamage = 0;
-    public virtual void TakeDamage(Opponent opponent, ulong? damage, int ammunition, bool type)
+    public void OnTakeDamage(Opponent opponent, ulong? receivedDamage, int ammunition, bool type)
     {
-        OnGetDamage?.Invoke(opponent, this, damage, ammunition, type);
-
-        if (damage == null) // Pudlo
+        if (IsDead)
             return;
-
-        ulong dmg = (ulong)damage;
 
         LastTakeDamage = REPAIR_EVERY_UPDATE;
 
-        if (Hitpoints - dmg <= MaxHitpoints)
-            Hitpoints -= dmg;
+        if (receivedDamage != null) // Obsluga pudla
+        {
+            TakeDamage((ulong)receivedDamage);
+            CheckIfDead(opponent);
+        }
+
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.GetDamage,
+            Data = new TakeDamage()
+            {
+                ToId = Id,
+                ToIsPlayer = IsPlayer,
+
+                FromId = opponent.Id,
+                FromIsPlayer = opponent.IsPlayer,
+
+                Damage = receivedDamage,
+
+                AmmunitionId = ammunition,
+                IsAmmunition = type
+            }
+        }, true);
+    }
+    protected void TakeDamage(ulong damage)
+    {
+        if (Hitpoints - damage <= MaxHitpoints)
+            Hitpoints -= damage;
         else
             Hitpoints = 0;
-
+    }
+    protected void CheckIfDead(Opponent opponent)
+    {
         if (Hitpoints == 0)
         {
+            DeadOpponent = opponent;
             IsDead = true;
-            OnDead?.Invoke(this, opponent);
-
-            Debug.Log(Name + " zginal od " + opponent.Name);
         }
     }
-    public virtual event GetDamage OnGetDamage;
-    public virtual event Dead OnDead;
     #endregion
 
 
@@ -133,31 +425,33 @@ public abstract class Opponent
     protected float timer = 0;
     public virtual void Update()
     {
+        if (IsDead)
+            return;
+
         Fly();
 
-        timer += Time.deltaTime;
         if (timer >= UPDATE_TIME)
         {
             timer = 0;
 
-            if (Attack && !Target.IsDead)
+            if (Attack)
             {
-                // Sprawdzenie dystansu
-
-                if (Ammunition != null)
+                if(MapServer.Distance(this, Target) <= SHOT_DISTANCE)
                 {
-                    LastTakeDamage = REPAIR_EVERY_UPDATE;
-                    Target.TakeDamage(this, Damage, (int)Ammunition, true);
+                    if (Ammunition != null)
+                    {
+                        LastTakeDamage = REPAIR_EVERY_UPDATE;
+                        Target.OnTakeDamage(this, Damage, (int)Ammunition, true);
+                    }
                 }
-
-                //if (Rocket != null)
-                //    Target.TakeDamage(this, Damage, (int)Rocket, true);
             }
             else if (CanRepair)
                 Repair();
             else
                 LastTakeDamage -= UPDATE_TIME;
         }
+        else
+            timer += Time.deltaTime;
     }
     #endregion
 

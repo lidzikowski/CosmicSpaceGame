@@ -16,9 +16,8 @@ public class Server : MonoBehaviour
     public static Dictionary<int, Ammunition> Ammunitions;
     public static Dictionary<int, Rocket> Rockets;
 
-    private int mapId = 1000; // Instancje
+    //private int mapId = 1000; // Instancje
     public static Dictionary<int, MapServer> MapsServer;
-
     public static Dictionary<ulong, PilotServer> Pilots;
 
 

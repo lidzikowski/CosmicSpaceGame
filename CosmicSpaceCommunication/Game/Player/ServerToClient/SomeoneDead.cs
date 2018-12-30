@@ -10,5 +10,6 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
 
         public ulong ById { get; set; }
         public bool ByIsPlayer { get; set; }
+        public string ByName { get; set; }
     }
 }

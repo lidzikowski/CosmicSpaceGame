@@ -66,7 +66,11 @@ public class Player : MonoBehaviour
 
             if (hit.transform.tag == "Player" || hit.transform.tag == "Enemy")
             {
-                LocalShipController.TargetGameObject = hit.transform.gameObject;
+                ShipLogic target = hit.transform.gameObject.GetComponent<ShipLogic>();
+                if (!target.IsDead)
+                    LocalShipController.TargetGameObject = target.gameObject;
+                else
+                    Debug.Log(target.Nickname + " nie zyje.");
             }
         }
         else
@@ -81,9 +85,10 @@ public class Player : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
         {
-            if (LocalShipController.TargetIsNull)
-                return;
-            LocalShipController.Attack = !LocalShipController.Attack;
+            if (!LocalShipController.TargetIsNull)
+                LocalShipController.Attack = !LocalShipController.Attack;
+            else
+                Debug.Log("Brak celu do ataku");
         }
     }
 
@@ -98,11 +103,13 @@ public class Player : MonoBehaviour
             Client.Pilot.Ship,
             Client.Pilot.Nickname,
             Color.white);
+        shipController.transform.name = Client.Pilot.Id.ToString();
         shipController.LocalPlayer = true;
+        shipController.IsDead = Client.Pilot.IsDead;
         LocalShipController = shipController;
+        PlayersController.Add(Client.Pilot.Id, shipController);
 
         PlayerCamera.TargetGameObject = shipController.gameObject;
-        PlayersController.Add(Client.Pilot.Id, shipController);
 
         CreateBackground(Client.Pilot.Map);
     }
@@ -117,6 +124,7 @@ public class Player : MonoBehaviour
             player.Nickname,
             Color.blue);
         shipController.transform.name = player.PlayerId.ToString();
+        shipController.IsDead = player.IsDead;
 
         PlayersController.Add(player.PlayerId, shipController);
     }
@@ -211,12 +219,11 @@ public class Player : MonoBehaviour
     public void PlayerSelectTarget(NewTarget newTarget)
     {
         ShipLogic targetShipLogic = null;
-        ulong targetId = (ulong)newTarget.TargetId;
         if (newTarget.TargetIsPlayer == true) // Target = Pilot
         {
-            if (PlayersController.ContainsKey(targetId))
+            if(newTarget.TargetId != null)
             {
-                targetShipLogic = PlayersController[targetId];
+                targetShipLogic = FindPilot(newTarget.PlayerId);
             }
         }
         else if (newTarget.TargetIsPlayer == false) // Target = Enemy
@@ -282,10 +289,7 @@ public class Player : MonoBehaviour
         ShipLogic whoShipLogic = null;
         if (someoneDead.WhoIsPlayer == true) // Target = Pilot
         {
-            if (PlayersController.ContainsKey(someoneDead.WhoId))
-            {
-                whoShipLogic = PlayersController[someoneDead.WhoId];
-            }
+            whoShipLogic = FindPilot(someoneDead.WhoId);
         }
         else if (someoneDead.WhoIsPlayer == false) // Target = Enemy
         {
@@ -295,25 +299,35 @@ public class Player : MonoBehaviour
         ShipLogic byShipLogic = null;
         if (someoneDead.ByIsPlayer == true) // Target = Pilot
         {
-            if (PlayersController.ContainsKey(someoneDead.ById))
-            {
-                byShipLogic = PlayersController[someoneDead.ById];
-            }
+            byShipLogic = FindPilot(someoneDead.ById);
         }
         else if (someoneDead.ByIsPlayer == false) // Target = Enemy
         {
             // Enemy
         }
 
+        if (whoShipLogic == null)
+            return;
+
         whoShipLogic.IsDead = true;
 
         foreach(ShipLogic shipLogic in PlayersController.Values)
         {
-            if (shipLogic.TargetGameObject == whoShipLogic)
+            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic.gameObject)
+            {
+                shipLogic.Attack = false;
                 shipLogic.TargetGameObject = null;
+            }
         }
-
-        Debug.Log(whoShipLogic?.name + " nie zyje");
+        
+        if(whoShipLogic == LocalShipController)
+        {
+            Debug.Log("Zostales zniszczony przez " + someoneDead.ByName);
+        }
+        else
+        {
+            Debug.Log(whoShipLogic.name + " zostal zabity przez " + byShipLogic.name);
+        }
     }
 
 

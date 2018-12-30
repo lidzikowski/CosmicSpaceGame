@@ -2,232 +2,73 @@
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class MapServer : MonoBehaviour
 {
+    protected static readonly float SYNC_DISTANCE = 150;
+
+
+
     public Dictionary<ulong, Opponent> PilotsOnMap = new Dictionary<ulong, Opponent>();
 
 
 
-    private void FixedUpdate()
+    //float timer = 0;
+    private void Update()
     {
-        foreach(KeyValuePair<ulong, Opponent> pilot in PilotsOnMap)
+        //timer += Time.deltaTime;
+        //bool time = timer >= 0.5f;
+
+        foreach (Opponent pilotOnMap in PilotsOnMap.Values)
         {
-            pilot.Value.Update();
+            FindOpponents(pilotOnMap);
+
+            pilotOnMap.Update();
+        }
+        //if (time)
+        //    timer = 0;
+    }
+
+    private void FindOpponents(Opponent pilot)
+    {
+        foreach (Opponent opponent in PilotsOnMap.Values.Where(o => o != pilot))
+        {
+            if(Distance(pilot, opponent) <= SYNC_DISTANCE)
+                pilot.AddOpponentInArea(opponent);
+            else
+                pilot.RemoveOpponentInArea(opponent);
         }
     }
 
-
-
-    #region Events
-    private void Pilot_OnChangePosition(Opponent opponent, Vector2 position, Vector2 targetPosition, int speed)
+    public static float Distance(Opponent a, Opponent b)
     {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Id != opponent.Id))
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.NewPosition,
-                Data = new NewPosition()
-                {
-                    PlayerId = opponent.Id,
-                    IsPlayer = true,
-                    PositionX = position.x,
-                    PositionY = position.y,
-                    TargetPositionX = targetPosition.x,
-                    TargetPositionY = targetPosition.y,
-                    Speed = speed
-                }
-            });
-        }
-    }
-    
-    private void Pilot_OnChangeHitpoints(Opponent opponent, ulong hitpoints, ulong maxHitpoints)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.ChangeHitpoints,
-                Data = new NewHitpointsOrShields()
-                {
-                    PlayerId = opponent.Id,
-                    IsPlayer = true,
-                    Value = hitpoints,
-                    MaxValue = maxHitpoints
-                }
-            });
-        }
-    }
-
-    private void Pilot_OnChangeShields(Opponent opponent, ulong shields, ulong maxShields)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.ChangeShields,
-                Data = new NewHitpointsOrShields()
-                {
-                    PlayerId = opponent.Id,
-                    IsPlayer = true,
-                    Value = shields,
-                    MaxValue = maxShields
-                }
-            });
-        }
+        return Vector2.Distance(a.Position, b.Position);
     }
     
-    private void Pilot_OnSelectTarget(Opponent opponent, Opponent targetOpponent)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Id != opponent.Id))
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.SelectTarget,
-                Data = new NewTarget()
-                {
-                    PlayerId = opponent.Id,
-                    AttackerIsPlayer = opponent.IsPlayer,
-                    TargetId = targetOpponent.Id,
-                    TargetIsPlayer = targetOpponent.IsPlayer
-                }
-            });
-        }
-    }
-
-    private void Pilot_OnAttackTarget(Opponent opponent, Opponent targetOpponent, bool attack)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.AttackTarget,
-                Data = new AttackTarget()
-                {
-                    PlayerId = opponent.Id,
-                    AttackerIsPlayer = opponent.IsPlayer,
-                    TargetId = targetOpponent.Id,
-                    TargetIsPlayer = targetOpponent.IsPlayer,
-
-                    Attack = attack,
-                    SelectedAmmunition = opponent.Ammunition,
-                    SelectedRocket = opponent.Rocket
-                }
-            });
-        }
-    }
-    
-    private void Pilot_OnGetDamage(Opponent whoGet, Opponent whoSet, ulong? damage, int ammunition, bool type)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.GetDamage,
-                Data = new TakeDamage()
-                {
-                    ToId = whoGet.Id,
-                    ToIsPlayer = whoGet.IsPlayer,
-
-                    FromId = whoSet.Id,
-                    FromIsPlayer = whoSet.IsPlayer,
-
-                    Damage = damage,
-
-                    AmmunitionId = ammunition,
-                    IsAmmunition = type
-                }
-            });
-        }
-    }
-
-    private void Pilot_OnDead(Opponent whoDead, Opponent whoOpponent)
-    {
-        // opponent is player?
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
-        {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.Dead,
-                Data = new SomeoneDead()
-                {
-                    WhoId = whoDead.Id,
-                    WhoIsPlayer = whoDead.IsPlayer,
-
-                    ById = whoOpponent.Id,
-                    ByIsPlayer = whoOpponent.IsPlayer
-                }
-            });
-        }
-    }
-    #endregion
 
 
-
-    #region Join and Leave Pilot
+    #region Join and Leave Pilot from Map
     public void Join(PilotServer pilot)
     {
-        if (PilotsOnMap.ContainsKey(pilot.Pilot.Id))
-            return;
-        
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        if (!PilotsOnMap.ContainsKey(pilot.Id))
         {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.PlayerJoin,
-                Data = PlayerJoin.Create(pilot.Pilot)
-            });
-
-            pilot.Send(new CommandData()
-            {
-                Command = Commands.PlayerJoin,
-                Data = PlayerJoin.Create(pilotServer.Pilot)
-            });
+            PilotsOnMap.Add(pilot.Id, pilot);
         }
-
-        pilot.OnChangePosition += Pilot_OnChangePosition;
-        pilot.OnChangeHitpoints += Pilot_OnChangeHitpoints;
-        pilot.OnChangeShields += Pilot_OnChangeShields;
-        pilot.OnSelectTarget += Pilot_OnSelectTarget;
-        pilot.OnAttackTarget += Pilot_OnAttackTarget;
-        pilot.OnGetDamage += Pilot_OnGetDamage;
-        pilot.OnDead += Pilot_OnDead;
-
-        PilotsOnMap.Add(pilot.Id, pilot);
     }
 
     public void Leave(PilotServer pilot)
     {
-        if (!PilotsOnMap.ContainsKey(pilot.Pilot.Id))
-            return;
-        
-        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        if (PilotsOnMap.ContainsKey(pilot.Id))
         {
-            pilotServer.Send(new CommandData()
-            {
-                Command = Commands.PlayerLeave,
-                Data = pilot.Pilot.Id
-            });
+            foreach (Opponent opponent in pilot.PilotsInArea.ToList())
+                opponent.RemoveOpponentInArea(pilot);
+
+            PilotsOnMap.Remove(pilot.Id);
         }
-
-        pilot.OnChangePosition -= Pilot_OnChangePosition;
-        pilot.OnChangeHitpoints -= Pilot_OnChangeHitpoints;
-        pilot.OnChangeShields -= Pilot_OnChangeShields;
-        pilot.OnSelectTarget -= Pilot_OnSelectTarget;
-        pilot.OnAttackTarget -= Pilot_OnAttackTarget;
-        pilot.OnGetDamage -= Pilot_OnGetDamage;
-        pilot.OnDead -= Pilot_OnDead;
-
-        PilotsOnMap.Remove(pilot.Id);
     }
     #endregion
 }

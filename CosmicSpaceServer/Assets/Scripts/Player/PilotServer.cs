@@ -1,5 +1,6 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -12,10 +13,10 @@ public class PilotServer : Opponent
 
     public override ulong Id => Pilot.Id;
     public override string Name => Pilot.Nickname;
-    public override bool IsDead
+    protected override bool isDead
     {
         get => Pilot.IsDead;
-        set => Pilot.IsDead = true;
+        set => Pilot.IsDead = value;
     }
 
     #region Socket gracza / Wyslanie danych przy inicjalizacji
@@ -43,57 +44,33 @@ public class PilotServer : Opponent
     #endregion
 
     #region Position
-    public override Vector2 Position
+    protected override Vector2 position
     {
         get => new Vector2(Pilot.PositionX, Pilot.PositionY);
         set
         {
-            if (value == TargetPostion)
-                return;
-
             Pilot.PositionX = value.x;
             Pilot.PositionY = value.y;
-
-            OnChangePosition?.Invoke(this, value, TargetPostion, Speed);
         }
     }
-    public override event ChangePosition OnChangePosition;
     #endregion
 
     #region Hitpoints / MaxHitpoints
-    public override ulong Hitpoints
+    protected override ulong hitpoints
     {
         get => Pilot.Hitpoints;
-        set
-        {
-            if (Pilot.Hitpoints == value)
-                return;
-
-            Pilot.Hitpoints = value;
-
-            OnChangeHitpoints?.Invoke(this, value, MaxHitpoints);
-        }
+        set => Pilot.Hitpoints = value;
     }
     public override ulong MaxHitpoints => Pilot.Ship.Hitpoints; // + dodatki
-    public override event ChangeHitpoints OnChangeHitpoints;
     #endregion
 
     #region Shields / MaxShields
-    public override ulong Shields
+    protected override ulong shields
     {
         get => Pilot.Shields;
-        set
-        {
-            if (Pilot.Shields == value)
-                return;
-
-            Pilot.Shields = value;
-
-            OnChangeShields?.Invoke(this, value, MaxShields);
-        }
+        set => Pilot.Shields = value;
     }
-    public override ulong MaxShields => 0; // Z wyposazenia + dodatki
-    public override event ChangeShields OnChangeShields;
+    public override ulong MaxShields => 100; // Z wyposazenia + dodatki
     #endregion
 
     #region Speed
@@ -107,17 +84,7 @@ public class PilotServer : Opponent
     }
     #endregion
 
-
-
-    public override void Update()
-    {
-        if (IsDead)
-            return;
-
-        base.Update();
-    }
-
-
+    
 
     public void Send(CommandData commandData)
     {

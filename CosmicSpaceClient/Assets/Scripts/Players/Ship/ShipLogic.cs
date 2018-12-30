@@ -104,11 +104,11 @@ public class ShipLogic : MonoBehaviour
 
             targetGameObject = value;
             Attack = false;
-            
-            if (!LocalPlayer)
-                return;
 
             if (IsDead)
+                return;
+
+            if (!LocalPlayer)
                 return;
 
             Client.SendToSocket(new CommandData()
@@ -137,15 +137,15 @@ public class ShipLogic : MonoBehaviour
             if (attack == value)
                 return;
 
-            if (TargetGameObject.GetComponent<ShipLogic>().IsDead)
-                return;
-
             attack = value;
 
-            if (!LocalPlayer)
+            if (TargetIsNull)
+                attack = false;
+            
+            if (IsDead)
                 return;
 
-            if (IsDead)
+            if (!LocalPlayer)
                 return;
 
             Client.SendToSocket(new CommandData()
@@ -269,9 +269,13 @@ public class ShipLogic : MonoBehaviour
             if (isDead == value)
                 return;
 
+            isDead = value;
+
             TargetGameObject = null;
+            Attack = false;
         }
     }
+    public string Nickname;
 
 
 
@@ -317,6 +321,7 @@ public class ShipLogic : MonoBehaviour
     {
         if (ModelNameText != null)
         {
+            Nickname = modelName;
             ModelNameText.text = modelName;
             ModelNameText.color = nameColor;
         }

@@ -9,6 +9,7 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
     {
         public string Nickname { get; set; }
         public Ship Ship { get; set; }
+        public bool IsDead { get; set; }
 
         public static PlayerJoin Create(Pilot pilot)
         {
@@ -18,7 +19,8 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
                 Nickname = pilot.Nickname,
                 PositionX = pilot.PositionX,
                 PositionY = pilot.PositionY,
-                Ship = pilot.Ship
+                Ship = pilot.Ship,
+                IsDead = pilot.IsDead,
             };
         }
     }
