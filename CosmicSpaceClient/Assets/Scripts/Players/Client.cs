@@ -182,7 +182,7 @@ public class Client : MonoBehaviour
         }
 
 
-        // ZDARZENIE NA ZMIANE HITPOINTS / SHIELDS GRACZA
+        // ZDARZENIE NA ZMIANE HITPOINTS
         else if (commandData.Command == Commands.ChangeHitpoints)
         {
             NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
@@ -193,6 +193,9 @@ public class Client : MonoBehaviour
             if (newValue.IsPlayer)
                 GetComponent<Player>().PlayerHitpointsOrShields(newValue, true);
         }
+
+
+        // ZDARZENIE NA ZMIANE SHIELDS
         else if (commandData.Command == Commands.ChangeShields)
         {
             NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
@@ -202,6 +205,56 @@ public class Client : MonoBehaviour
 
             if (newValue.IsPlayer)
                 GetComponent<Player>().PlayerHitpointsOrShields(newValue, false);
+        }
+
+
+        // ZDARZENIE NA ZMIANE TARGET
+        else if (commandData.Command == Commands.SelectTarget)
+        {
+            NewTarget newTarget = (NewTarget)commandData.Data;
+
+            if (newTarget == null)
+                return;
+
+            if (newTarget.AttackerIsPlayer)
+                GetComponent<Player>().PlayerSelectTarget(newTarget);
+        }
+
+
+        // ZDARZENIE NA ATAK TARGETU
+        else if (commandData.Command == Commands.AttackTarget)
+        {
+            AttackTarget attackTarget = (AttackTarget)commandData.Data;
+
+            if (attackTarget == null)
+                return;
+
+            if (attackTarget.AttackerIsPlayer)
+                GetComponent<Player>().PlayerAttackTarget(attackTarget);
+        }
+
+
+        // ZDARZENIE NA OTRZYMYWANIE OBRAZEN
+        else if (commandData.Command == Commands.GetDamage)
+        {
+            TakeDamage takeDamage = (TakeDamage)commandData.Data;
+
+            if (takeDamage == null)
+                return;
+
+            GetComponent<Player>().SomeoneTakeDamage(takeDamage);
+        }
+
+
+        // ZDARZENIE NA SMIERC
+        else if (commandData.Command == Commands.Dead)
+        {
+            SomeoneDead someoneDead = (SomeoneDead)commandData.Data;
+
+            if (someoneDead == null)
+                return;
+
+            GetComponent<Player>().SomeoneDead(someoneDead);
         }
 
 

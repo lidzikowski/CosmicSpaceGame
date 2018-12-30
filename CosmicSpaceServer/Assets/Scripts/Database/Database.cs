@@ -23,9 +23,9 @@ public class Database
     #endregion
 
 
-
-    #region Baza danych i obsluga danych
-
+    /// <summary>
+    /// Procedury skladowane w bazie MySQL
+    /// </summary>
     public enum Commands
     {
         getmaps,
@@ -47,6 +47,7 @@ public class Database
 
     }
 
+    #region Baza danych i obsluga danych
     private static async Task<DataTable> ExecuteCommand(Commands command, Dictionary<string, object> parameters)
     {
         try
@@ -117,7 +118,6 @@ public class Database
             Data = result
         }, headers);
     }
-
     #endregion
 
 
@@ -398,6 +398,7 @@ public class Database
             { "inmetal", pilot.Metal },
             { "inhitpoints", pilot.Hitpoints },
             { "inshields", pilot.Shields },
+            { "inisdead", pilot.IsDead },
 
             { "inammunition0", pilot.Ammunitions[0] },
             { "inammunition1", pilot.Ammunitions[1] },

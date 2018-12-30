@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using System;
 
-namespace CosmicSpaceCommunication.Game.Player.ClientToServer
+namespace CosmicSpaceCommunication.Game.Player.ServerToClient
 {
     [Serializable]
     public class NewHitpointsOrShields : Communication

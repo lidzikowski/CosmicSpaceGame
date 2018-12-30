@@ -5,13 +5,18 @@ using System.Data;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public delegate void ChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition, int speed);
-public delegate void ChangeHitpoints(Pilot pilot, ulong hitpoints, ulong maxHitpoints);
-public delegate void ChangeShields(Pilot pilot, ulong shields, ulong maxShields);
 
-public class PilotServer
+public class PilotServer : Opponent
 {
     public Pilot Pilot { get; set; }
+
+    public override ulong Id => Pilot.Id;
+    public override string Name => Pilot.Nickname;
+    public override bool IsDead
+    {
+        get => Pilot.IsDead;
+        set => Pilot.IsDead = true;
+    }
 
     #region Socket gracza / Wyslanie danych przy inicjalizacji
     private Headers headers;
@@ -37,8 +42,8 @@ public class PilotServer
     }
     #endregion
 
-    #region Pozycja / Nowa pozycja / Zdarzenie na zmiane pozycji gracza
-    public Vector2 Position
+    #region Position
+    public override Vector2 Position
     {
         get => new Vector2(Pilot.PositionX, Pilot.PositionY);
         set
@@ -49,16 +54,14 @@ public class PilotServer
             Pilot.PositionX = value.x;
             Pilot.PositionY = value.y;
 
-            OnChangePosition?.Invoke(Pilot, value, TargetPostion, Speed);
+            OnChangePosition?.Invoke(this, value, TargetPostion, Speed);
         }
     }
-    public Vector2 TargetPostion;
-
-    public event ChangePosition OnChangePosition;
+    public override event ChangePosition OnChangePosition;
     #endregion
 
-    #region Hitpoints / Shields / Zdarzenie na zmiane hitpoints oraz shields
-    public ulong Hitpoints
+    #region Hitpoints / MaxHitpoints
+    public override ulong Hitpoints
     {
         get => Pilot.Hitpoints;
         set
@@ -68,14 +71,15 @@ public class PilotServer
 
             Pilot.Hitpoints = value;
 
-            OnChangeHitpoints?.Invoke(Pilot, value, MaxHitpoints);
+            OnChangeHitpoints?.Invoke(this, value, MaxHitpoints);
         }
     }
-    public ulong MaxHitpoints => Pilot.Ship.Hitpoints;
-    public bool CanRepearHitpoints => Hitpoints != MaxHitpoints;
-    public event ChangeHitpoints OnChangeHitpoints;
+    public override ulong MaxHitpoints => Pilot.Ship.Hitpoints; // + dodatki
+    public override event ChangeHitpoints OnChangeHitpoints;
+    #endregion
 
-    public ulong Shields
+    #region Shields / MaxShields
+    public override ulong Shields
     {
         get => Pilot.Shields;
         set
@@ -85,65 +89,32 @@ public class PilotServer
 
             Pilot.Shields = value;
 
-            OnChangeShields?.Invoke(Pilot, value, MaxShields);
+            OnChangeShields?.Invoke(this, value, MaxShields);
         }
     }
-    public ulong MaxShields => 0; // Z wyposazenia
-    public bool CanRepearShields => Shields != MaxShields;
-    public event ChangeShields OnChangeShields;
-
+    public override ulong MaxShields => 0; // Z wyposazenia + dodatki
+    public override event ChangeShields OnChangeShields;
     #endregion
 
     #region Speed
-    public int Speed => Pilot.Ship.Speed;
+    public override int Speed => Pilot.Ship.Speed; // + wyposazenie + dodatki
+    #endregion
+
+    #region Damage
+    public override ulong Damage
+    {
+        get => 10000;
+    }
     #endregion
 
 
 
-    float timer = 0;
-    public void Update()
+    public override void Update()
     {
-        Fly();
-
-        timer += Time.deltaTime;
-        if(timer > 1)
-        {
-            timer = 0;
-
-            // Last attack bool
-
-            Repair();
-        }
-    }
-
-
-
-    public void Fly()
-    {
-        if (TargetPostion == Position)
+        if (IsDead)
             return;
-        Position = Vector3.MoveTowards(Position, TargetPostion, Time.deltaTime * Speed);
-    }
 
-    public void Repair()
-    {
-        if (CanRepearHitpoints)
-        {
-            var hitpoint = MaxHitpoints / 30;
-            if (Hitpoints + hitpoint <= MaxHitpoints)
-                Hitpoints += hitpoint;
-            else
-                Hitpoints = MaxHitpoints;
-        }
-
-        if (CanRepearShields)
-        {
-            var shield = MaxShields / 20;
-            if (Shields + shield <= MaxShields)
-                Shields += shield;
-            else
-                Shields = MaxShields;
-        }
+        base.Update();
     }
 
 
@@ -190,6 +161,7 @@ public class PilotServer
             Metal = Database.Row<double>(row["metal"]),
             Hitpoints = Database.Row<ulong>(row["hitpoints"]),
             Shields = Database.Row<ulong>(row["shields"]),
+            IsDead = Database.Row<bool>(row["isdead"]),
         };
         
         PilotResources resources = await Database.GetPilotResources(pilot.Id);

@@ -1,5 +1,6 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +39,9 @@ public class ShipLogic : MonoBehaviour
             targetPosition = position;
 
             if (!LocalPlayer)
+                return;
+
+            if (IsDead)
                 return;
 
             Client.SendToSocket(new CommandData()
@@ -87,6 +91,9 @@ public class ShipLogic : MonoBehaviour
 
     #region Target
     private GameObject targetGameObject;
+    public bool TargetIsNull => targetGameObject == null;
+    private bool? TargetIsPlayer => !TargetIsNull ? targetGameObject.tag == "Player" : (bool?)null;
+    private ulong? TargetId => !TargetIsNull ? ulong.Parse(targetGameObject.name) : (ulong?)null;
     public GameObject TargetGameObject
     {
         get => targetGameObject;
@@ -96,12 +103,13 @@ public class ShipLogic : MonoBehaviour
                 return;
 
             targetGameObject = value;
+            Attack = false;
             
             if (!LocalPlayer)
                 return;
 
-            bool isNull = value == null;
-            bool? targetIsPlayer = !isNull ? value.tag == "Player" : (bool?)null;
+            if (IsDead)
+                return;
 
             Client.SendToSocket(new CommandData()
             {
@@ -110,13 +118,55 @@ public class ShipLogic : MonoBehaviour
                 {
                     PlayerId = Client.Pilot.Id,
                     AttackerIsPlayer = true,
-                    TargetIsPlayer = targetIsPlayer,
-                    TargetId = null //////////////
+
+                    TargetId = TargetId,
+                    TargetIsPlayer = TargetIsPlayer,
                 }
             });
         }
     }
-    public bool Attack = false;
+    #endregion
+
+    #region Attack
+    public bool attack;
+    public bool Attack
+    {
+        get => attack;
+        set
+        {
+            if (attack == value)
+                return;
+
+            if (TargetGameObject.GetComponent<ShipLogic>().IsDead)
+                return;
+
+            attack = value;
+
+            if (!LocalPlayer)
+                return;
+
+            if (IsDead)
+                return;
+
+            Client.SendToSocket(new CommandData()
+            {
+                Command = Commands.AttackTarget,
+                Data = new AttackTarget()
+                {
+                    PlayerId = Client.Pilot.Id,
+                    AttackerIsPlayer = true,
+
+                    TargetId = TargetId,
+                    TargetIsPlayer = TargetIsPlayer,
+
+                    Attack = value,
+
+                    SelectedAmmunition = 0,
+                    SelectedRocket = null,
+                }
+            });
+        }
+    }
     #endregion
 
     #region Hitpoints / Shields
@@ -210,10 +260,26 @@ public class ShipLogic : MonoBehaviour
 
     public bool LocalPlayer = false;
 
+    private bool isDead = false;
+    public bool IsDead
+    {
+        get => isDead;
+        set
+        {
+            if (isDead == value)
+                return;
+
+            TargetGameObject = null;
+        }
+    }
+
 
 
     private void Update()
     {
+        if (IsDead)
+            return;
+
         Rotate();
         Fly();
     }
@@ -222,8 +288,8 @@ public class ShipLogic : MonoBehaviour
 
     public void Rotate()
     {
-        if (TargetGameObject != null && Attack)
-            RotateAngle = Mathf.Atan2(TargetGameObject.transform.position.y - Position.y, TargetGameObject.transform.position.x - Position.x) * Mathf.Rad2Deg + 90;
+        if (!TargetIsNull && Attack)
+            RotateAngle = Mathf.Atan2(TargetGameObject.transform.position.y - Position.y, TargetGameObject.transform.position.x - Position.x) * Mathf.Rad2Deg + 180;
         else if (TargetPosition != Position)
         {
             float angle = Mathf.Atan2(TargetPosition.y - Position.y, TargetPosition.x - Position.x);

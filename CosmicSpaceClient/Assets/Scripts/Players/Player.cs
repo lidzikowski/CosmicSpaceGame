@@ -31,26 +31,27 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Client.Pilot == null)
+        if (Client.Pilot == null || LocalShipController == null)
             return;
 
         MouseControl();
+        KeyboardControl();
     }
 
 
 
-    protected void MouseControl()
+    private void MouseControl()
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
 
         if (Input.GetMouseButtonDown(0))
-            Controller();
+            MouseController();
         else if (Input.GetMouseButton(0))
-            Controller(false);
+            MouseController(false);
     }
 
-    private void Controller(bool press = true)
+    private void MouseController(bool press = true)
     {
         Vector3 mousePosition = Input.mousePosition;
         Ray ray = Camera.main.ScreenPointToRay(mousePosition);
@@ -65,8 +66,7 @@ public class Player : MonoBehaviour
 
             if (hit.transform.tag == "Player" || hit.transform.tag == "Enemy")
             {
-                //Attack = false;
-                //Target = hit.transform.gameObject;
+                LocalShipController.TargetGameObject = hit.transform.gameObject;
             }
         }
         else
@@ -74,6 +74,16 @@ public class Player : MonoBehaviour
             float x = (mousePosition.x - Screen.width / 2) / 20;
             float y = (mousePosition.y - Screen.height / 2) / 20;
             LocalShipController.TargetPosition = new Vector2(LocalShipController.Position.x + x, LocalShipController.Position.y + y);
+        }
+    }
+
+    private void KeyboardControl()
+    {
+        if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+        {
+            if (LocalShipController.TargetIsNull)
+                return;
+            LocalShipController.Attack = !LocalShipController.Attack;
         }
     }
 
@@ -92,6 +102,7 @@ public class Player : MonoBehaviour
         LocalShipController = shipController;
 
         PlayerCamera.TargetGameObject = shipController.gameObject;
+        PlayersController.Add(Client.Pilot.Id, shipController);
 
         CreateBackground(Client.Pilot.Map);
     }
@@ -105,6 +116,7 @@ public class Player : MonoBehaviour
             player.Ship,
             player.Nickname,
             Color.blue);
+        shipController.transform.name = player.PlayerId.ToString();
 
         PlayersController.Add(player.PlayerId, shipController);
     }
@@ -169,54 +181,150 @@ public class Player : MonoBehaviour
         Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
         Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
 
-        if (newPosition.PlayerId == Client.Pilot.Id)
-        {
-            LocalShipController.Position = position;
-            LocalShipController.TargetPosition = targetPosition;
-            LocalShipController.Speed = newPosition.Speed;
-        }
-        else
-        {
-            if (!PlayersController.ContainsKey(newPosition.PlayerId))
-                return;
-            
-            PlayersController[newPosition.PlayerId].Position = position;
-            PlayersController[newPosition.PlayerId].TargetPosition = targetPosition;
-            PlayersController[newPosition.PlayerId].Speed = newPosition.Speed;
-        }
+        ShipLogic pilot = FindPilot(newPosition.PlayerId);
+        if (pilot == null)
+            return;
+
+        pilot.Position = position;
+        pilot.TargetPosition = targetPosition;
+        pilot.Speed = newPosition.Speed;
     }
 
     public void PlayerHitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
     {
-        if (newValue.PlayerId == Client.Pilot.Id)
-        {
-            if(hitpoints)
-            {
-                LocalShipController.Hitpoints = newValue.Value;
-                LocalShipController.MaxHitpoints = newValue.MaxValue;
-            }
-            else
-            {
-                LocalShipController.Shields = newValue.Value;
-                LocalShipController.MaxShields = newValue.MaxValue;
-            }
-            return;
-        }
-
-        if (!PlayersController.ContainsKey(newValue.PlayerId))
+        ShipLogic pilot = FindPilot(newValue.PlayerId);
+        if (pilot == null)
             return;
 
         if (hitpoints)
         {
-            PlayersController[newValue.PlayerId].Hitpoints = newValue.Value;
-            PlayersController[newValue.PlayerId].MaxHitpoints = newValue.MaxValue;
+            pilot.Hitpoints = newValue.Value;
+            pilot.MaxHitpoints = newValue.MaxValue;
         }
         else
         {
-            PlayersController[newValue.PlayerId].Shields = newValue.Value;
-            PlayersController[newValue.PlayerId].MaxShields = newValue.MaxValue;
+            pilot.Shields = newValue.Value;
+            pilot.MaxShields = newValue.MaxValue;
         }
     }
+
+    public void PlayerSelectTarget(NewTarget newTarget)
+    {
+        ShipLogic targetShipLogic = null;
+        ulong targetId = (ulong)newTarget.TargetId;
+        if (newTarget.TargetIsPlayer == true) // Target = Pilot
+        {
+            if (PlayersController.ContainsKey(targetId))
+            {
+                targetShipLogic = PlayersController[targetId];
+            }
+        }
+        else if (newTarget.TargetIsPlayer == false) // Target = Enemy
+        {
+            // Enemy
+        }
+
+        GameObject target = null;
+        if (targetShipLogic != null)
+            target = targetShipLogic.gameObject;
+
+        ShipLogic pilot = FindPilot(newTarget.PlayerId);
+        if (pilot == null)
+            return;
+
+        pilot.TargetGameObject = target;
+    }
+
+    public void PlayerAttackTarget(AttackTarget attackTarget)
+    {
+        PlayerSelectTarget(attackTarget);
+
+        ShipLogic pilot = FindPilot(attackTarget.PlayerId);
+        if (pilot == null)
+            return;
+
+        pilot.Attack = attackTarget.Attack;
+    }
+
+    public void SomeoneTakeDamage(TakeDamage takeDamage)
+    {
+        ShipLogic fromShipLogic = null;
+        if (takeDamage.FromIsPlayer == true) // Target = Pilot
+        {
+            if (PlayersController.ContainsKey(takeDamage.FromId))
+            {
+                fromShipLogic = PlayersController[takeDamage.FromId];
+            }
+        }
+        else if (takeDamage.FromIsPlayer == false) // Target = Enemy
+        {
+            // Enemy
+        }
+
+        ShipLogic toShipLogic = null;
+        if (takeDamage.ToIsPlayer == true) // Target = Pilot
+        {
+            if (PlayersController.ContainsKey(takeDamage.ToId))
+            {
+                toShipLogic = PlayersController[takeDamage.ToId];
+            }
+        }
+        else if (takeDamage.ToIsPlayer == false) // Target = Enemy
+        {
+            // Enemy
+        }
+
+        Debug.Log(fromShipLogic.name + " zadaje " + takeDamage.Damage + " obrazen " + toShipLogic.name);
+    }
+
+    public void SomeoneDead(SomeoneDead someoneDead)
+    {
+        ShipLogic whoShipLogic = null;
+        if (someoneDead.WhoIsPlayer == true) // Target = Pilot
+        {
+            if (PlayersController.ContainsKey(someoneDead.WhoId))
+            {
+                whoShipLogic = PlayersController[someoneDead.WhoId];
+            }
+        }
+        else if (someoneDead.WhoIsPlayer == false) // Target = Enemy
+        {
+            // Enemy
+        }
+
+        ShipLogic byShipLogic = null;
+        if (someoneDead.ByIsPlayer == true) // Target = Pilot
+        {
+            if (PlayersController.ContainsKey(someoneDead.ById))
+            {
+                byShipLogic = PlayersController[someoneDead.ById];
+            }
+        }
+        else if (someoneDead.ByIsPlayer == false) // Target = Enemy
+        {
+            // Enemy
+        }
+
+        whoShipLogic.IsDead = true;
+
+        foreach(ShipLogic shipLogic in PlayersController.Values)
+        {
+            if (shipLogic.TargetGameObject == whoShipLogic)
+                shipLogic.TargetGameObject = null;
+        }
+
+        Debug.Log(whoShipLogic?.name + " nie zyje");
+    }
+
+
+
+    private ShipLogic FindPilot(ulong? pilotId)
+    {
+        if (!PlayersController.ContainsKey((ulong)pilotId))
+            return null;
+        return PlayersController[(ulong)pilotId];
+    }
+
 
 
     public void ClearGameArea()

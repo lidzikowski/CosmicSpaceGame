@@ -2,11 +2,11 @@
 using WebSocketSharp.Server;
 using UnityEngine;
 using System;
+using System.Linq;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Account;
-using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
-using System.Linq;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
 
 public class Game : WebSocketBehavior
 {
@@ -72,6 +72,26 @@ public class Game : WebSocketBehavior
                     if (newPosition.IsPlayer)
                         PilotChangePosition(newPosition);
                     break;
+
+                case Commands.SelectTarget:
+                    NewTarget newTarget = (NewTarget)commandData.Data;
+
+                    if (newTarget == null)
+                        return;
+
+                    if (newTarget.AttackerIsPlayer)
+                        PilotSelectTarget(newTarget);
+                    break;
+
+                case Commands.AttackTarget:
+                    AttackTarget attackTarget = (AttackTarget)commandData.Data;
+
+                    if (attackTarget == null)
+                        return;
+
+                    if (attackTarget.AttackerIsPlayer)
+                        PilotAttackTarget(attackTarget);
+                    break;
             }
         }
         catch (Exception ex)
@@ -79,8 +99,6 @@ public class Game : WebSocketBehavior
             Debug.Log(ex);
         }
     }
-
-
 
     private Headers GetHeaders()
     {
@@ -169,5 +187,55 @@ public class Game : WebSocketBehavior
 
         pilotServer.TargetPostion = new Vector2(newPosition.PositionX, newPosition.PositionY);
     }
+    
+    private bool? PilotSelectTarget(NewTarget newTarget)
+    {
+        if (!Server.Pilots.ContainsKey(newTarget.PlayerId))
+            return false;
+        PilotServer attacker = Server.Pilots[newTarget.PlayerId];
 
+        if (newTarget.TargetIsPlayer == true) // Pilot
+        {
+            if (!Server.MapsServer.ContainsKey(attacker.Pilot.Map.Id))
+                return false;
+            MapServer attackerMap = Server.MapsServer[attacker.Pilot.Map.Id];
+
+            ulong targetId = newTarget.TargetId ?? 0;
+            if (targetId == 0)
+                return false;
+
+            if (!attackerMap.PilotsOnMap.ContainsKey(targetId))
+                return false;
+            Opponent opponent = attackerMap.PilotsOnMap[targetId];
+            
+            attacker.Target = opponent;
+            return true; //Zaznaczono pilot
+        }
+        else if (newTarget.TargetIsPlayer == false) // Enemy
+        {
+
+            return true; //Zaznaczono enemy
+        }
+        else
+        {
+            attacker.Target = null;
+            return null; //Zaznaczono nic
+        }
+    }
+
+    private void PilotAttackTarget(AttackTarget attackTarget)
+    {
+        if(PilotSelectTarget(attackTarget) == true)
+        {
+            PilotServer attacker = Server.Pilots[attackTarget.PlayerId];
+
+            attacker.Ammunition = attackTarget.SelectedAmmunition;
+            attacker.Rocket = attackTarget.SelectedRocket;
+
+            if (attacker.Target == null)
+                return;
+
+            attacker.Attack = attackTarget.Attack;
+        }
+    }
 }

@@ -8,13 +8,13 @@ using UnityEngine;
 
 public class MapServer : MonoBehaviour
 {
-    public Dictionary<ulong, PilotServer> PilotsOnMap = new Dictionary<ulong, PilotServer>();
+    public Dictionary<ulong, Opponent> PilotsOnMap = new Dictionary<ulong, Opponent>();
 
 
 
     private void FixedUpdate()
     {
-        foreach(KeyValuePair<ulong, PilotServer> pilot in PilotsOnMap)
+        foreach(KeyValuePair<ulong, Opponent> pilot in PilotsOnMap)
         {
             pilot.Value.Update();
         }
@@ -22,16 +22,18 @@ public class MapServer : MonoBehaviour
 
 
 
-    private void Pilot_OnChangePosition(Pilot pilot, Vector2 position, Vector2 targetPosition, int speed)
+    #region Events
+    private void Pilot_OnChangePosition(Opponent opponent, Vector2 position, Vector2 targetPosition, int speed)
     {
-        foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Pilot.Id != pilot.Id))
+        // opponent is player?
+        foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Id != opponent.Id))
         {
             pilotServer.Send(new CommandData()
             {
                 Command = Commands.NewPosition,
                 Data = new NewPosition()
                 {
-                    PlayerId = pilot.Id,
+                    PlayerId = opponent.Id,
                     IsPlayer = true,
                     PositionX = position.x,
                     PositionY = position.y,
@@ -43,8 +45,9 @@ public class MapServer : MonoBehaviour
         }
     }
     
-    private void Pilot_OnChangeHitpoints(Pilot pilot, ulong hitpoints, ulong maxHitpoints)
+    private void Pilot_OnChangeHitpoints(Opponent opponent, ulong hitpoints, ulong maxHitpoints)
     {
+        // opponent is player?
         foreach (PilotServer pilotServer in PilotsOnMap.Values)
         {
             pilotServer.Send(new CommandData()
@@ -52,7 +55,7 @@ public class MapServer : MonoBehaviour
                 Command = Commands.ChangeHitpoints,
                 Data = new NewHitpointsOrShields()
                 {
-                    PlayerId = pilot.Id,
+                    PlayerId = opponent.Id,
                     IsPlayer = true,
                     Value = hitpoints,
                     MaxValue = maxHitpoints
@@ -61,8 +64,9 @@ public class MapServer : MonoBehaviour
         }
     }
 
-    private void Pilot_OnChangeShields(Pilot pilot, ulong shields, ulong maxShields)
+    private void Pilot_OnChangeShields(Opponent opponent, ulong shields, ulong maxShields)
     {
+        // opponent is player?
         foreach (PilotServer pilotServer in PilotsOnMap.Values)
         {
             pilotServer.Send(new CommandData()
@@ -70,7 +74,7 @@ public class MapServer : MonoBehaviour
                 Command = Commands.ChangeShields,
                 Data = new NewHitpointsOrShields()
                 {
-                    PlayerId = pilot.Id,
+                    PlayerId = opponent.Id,
                     IsPlayer = true,
                     Value = shields,
                     MaxValue = maxShields
@@ -78,9 +82,98 @@ public class MapServer : MonoBehaviour
             });
         }
     }
+    
+    private void Pilot_OnSelectTarget(Opponent opponent, Opponent targetOpponent)
+    {
+        // opponent is player?
+        foreach (PilotServer pilotServer in PilotsOnMap.Values.Where(o => o.Id != opponent.Id))
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.SelectTarget,
+                Data = new NewTarget()
+                {
+                    PlayerId = opponent.Id,
+                    AttackerIsPlayer = opponent.IsPlayer,
+                    TargetId = targetOpponent.Id,
+                    TargetIsPlayer = targetOpponent.IsPlayer
+                }
+            });
+        }
+    }
+
+    private void Pilot_OnAttackTarget(Opponent opponent, Opponent targetOpponent, bool attack)
+    {
+        // opponent is player?
+        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.AttackTarget,
+                Data = new AttackTarget()
+                {
+                    PlayerId = opponent.Id,
+                    AttackerIsPlayer = opponent.IsPlayer,
+                    TargetId = targetOpponent.Id,
+                    TargetIsPlayer = targetOpponent.IsPlayer,
+
+                    Attack = attack,
+                    SelectedAmmunition = opponent.Ammunition,
+                    SelectedRocket = opponent.Rocket
+                }
+            });
+        }
+    }
+    
+    private void Pilot_OnGetDamage(Opponent whoGet, Opponent whoSet, ulong? damage, int ammunition, bool type)
+    {
+        // opponent is player?
+        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.GetDamage,
+                Data = new TakeDamage()
+                {
+                    ToId = whoGet.Id,
+                    ToIsPlayer = whoGet.IsPlayer,
+
+                    FromId = whoSet.Id,
+                    FromIsPlayer = whoSet.IsPlayer,
+
+                    Damage = damage,
+
+                    AmmunitionId = ammunition,
+                    IsAmmunition = type
+                }
+            });
+        }
+    }
+
+    private void Pilot_OnDead(Opponent whoDead, Opponent whoOpponent)
+    {
+        // opponent is player?
+        foreach (PilotServer pilotServer in PilotsOnMap.Values)
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.Dead,
+                Data = new SomeoneDead()
+                {
+                    WhoId = whoDead.Id,
+                    WhoIsPlayer = whoDead.IsPlayer,
+
+                    ById = whoOpponent.Id,
+                    ByIsPlayer = whoOpponent.IsPlayer
+                }
+            });
+        }
+    }
+    #endregion
 
 
 
+    #region Join and Leave Pilot
     public void Join(PilotServer pilot)
     {
         if (PilotsOnMap.ContainsKey(pilot.Pilot.Id))
@@ -104,8 +197,12 @@ public class MapServer : MonoBehaviour
         pilot.OnChangePosition += Pilot_OnChangePosition;
         pilot.OnChangeHitpoints += Pilot_OnChangeHitpoints;
         pilot.OnChangeShields += Pilot_OnChangeShields;
+        pilot.OnSelectTarget += Pilot_OnSelectTarget;
+        pilot.OnAttackTarget += Pilot_OnAttackTarget;
+        pilot.OnGetDamage += Pilot_OnGetDamage;
+        pilot.OnDead += Pilot_OnDead;
 
-        PilotsOnMap.Add(pilot.Pilot.Id, pilot);
+        PilotsOnMap.Add(pilot.Id, pilot);
     }
 
     public void Leave(PilotServer pilot)
@@ -125,7 +222,12 @@ public class MapServer : MonoBehaviour
         pilot.OnChangePosition -= Pilot_OnChangePosition;
         pilot.OnChangeHitpoints -= Pilot_OnChangeHitpoints;
         pilot.OnChangeShields -= Pilot_OnChangeShields;
-        
-        PilotsOnMap.Remove(pilot.Pilot.Id);
+        pilot.OnSelectTarget -= Pilot_OnSelectTarget;
+        pilot.OnAttackTarget -= Pilot_OnAttackTarget;
+        pilot.OnGetDamage -= Pilot_OnGetDamage;
+        pilot.OnDead -= Pilot_OnDead;
+
+        PilotsOnMap.Remove(pilot.Id);
     }
+    #endregion
 }

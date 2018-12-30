@@ -23,6 +23,8 @@ namespace CosmicSpaceCommunication
         SelectTarget = 320,
         AttackTarget = 321,
 
+        GetDamage = 330,
+        Dead = 331,
 
 
     }
