@@ -399,6 +399,7 @@ public class Database
             { "inhitpoints", pilot.Hitpoints },
             { "inshields", pilot.Shields },
             { "inisdead", pilot.IsDead },
+            { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy },
 
             { "inammunition0", pilot.Ammunitions[0] },
             { "inammunition1", pilot.Ammunitions[1] },

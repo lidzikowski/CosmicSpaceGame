@@ -10,17 +10,25 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
         public string Nickname { get; set; }
         public Ship Ship { get; set; }
         public bool IsDead { get; set; }
+        public string KillerBy { get; set; }
 
         public static PlayerJoin Create(Pilot pilot)
         {
             return new PlayerJoin()
             {
                 PlayerId = pilot.Id,
-                Nickname = pilot.Nickname,
+
+                IsPlayer = true,
                 PositionX = pilot.PositionX,
                 PositionY = pilot.PositionY,
+                TargetPositionX = pilot.PositionX,
+                TargetPositionY = pilot.PositionY,
+                Speed = pilot.Ship.Speed,
+
+                Nickname = pilot.Nickname,
                 Ship = pilot.Ship,
                 IsDead = pilot.IsDead,
+                KillerBy = pilot.KillerBy,
             };
         }
     }

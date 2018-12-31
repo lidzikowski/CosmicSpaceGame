@@ -4,6 +4,7 @@ using UnityEngine;
 using WebSocketSharp.Server;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Threading.Tasks;
 
 public class Server : MonoBehaviour
 {
@@ -22,21 +23,21 @@ public class Server : MonoBehaviour
 
 
 
-    void Start()
+    async void Start()
     {
         //if (Application.version != GameData.GameVersion)
         //    Debug.Log($"Wersja: {Application.version} DLL: {GameData.GameVersion}");
 
         Application.targetFrameRate = 60;
 
-        StartCoroutine("GameResourcesFromDatabase");
+        await GameResourcesFromDatabase();
 
         CreateWebSocket();
     }
 
 
 
-    private async void GameResourcesFromDatabase()
+    private async Task GameResourcesFromDatabase()
     {
         Ships = await Database.GetShips();
 

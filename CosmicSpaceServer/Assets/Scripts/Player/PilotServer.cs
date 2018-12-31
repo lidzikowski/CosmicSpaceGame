@@ -129,6 +129,7 @@ public class PilotServer : Opponent
             Hitpoints = Database.Row<ulong>(row["hitpoints"]),
             Shields = Database.Row<ulong>(row["shields"]),
             IsDead = Database.Row<bool>(row["isdead"]),
+            KillerBy = Database.Row<string>(row["killerby"]),
         };
         
         PilotResources resources = await Database.GetPilotResources(pilot.Id);

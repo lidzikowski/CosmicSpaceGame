@@ -19,7 +19,7 @@ public class ShipLogic : MonoBehaviour
     public TextMesh ModelNameText;
 
 
-    #region Position / New Position / Ship / Speed / Gear status
+    #region Position / New Position / Gear status
     public Vector2 Position
     {
         get => transform.position;
@@ -57,9 +57,6 @@ public class ShipLogic : MonoBehaviour
             });
         }
     }
-
-    public Ship Ship { get; set; }
-    public int Speed { get; set; }
 
     protected bool gearsStatus;
     public bool GearsStatus
@@ -259,23 +256,26 @@ public class ShipLogic : MonoBehaviour
 
 
     public bool LocalPlayer = false;
+    public PlayerJoin Player;
 
-    private bool isDead = false;
     public bool IsDead
     {
-        get => isDead;
+        get => Player.IsDead;
         set
         {
-            if (isDead == value)
+            if (Player.IsDead == value)
                 return;
 
-            isDead = value;
+            Player.IsDead = value;
 
             TargetGameObject = null;
             Attack = false;
         }
     }
-    public string Nickname;
+    public string KillerBy => Player.KillerBy;
+    public string Nickname => Player.Nickname;
+    public Ship Ship => Player.Ship;
+    public int Speed => Player.Speed;
 
 
 
@@ -317,23 +317,24 @@ public class ShipLogic : MonoBehaviour
             GearsStatus = false;
     }
 
-    public void InitShip(Ship ship, string modelName, Color nameColor)
+    public void InitShip(PlayerJoin player, Color nameColor)
     {
-        if (ModelNameText != null)
-        {
-            Nickname = modelName;
-            ModelNameText.text = modelName;
-            ModelNameText.color = nameColor;
-        }
+        Player = player;
+        
+        transform.position = new Vector2(player.PositionX, player.PositionY);
+        TargetPosition = new Vector2(player.TargetPositionX, player.TargetPositionY);
 
-        foreach(Transform t in ModelTransform)
+        transform.name = player.PlayerId.ToString();
+        
+        ModelNameText.text = player.Nickname;
+        ModelNameText.color = nameColor;
+
+        foreach (Transform t in ModelTransform)
         {
             Destroy(t.gameObject);
         }
 
-        Ship = ship;
-
-        Instantiate(Resources.Load<GameObject>("Ships/" + ship.Name), ModelTransform);
+        Instantiate(Resources.Load<GameObject>("Ships/" + player.Ship.Name), ModelTransform);
     }
     
     private List<GameObject> ChildInChild(string parent)

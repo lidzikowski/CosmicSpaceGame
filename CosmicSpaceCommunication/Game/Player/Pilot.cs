@@ -19,6 +19,7 @@ namespace CosmicSpaceCommunication.Game.Player
         public ulong Hitpoints { get; set; }
         public ulong Shields { get; set; }
         public bool IsDead { get; set; }
+        public string KillerBy { get; set; }
 
         public List<ulong> Ammunitions { get; set; }
         public List<ulong> Rockets { get; set; }

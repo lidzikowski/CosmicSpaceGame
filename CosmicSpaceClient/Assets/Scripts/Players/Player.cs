@@ -99,16 +99,14 @@ public class Player : MonoBehaviour
         ShipLogic shipController = CreatePlayer(
             LocalPlayerTransform,
             "LocalPlayer",
-            new Vector2(Client.Pilot.PositionX, Client.Pilot.PositionY),
-            Client.Pilot.Ship,
-            Client.Pilot.Nickname,
+            PlayerJoin.Create(Client.Pilot),
             Color.white);
-        shipController.transform.name = Client.Pilot.Id.ToString();
-        shipController.LocalPlayer = true;
-        shipController.IsDead = Client.Pilot.IsDead;
-        LocalShipController = shipController;
-        PlayersController.Add(Client.Pilot.Id, shipController);
 
+        shipController.LocalPlayer = true;
+        LocalShipController = shipController;
+
+        PlayersController.Add(Client.Pilot.Id, shipController);
+        
         PlayerCamera.TargetGameObject = shipController.gameObject;
 
         CreateBackground(Client.Pilot.Map);
@@ -119,32 +117,25 @@ public class Player : MonoBehaviour
         ShipLogic shipController = CreatePlayer(
             PlayersTransform,
             "Player",
-            new Vector2(player.PositionX, player.PositionY),
-            player.Ship,
-            player.Nickname,
+            player,
             Color.blue);
-        shipController.transform.name = player.PlayerId.ToString();
-        shipController.IsDead = player.IsDead;
 
         PlayersController.Add(player.PlayerId, shipController);
     }
 
-    private ShipLogic CreatePlayer(Transform spawnTransform, string tag, Vector2 position, Ship ship, string nickname, Color nicknameColor)
+    private ShipLogic CreatePlayer(Transform spawnTransform, string tag, PlayerJoin player, Color nicknameColor)
     {
         GameObject go = Instantiate(
             PlayerPrefab,
             spawnTransform);
         go.tag = tag;
-        go.transform.position = position;
 
         ShipLogic shipController = go.GetComponent<ShipLogic>();
-        shipController.TargetPosition = shipController.Position;
-        shipController.Speed = ship.Speed;
-
+        
         shipController.InitShip(
-            ship,
-            nickname,
+            player,
             nicknameColor);
+
         return shipController;
     }
     
@@ -195,7 +186,7 @@ public class Player : MonoBehaviour
 
         pilot.Position = position;
         pilot.TargetPosition = targetPosition;
-        pilot.Speed = newPosition.Speed;
+        pilot.Player.Speed = newPosition.Speed;
     }
 
     public void PlayerHitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
