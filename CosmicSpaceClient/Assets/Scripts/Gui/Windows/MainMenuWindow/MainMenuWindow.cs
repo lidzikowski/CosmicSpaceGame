@@ -55,9 +55,6 @@ public class MainMenuWindow : GameWindow
 
     public override void ChangeLanguage()
     {
-        if (GameSettings.UserLanguage == null)
-            return;
-
         SetText(GameVersionText, string.Format(GameSettings.UserLanguage.GAME_VERSION, Application.version));
         SetText(ServerStatusText, string.Format(GameSettings.UserLanguage.SERVER_STATUS, Client.SocketConnected ? "ONLINE" : "OFFLINE"));
         SetText(CreateAccountLabel, GameSettings.UserLanguage.CREATE_ACCOUNT);

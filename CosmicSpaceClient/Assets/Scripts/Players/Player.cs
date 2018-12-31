@@ -98,7 +98,7 @@ public class Player : MonoBehaviour
     {
         ShipLogic shipController = CreatePlayer(
             LocalPlayerTransform,
-            "LocalPlayer",
+            true,
             PlayerJoin.Create(Client.Pilot),
             Color.white);
 
@@ -116,25 +116,26 @@ public class Player : MonoBehaviour
     {
         ShipLogic shipController = CreatePlayer(
             PlayersTransform,
-            "Player",
+            false,
             player,
             Color.blue);
 
         PlayersController.Add(player.PlayerId, shipController);
     }
 
-    private ShipLogic CreatePlayer(Transform spawnTransform, string tag, PlayerJoin player, Color nicknameColor)
+    private ShipLogic CreatePlayer(Transform spawnTransform, bool localPlayer, PlayerJoin player, Color nicknameColor)
     {
         GameObject go = Instantiate(
             PlayerPrefab,
             spawnTransform);
-        go.tag = tag;
+        go.tag = localPlayer ? "LocalPlayer" : "Player";
 
         ShipLogic shipController = go.GetComponent<ShipLogic>();
         
         shipController.InitShip(
             player,
-            nicknameColor);
+            nicknameColor,
+            localPlayer);
 
         return shipController;
     }
@@ -214,7 +215,7 @@ public class Player : MonoBehaviour
         {
             if(newTarget.TargetId != null)
             {
-                targetShipLogic = FindPilot(newTarget.PlayerId);
+                targetShipLogic = FindPilot(newTarget.TargetId);
             }
         }
         else if (newTarget.TargetIsPlayer == false) // Target = Enemy
@@ -311,14 +312,24 @@ public class Player : MonoBehaviour
             }
         }
         
-        if(whoShipLogic == LocalShipController)
-        {
-            Debug.Log("Zostales zniszczony przez " + someoneDead.ByName);
-        }
-        else
-        {
-            Debug.Log(whoShipLogic.name + " zostal zabity przez " + byShipLogic.name);
-        }
+        //if(whoShipLogic == LocalShipController)
+        //{
+        //    Debug.Log("Zostales zniszczony przez " + someoneDead.ByName);
+        //}
+        //else
+        //{
+        //    Debug.Log(whoShipLogic.name + " zostal zabity przez " + byShipLogic.name);
+        //}
+    }
+
+    public void SomeoneAlive(ulong userId)
+    {
+        ShipLogic whoShipLogic = FindPilot(userId);
+
+        if (whoShipLogic == null)
+            return;
+
+        whoShipLogic.IsDead = false;
     }
 
 

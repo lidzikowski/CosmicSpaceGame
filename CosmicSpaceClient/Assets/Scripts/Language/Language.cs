@@ -24,4 +24,10 @@
     public string GAME_VERSION = "v. {0}";
     public string SERVER_STATUS = "Server is {0}";
     #endregion
+
+
+    #region RepairShipWindow
+    public string REPAIR = "Repair";
+    public string DESTROYED = "You're Dead";
+    #endregion
 }

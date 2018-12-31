@@ -101,7 +101,7 @@ public class ShipLogic : MonoBehaviour
 
             targetGameObject = value;
             Attack = false;
-
+            
             if (IsDead)
                 return;
 
@@ -135,10 +135,10 @@ public class ShipLogic : MonoBehaviour
                 return;
 
             attack = value;
-
+            
             if (TargetIsNull)
                 attack = false;
-            
+
             if (IsDead)
                 return;
 
@@ -201,7 +201,12 @@ public class ShipLogic : MonoBehaviour
     public ulong MaxHitpoints
     {
         get => maxHitpoints;
-        set => OnChangeHitpointsOrShields(ref maxHitpoints, ref value);
+        set
+        {
+            var x = maxHitpoints;
+            OnChangeHitpointsOrShields(ref x, ref value);
+            maxHitpoints = x;
+        }
     }
     
     private ulong localShields;
@@ -238,17 +243,18 @@ public class ShipLogic : MonoBehaviour
     public ulong MaxShields
     {
         get => maxShields;
-        set => OnChangeHitpointsOrShields(ref maxShields, ref value);
+        set
+        {
+            var x = maxShields;
+            OnChangeHitpointsOrShields(ref x, ref value);
+            maxShields = x;
+        }
     }
     
     private void OnChangeHitpointsOrShields(ref ulong variable, ref ulong value)
     {
-        if (variable == value)
-            return;
-
         variable = value;
-
-        // REFRESH INTERFACE
+        
         GuiScript.RefreshAllActiveWindow();
     }
     #endregion
@@ -256,6 +262,8 @@ public class ShipLogic : MonoBehaviour
 
 
     public bool LocalPlayer = false;
+
+    #region Player / IsDead, KillerBy / Nickname / Ship / Speed
     public PlayerJoin Player;
 
     public bool IsDead
@@ -263,19 +271,30 @@ public class ShipLogic : MonoBehaviour
         get => Player.IsDead;
         set
         {
-            if (Player.IsDead == value)
-                return;
-
             Player.IsDead = value;
 
             TargetGameObject = null;
             Attack = false;
+
+            if(LocalPlayer)
+            {
+                Client.Pilot.IsDead = value;
+
+                if (value)
+                    GuiScript.OpenWindow(WindowTypes.RepairShip);
+                else
+                {
+                    Player.KillerBy = string.Empty;
+                    GuiScript.CloseWindow(WindowTypes.RepairShip);
+                }
+            }
         }
     }
     public string KillerBy => Player.KillerBy;
     public string Nickname => Player.Nickname;
     public Ship Ship => Player.Ship;
     public int Speed => Player.Speed;
+    #endregion
 
 
 
@@ -317,9 +336,12 @@ public class ShipLogic : MonoBehaviour
             GearsStatus = false;
     }
 
-    public void InitShip(PlayerJoin player, Color nameColor)
+    public void InitShip(PlayerJoin player, Color nameColor, bool localPlayer)
     {
         Player = player;
+        LocalPlayer = localPlayer;
+
+        IsDead = player.IsDead;
         
         transform.position = new Vector2(player.PositionX, player.PositionY);
         TargetPosition = new Vector2(player.TargetPositionX, player.TargetPositionY);

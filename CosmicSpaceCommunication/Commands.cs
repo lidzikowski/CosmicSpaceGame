@@ -25,7 +25,7 @@ namespace CosmicSpaceCommunication
 
         GetDamage = 330,
         Dead = 331,
-
+        RepairShip = 332,
 
     }
 }

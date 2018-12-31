@@ -12,6 +12,7 @@ public abstract class Opponent
     protected static readonly float SHOT_DISTANCE = 50;
 
 
+
     #region OpponentsInArea / PilotsInArea / Join / Leave
     public virtual List<Opponent> OpponentsInArea { get; set; } = new List<Opponent>();
     public IEnumerable<Opponent> PilotsInArea => OpponentsInArea.Where(o => o.IsPlayer);
@@ -98,13 +99,11 @@ public abstract class Opponent
             pilot.Send(commandData);
         }
     }
-    protected void SendToPilotsInArea(CommandData commandData, bool andPilot)
+    protected void SendToPilotsInArea(CommandData commandData, bool andLocalPilot)
     {
-        foreach (PilotServer pilot in PilotsInArea)
-        {
-            pilot.Send(commandData);
-        }
-        if (IsPlayer && andPilot)
+        SendToPilotsInArea(commandData);
+
+        if (IsPlayer && andLocalPilot)
             (this as PilotServer).Send(commandData);
     }
     #endregion
@@ -132,18 +131,18 @@ public abstract class Opponent
             if(value)
             {
                 OnDead();
-                Debug.Log(Name + " zginal od " + DeadOpponent.Name);
             }
             else
             {
-                // ZYJE
-                Debug.Log(Name + " zmartwychwstal");
+                OnAlive();
             }
         }
     }
     protected Opponent DeadOpponent { get; set; }
     protected void OnDead()
     {
+        Target = null;
+
         SendToPilotsInArea(new CommandData()
         {
             Command = Commands.Dead,
@@ -157,15 +156,20 @@ public abstract class Opponent
                 ByName = DeadOpponent.Name
             }
         }, true);
+    }
+    protected void OnAlive()
+    {
+        Hitpoints = 1000;
+        LastTakeDamage = 0;
 
-        //if(IsPlayer)
-        //{
-        //    PilotServer pilot = this as PilotServer;
-        //    Server.MapsServer[pilot.Pilot.Map.Id].Leave(pilot);
-        //}
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.RepairShip,
+            Data = Id
+        }, true);
     }
     #endregion
-    
+
     #region Ammunition / Rocket
     public virtual int? Ammunition { get; set; }
     public virtual int? Rocket { get; set; }
@@ -378,12 +382,6 @@ public abstract class Opponent
 
         LastTakeDamage = REPAIR_EVERY_UPDATE;
 
-        if (receivedDamage != null) // Obsluga pudla
-        {
-            TakeDamage((ulong)receivedDamage);
-            CheckIfDead(opponent);
-        }
-
         SendToPilotsInArea(new CommandData()
         {
             Command = Commands.GetDamage,
@@ -401,6 +399,12 @@ public abstract class Opponent
                 IsAmmunition = type
             }
         }, true);
+        
+        if (receivedDamage != null)
+        {
+            TakeDamage((ulong)receivedDamage);
+            CheckIfDead(opponent);
+        }
     }
     protected void TakeDamage(ulong damage)
     {

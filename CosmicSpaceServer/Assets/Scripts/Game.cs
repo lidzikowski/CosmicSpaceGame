@@ -69,6 +69,9 @@ public class Game : WebSocketBehavior
                     if (newPosition == null)
                         return;
 
+                    if (!CheckPacket(newPosition.PlayerId))
+                        return;
+
                     if (newPosition.IsPlayer)
                         PilotChangePosition(newPosition);
                     break;
@@ -77,6 +80,9 @@ public class Game : WebSocketBehavior
                     NewTarget newTarget = (NewTarget)commandData.Data;
 
                     if (newTarget == null)
+                        return;
+
+                    if (!CheckPacket(newTarget.PlayerId))
                         return;
 
                     if (newTarget.AttackerIsPlayer)
@@ -89,8 +95,24 @@ public class Game : WebSocketBehavior
                     if (attackTarget == null)
                         return;
 
+                    if (!CheckPacket(attackTarget.PlayerId))
+                        return;
+
                     if (attackTarget.AttackerIsPlayer)
                         PilotAttackTarget(attackTarget);
+                    break;
+
+                case Commands.RepairShip:
+
+                    ulong userId;
+                    if (!ulong.TryParse(commandData.Data.ToString(), out userId))
+                        return;
+
+                    if (!CheckPacket(userId))
+                        return;
+
+                    Server.Pilots[userId].IsDead = false;
+
                     break;
             }
         }
@@ -110,6 +132,10 @@ public class Game : WebSocketBehavior
         };
     }
 
+    private bool CheckPacket(ulong userId)
+    {
+        return Server.Pilots[userId].Headers.SocketId == ID;
+    }
 
 
     private async void LoginUser(LogInUser logInUser)

@@ -16,8 +16,21 @@ public class PilotServer : Opponent
     protected override bool isDead
     {
         get => Pilot.IsDead;
-        set => Pilot.IsDead = value;
+        set
+        {
+            if (Pilot.IsDead == value)
+                return;
+
+            Pilot.IsDead = value;
+
+            if(value)
+                Pilot.KillerBy = DeadOpponent.Name;
+            else
+                Pilot.KillerBy = string.Empty;
+        }
     }
+
+
 
     #region Socket gracza / Wyslanie danych przy inicjalizacji
     private Headers headers;
@@ -88,7 +101,7 @@ public class PilotServer : Opponent
 
     public void Send(CommandData commandData)
     {
-        if (headers == null)
+        if (Headers == null)
             return;
 
         try

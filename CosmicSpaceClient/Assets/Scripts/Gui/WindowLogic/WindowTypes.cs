@@ -1,5 +1,6 @@
 ﻿public enum WindowTypes
 {
     MainMenu,
-    UserInterface
+    UserInterface,
+    RepairShip
 }

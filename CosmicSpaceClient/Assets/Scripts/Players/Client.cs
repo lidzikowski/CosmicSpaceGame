@@ -6,6 +6,7 @@ using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using System;
 
 public class Client : MonoBehaviour
 {
@@ -72,23 +73,40 @@ public class Client : MonoBehaviour
 
         PlayerScript = GetComponent<Player>();
 
+        CreateSocket();
+    }
+
+    void CreateSocket()
+    {
         Socket = new WebSocket($"{GameData.ServerIP}/Game");
+
         Socket.OnOpen += Socket_OnOpen;
         Socket.OnClose += Socket_OnClose;
         Socket.OnError += Socket_OnError;
         Socket.OnMessage += Socket_OnMessage;
     }
 
-    float timer = 5;
+    float timer = 9;
     void Update()
     {
         if (SocketConnected)
             return;
 
-        if (timer > 5)
+        if (timer >= 10)
         {
             timer = 0;
-            MainThread.Instance().Enqueue(() => Socket.Connect());
+            try
+            {
+                if (!Socket.IsAlive)
+                {
+                    Socket.ConnectAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex);
+                CreateSocket();
+            }
         }
         else
             timer += Time.deltaTime;
@@ -98,12 +116,22 @@ public class Client : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        if (!SocketConnected)
+            return;
+
         SendToSocket(new CommandData()
         {
             Command = Commands.PlayerLeave
         });
 
-        MainThread.Instance().Enqueue(() => Socket.Close());
+        try
+        {
+            Socket.Close();
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
     }
 
     private void Socket_OnMessage(object sender, MessageEventArgs e)
@@ -117,7 +145,7 @@ public class Client : MonoBehaviour
         {
             commandData = GameData.Deserialize(e.RawData);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.Log(ex.Message);
         }
@@ -258,6 +286,17 @@ public class Client : MonoBehaviour
         }
 
 
+        // ZDARZENIE NA ODRODZENIE
+        else if (commandData.Command == Commands.RepairShip)
+        {
+            ulong userId;
+            if (!ulong.TryParse(commandData.Data.ToString(), out userId))
+                return;
+            
+            GetComponent<Player>().SomeoneAlive(userId);
+        }
+
+
 
     }
 
@@ -266,17 +305,17 @@ public class Client : MonoBehaviour
         MainThread.Instance().Enqueue(() => SocketConnected = false);
 
 
-        Debug.Log($"OnError {System.Environment.NewLine} {e.Exception} {System.Environment.NewLine} {e.Message}");
+        Debug.LogError($"OnError {Environment.NewLine} {e.Exception} {Environment.NewLine} {e.Message}");
     }
 
     private void Socket_OnClose(object sender, CloseEventArgs e)
     {
         MainThread.Instance().Enqueue(() => SocketConnected = false);
-
-        Debug.Log($"OnClose {System.Environment.NewLine} {e.Code} {System.Environment.NewLine} {e.WasClean} {System.Environment.NewLine} {e.Reason}");
+        
+        Debug.Log($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
     }
 
-    private void Socket_OnOpen(object sender, System.EventArgs e)
+    private void Socket_OnOpen(object sender, EventArgs e)
     {
         MainThread.Instance().Enqueue(() => SocketConnected = true);
     }
@@ -290,7 +329,7 @@ public class Client : MonoBehaviour
         {
             Socket.Send(GameData.Serialize(commandData));
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
             Debug.Log(ex.Message);
         }
