@@ -13,7 +13,7 @@ public class MapServer : MonoBehaviour
 
 
 
-    public Dictionary<ulong, Opponent> PilotsOnMap = new Dictionary<ulong, Opponent>();
+    public List<Opponent> PilotsOnMap = new List<Opponent> ();
 
 
 
@@ -23,7 +23,7 @@ public class MapServer : MonoBehaviour
         //timer += Time.deltaTime;
         //bool time = timer >= 0.5f;
 
-        foreach (Opponent pilotOnMap in PilotsOnMap.Values)
+        foreach (Opponent pilotOnMap in PilotsOnMap)
         {
             FindOpponents(pilotOnMap);
 
@@ -35,7 +35,7 @@ public class MapServer : MonoBehaviour
 
     private void FindOpponents(Opponent pilot)
     {
-        foreach (Opponent opponent in PilotsOnMap.Values.Where(o => o != pilot))
+        foreach (Opponent opponent in PilotsOnMap.Where(o => o != pilot))
         {
             if(Distance(pilot, opponent) <= SYNC_DISTANCE)
                 pilot.AddOpponentInArea(opponent);
@@ -54,20 +54,20 @@ public class MapServer : MonoBehaviour
     #region Join and Leave Pilot from Map
     public void Join(PilotServer pilot)
     {
-        if (!PilotsOnMap.ContainsKey(pilot.Id))
+        if (!PilotsOnMap.Contains(pilot))
         {
-            PilotsOnMap.Add(pilot.Id, pilot);
+            PilotsOnMap.Add(pilot);
         }
     }
 
     public void Leave(PilotServer pilot)
     {
-        if (PilotsOnMap.ContainsKey(pilot.Id))
+        if (PilotsOnMap.Contains(pilot))
         {
-            foreach (Opponent opponent in pilot.PilotsInArea.ToList())
+            foreach (Opponent opponent in pilot.PilotsInArea)
                 opponent.RemoveOpponentInArea(pilot);
 
-            PilotsOnMap.Remove(pilot.Id);
+            PilotsOnMap.Remove(pilot);
         }
     }
     #endregion

@@ -15,7 +15,7 @@ public abstract class Opponent
 
     #region OpponentsInArea / PilotsInArea / Join / Leave
     public virtual List<Opponent> OpponentsInArea { get; set; } = new List<Opponent>();
-    public IEnumerable<Opponent> PilotsInArea => OpponentsInArea.Where(o => o.IsPlayer);
+    public List<Opponent> PilotsInArea => OpponentsInArea.Where(o => o.IsPlayer).ToList();
 
     public virtual bool AddOpponentInArea(Opponent opponent, bool relation = true)
     {

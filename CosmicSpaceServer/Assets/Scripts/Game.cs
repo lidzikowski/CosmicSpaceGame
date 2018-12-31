@@ -230,9 +230,9 @@ public class Game : WebSocketBehavior
             if (targetId == 0)
                 return false;
 
-            if (!attackerMap.PilotsOnMap.ContainsKey(targetId))
+            Opponent opponent = attackerMap.PilotsOnMap.FirstOrDefault(o => o.Id == targetId);
+            if (opponent == null)
                 return false;
-            Opponent opponent = attackerMap.PilotsOnMap[targetId];
             
             attacker.Target = opponent;
             return true; //Zaznaczono pilot
