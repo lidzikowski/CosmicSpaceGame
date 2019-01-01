@@ -1,4 +1,6 @@
 ﻿using CosmicSpaceCommunication.Account;
+using CosmicSpaceCommunication.Game;
+using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
 using MySql.Data.MySqlClient;
@@ -32,6 +34,8 @@ public class Database
         getships,
         getammunitions,
         getrockets,
+        getenemies,
+        getenemymap,
 
         occupiedaccount,
         ocuppiednickname,
@@ -81,25 +85,6 @@ public class Database
     }
 
     /// <summary>
-    /// Konwersacja obiektu z bazy na szczegolny typ
-    /// </summary>
-    public static T Row<T>(object obj)
-    {
-        var t = typeof(T);
-
-        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-        {
-            if (t == null)
-                return default;
-            t = Nullable.GetUnderlyingType(t);
-        }
-
-        if (Convert.IsDBNull(obj))
-            return default;
-        return (T)Convert.ChangeType(obj, t);
-    }
-
-    /// <summary>
     /// Logi do bazy danych z operacji
     /// </summary>
     public static async void LogUser(Headers headers, CosmicSpaceCommunication.Commands command, bool result, ulong? userid)
@@ -136,13 +121,13 @@ public class Database
             Dictionary<int, Map> maps = new Dictionary<int, Map>();
             foreach (DataRow row in dt.Rows)
             {
-                maps.Add(Row<int>(row["mapid"]), new Map()
+                maps.Add(ConvertRow.Row<int>(row["mapid"]), new Map()
                 {
-                    Id = Row<int>(row["mapid"]),
-                    Name = Row<string>(row["mapname"]),
-                    RequiredLevel = Row<int>(row["requiredlevel"]),
+                    Id = ConvertRow.Row<int>(row["mapid"]),
+                    Name = ConvertRow.Row<string>(row["mapname"]),
+                    RequiredLevel = ConvertRow.Row<int>(row["requiredlevel"]),
 
-                    IsPvp = Row<bool>(row["ispvp"])
+                    IsPvp = ConvertRow.Row<bool>(row["ispvp"])
                 });
             }
             return maps;
@@ -162,20 +147,20 @@ public class Database
             Dictionary<int, Ship> ships = new Dictionary<int, Ship>();
             foreach (DataRow row in dt.Rows)
             {
-                ships.Add(Row<int>(row["shipid"]), new Ship()
+                ships.Add(ConvertRow.Row<int>(row["shipid"]), new Ship()
                 {
-                    Id = Row<int>(row["shipid"]),
-                    Name = Row<string>(row["shipname"]),
-                    RequiredLevel = Row<int>(row["requiredlevel"]),
+                    Id = ConvertRow.Row<int>(row["shipid"]),
+                    Name = ConvertRow.Row<string>(row["shipname"]),
+                    RequiredLevel = ConvertRow.Row<int>(row["requiredlevel"]),
 
-                    ScrapPrice = Row<double?>(row["scrapprice"]),
-                    MetalPrice = Row<double?>(row["metalprice"]),
-                    Lasers = Row<int>(row["lasers"]),
-                    Generators = Row<int>(row["generators"]),
-                    Extras = Row<int>(row["extras"]),
-                    Speed = Row<int>(row["speed"]),
-                    Cargo = Row<int>(row["cargo"]),
-                    Hitpoints = Row<ulong>(row["hitpoints"])
+                    ScrapPrice = ConvertRow.Row<double?>(row["scrapprice"]),
+                    MetalPrice = ConvertRow.Row<double?>(row["metalprice"]),
+                    Lasers = ConvertRow.Row<int>(row["lasers"]),
+                    Generators = ConvertRow.Row<int>(row["generators"]),
+                    Extras = ConvertRow.Row<int>(row["extras"]),
+                    Speed = ConvertRow.Row<int>(row["speed"]),
+                    Cargo = ConvertRow.Row<int>(row["cargo"]),
+                    Hitpoints = ConvertRow.Row<ulong>(row["hitpoints"])
                 });
 
             }
@@ -196,16 +181,16 @@ public class Database
             Dictionary<int, Ammunition> ammunitions = new Dictionary<int, Ammunition>();
             foreach (DataRow row in dt.Rows)
             {
-                ammunitions.Add(Row<int>(row["ammunitionid"]), new Ammunition()
+                ammunitions.Add(ConvertRow.Row<int>(row["ammunitionid"]), new Ammunition()
                 {
-                    Id = Row<int>(row["ammunitionid"]),
-                    Name = Row<string>(row["ammunitionname"]),
+                    Id = ConvertRow.Row<int>(row["ammunitionid"]),
+                    Name = ConvertRow.Row<string>(row["ammunitionname"]),
 
-                    MultiplierPlayer = Row<float?>(row["multiplierplayer"]),
-                    MultiplierEnemy = Row<float?>(row["multiplierenemy"]),
-                    ScrapPrice = Row<double?>(row["scrapprice"]),
-                    MetalPrice = Row<double?>(row["metalprice"]),
-                    SkillId = Row<int?>(row["skillid"]),
+                    MultiplierPlayer = ConvertRow.Row<float?>(row["multiplierplayer"]),
+                    MultiplierEnemy = ConvertRow.Row<float?>(row["multiplierenemy"]),
+                    ScrapPrice = ConvertRow.Row<double?>(row["scrapprice"]),
+                    MetalPrice = ConvertRow.Row<double?>(row["metalprice"]),
+                    SkillId = ConvertRow.Row<int?>(row["skillid"]),
                 });
             }
             return ammunitions;
@@ -225,15 +210,15 @@ public class Database
             Dictionary<int, Rocket> rockets = new Dictionary<int, Rocket>();
             foreach (DataRow row in dt.Rows)
             {
-                rockets.Add(Row<int>(row["rocketid"]), new Rocket()
+                rockets.Add(ConvertRow.Row<int>(row["rocketid"]), new Rocket()
                 {
-                    Id = Row<int>(row["rocketid"]),
-                    Name = Row<string>(row["rocketname"]),
-                    
-                    ScrapPrice = Row<double?>(row["scrapprice"]),
-                    MetalPrice = Row<double?>(row["metalprice"]),
-                    SkillId = Row<int?>(row["skillid"]),
-                    Damage = Row<int>(row["damage"]),
+                    Id = ConvertRow.Row<int>(row["rocketid"]),
+                    Name = ConvertRow.Row<string>(row["rocketname"]),
+
+                    ScrapPrice = ConvertRow.Row<double?>(row["scrapprice"]),
+                    MetalPrice = ConvertRow.Row<double?>(row["metalprice"]),
+                    SkillId = ConvertRow.Row<int?>(row["skillid"]),
+                    Damage = ConvertRow.Row<int>(row["damage"]),
                 });
 
             }
@@ -255,21 +240,58 @@ public class Database
             {
                 PilotResources pilotResources = new PilotResources();
 
-                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition0"]));
-                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition1"]));
-                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition2"]));
-                pilotResources.Ammunitions.Add(Row<ulong>(row["ammunition3"]));
+                pilotResources.Ammunitions.Add(ConvertRow.Row<ulong>(row["ammunition0"]));
+                pilotResources.Ammunitions.Add(ConvertRow.Row<ulong>(row["ammunition1"]));
+                pilotResources.Ammunitions.Add(ConvertRow.Row<ulong>(row["ammunition2"]));
+                pilotResources.Ammunitions.Add(ConvertRow.Row<ulong>(row["ammunition3"]));
 
-                pilotResources.Rockets.Add(Row<ulong>(row["rocket0"]));
-                pilotResources.Rockets.Add(Row<ulong>(row["rocket1"]));
-                pilotResources.Rockets.Add(Row<ulong>(row["rocket2"]));
+                pilotResources.Rockets.Add(ConvertRow.Row<ulong>(row["rocket0"]));
+                pilotResources.Rockets.Add(ConvertRow.Row<ulong>(row["rocket1"]));
+                pilotResources.Rockets.Add(ConvertRow.Row<ulong>(row["rocket2"]));
 
                 return pilotResources;
             }
         }
         return null;
     }
-        #endregion
+
+    public static async Task<Dictionary<int, Enemy>> GetEnemies()
+    {
+        DataTable dt = await ExecuteCommand(Commands.getenemies, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
+            foreach (DataRow row in dt.Rows)
+            {
+                enemies.Add(ConvertRow.Row<int>(row["enemyid"]), Enemy.GetEnemy(row));
+            }
+            return enemies;
+        }
+        return null;
+    }
+
+    public static async Task<List<EnemyMap>> GetEnemyMap(int mapId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getenemymap, new Dictionary<string, object>()
+        {
+            { "inmapid", mapId }
+        });
+
+        if (dt != null)
+        {
+            List<EnemyMap> enemyMaps = new List<EnemyMap>();
+            foreach (DataRow row in dt.Rows)
+            {
+                enemyMaps.Add(EnemyMap.GetEnemyMap(row));
+            }
+            return enemyMaps;
+        }
+        return null;
+    }
+
+
+    #endregion
 
     #region Proces rejestracji
 
@@ -283,7 +305,7 @@ public class Database
             { "inusername", registerUser.Username },
             { "inemail", registerUser.Email }
         });
-        
+
         if (dt != null)
             return int.Parse(dt.Rows[0][0].ToString()) == 0;
         return false;
@@ -344,7 +366,7 @@ public class Database
             return ulong.Parse(dt.Rows[0][0].ToString());
         return null;
     }
-    
+
     /// <summary>
     /// Pobranie informacji z bazy danych o graczu
     /// </summary>
@@ -357,7 +379,7 @@ public class Database
 
         if (dt != null)
         {
-            foreach(DataRow row in dt.Rows)
+            foreach (DataRow row in dt.Rows)
             {
                 return await PilotServer.GetPilot(row);
             }

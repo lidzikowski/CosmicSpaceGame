@@ -27,5 +27,7 @@ namespace CosmicSpaceCommunication
         Dead = 331,
         RepairShip = 332,
 
+        EnemyJoin = 340,
+        EnemyLeave = 341,
     }
 }

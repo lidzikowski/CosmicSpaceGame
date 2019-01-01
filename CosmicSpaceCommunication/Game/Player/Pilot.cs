@@ -1,9 +1,11 @@
 ﻿using CosmicSpaceCommunication.Game.Resources;
+using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Player
 {
-    [System.Serializable]
+    [Serializable]
     public class Pilot
     {
         public ulong Id { get; set; }
@@ -23,5 +25,24 @@ namespace CosmicSpaceCommunication.Game.Player
 
         public List<ulong> Ammunitions { get; set; }
         public List<ulong> Rockets { get; set; }
+
+        public static Pilot GetPilot(DataRow row)
+        {
+            return new Pilot()
+            {
+                Id = ConvertRow.Row<ulong>(row["userid"]),
+                Nickname = ConvertRow.Row<string>(row["nickname"]),
+                PositionX = ConvertRow.Row<float>(row["positionx"]),
+                PositionY = ConvertRow.Row<float>(row["positiony"]),
+                Experience = ConvertRow.Row<ulong>(row["experience"]),
+                Level = ConvertRow.Row<int>(row["level"]),
+                Scrap = ConvertRow.Row<double>(row["scrap"]),
+                Metal = ConvertRow.Row<double>(row["metal"]),
+                Hitpoints = ConvertRow.Row<ulong>(row["hitpoints"]),
+                Shields = ConvertRow.Row<ulong>(row["shields"]),
+                IsDead = ConvertRow.Row<bool>(row["isdead"]),
+                KillerBy = ConvertRow.Row<string>(row["killerby"]),
+            };
+        }
     }
 }

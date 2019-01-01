@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ public abstract class Opponent
     public virtual List<Opponent> OpponentsInArea { get; set; } = new List<Opponent>();
     public List<Opponent> PilotsInArea => OpponentsInArea.Where(o => o.IsPlayer).ToList();
 
-    public virtual bool AddOpponentInArea(Opponent opponent, bool relation = true)
+    public virtual void AddOpponentInArea(Opponent opponent, bool relation = true)
     {
         if (!OpponentsInArea.Contains(opponent))
         {
@@ -27,33 +28,37 @@ public abstract class Opponent
 
             if (relation)
                 opponent.AddOpponentInArea(this, false);
-
-            return true;
         }
-        return false;
     }
     protected void Join(Opponent joinOpponent)
     {
-        if (!IsPlayer) // Ten obiekt jest pilotem
+        if (!IsPlayer) // Jakby obiekt byl npc - brak synchronizacji do niego
             return;
+
+        PilotServer pilot = this as PilotServer;
 
         if (joinOpponent.IsPlayer) // PILOT
         {
-            PilotServer pilot = this as PilotServer;
-
             pilot.Send(new CommandData()
             {
                 Command = Commands.PlayerJoin,
-                Data = PlayerJoin.Create((joinOpponent as PilotServer).Pilot)
+                Data = PlayerJoin.GetNewJoin((joinOpponent as PilotServer).Pilot)
             });
         }
         else // ENEMY
         {
-
+            pilot.Send(new CommandData()
+            {
+                Command = Commands.EnemyJoin,
+                Data = new EnemyJoin(
+                    joinOpponent.Id,
+                    (joinOpponent as EnemyServer).ParentEnemy,
+                    joinOpponent.Position.x, joinOpponent.Position.y)
+            });
         }
     }
 
-    public virtual bool RemoveOpponentInArea(Opponent opponent, bool relation = true)
+    public virtual void RemoveOpponentInArea(Opponent opponent, bool relation = true)
     {
         if (OpponentsInArea.Contains(opponent))
         {
@@ -63,22 +68,20 @@ public abstract class Opponent
 
             if (relation)
                 opponent.RemoveOpponentInArea(this, false);
-            return true;
         }
-        return false;
     }
     protected void Leave(Opponent leaveOpponent)
     {
-        if (!IsPlayer) // Ten obiekt jest pilotem
+        if (!IsPlayer) // Jakby obiekt byl npc - brak synchronizacji do niego
             return;
-        
+
         if (Target == leaveOpponent)
             Target = null;
 
+        PilotServer pilot = this as PilotServer;
+
         if (leaveOpponent.IsPlayer) // PILOT
         {
-            PilotServer pilot = this as PilotServer;
-
             pilot.Send(new CommandData()
             {
                 Command = Commands.PlayerLeave,
@@ -87,7 +90,11 @@ public abstract class Opponent
         }
         else // ENEMY
         {
-
+            pilot.Send(new CommandData()
+            {
+                Command = Commands.EnemyLeave,
+                Data = leaveOpponent.Id
+            });
         }
     }
 
@@ -111,7 +118,7 @@ public abstract class Opponent
 
 
     #region Id / Name / IsPlayer
-    public abstract ulong Id { get; }
+    public abstract ulong Id { get; protected set; }
     public abstract string Name { get; }
     public bool IsPlayer => this is PilotServer;
     #endregion

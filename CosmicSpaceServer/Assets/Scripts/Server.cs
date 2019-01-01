@@ -5,6 +5,8 @@ using WebSocketSharp.Server;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Threading.Tasks;
+using CosmicSpaceCommunication.Game.Enemy;
+using System;
 
 public class Server : MonoBehaviour
 {
@@ -16,6 +18,7 @@ public class Server : MonoBehaviour
     public static Dictionary<int, Map> Maps;
     public static Dictionary<int, Ammunition> Ammunitions;
     public static Dictionary<int, Rocket> Rockets;
+    public static Dictionary<int, Enemy> Enemies;
 
     //private int mapId = 1000; // Instancje
     public static Dictionary<int, MapServer> MapsServer;
@@ -51,14 +54,19 @@ public class Server : MonoBehaviour
         {
             GameObject go = new GameObject() { name = $"{map.Id} -> {map.Name}" };
             go.transform.parent = maps.transform;
-            go.AddComponent<MapServer>();
+            MapServer mapServer = go.AddComponent<MapServer>();
 
-            MapsServer.Add(map.Id, go.GetComponent<MapServer>());
+            mapServer.CurrentMap = map;
+            mapServer.EnemiesOnCurrentMap = await Database.GetEnemyMap(map.Id);
+
+            MapsServer.Add(map.Id, mapServer);
         }
 
         Ammunitions = await Database.GetAmmunitions();
 
         Rockets = await Database.GetRockets();
+
+        Enemies = await Database.GetEnemies();
     }
 
 
@@ -67,20 +75,34 @@ public class Server : MonoBehaviour
     {
         Pilots = new Dictionary<ulong, PilotServer>();
 
-        WebSocket = new WebSocketServer(GameData.ServerIP);
-        WebSocket.AddWebSocketService<Game>("/Game");
-        WebSocket.Start();
+        try
+        {
+            WebSocket = new WebSocketServer(GameData.ServerIP);
+            WebSocket.AddWebSocketService<Game>("/Game");
+            WebSocket.Start();
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
 
         Debug.Log($"Server: {(WebSocket.IsListening ? "ONLINE" : "OFFLINE")}");
     }
 
     private void OnApplicationQuit()
     {
-        WebSocket.Stop();
-
-        foreach (KeyValuePair<ulong, PilotServer> pilot in Pilots)
+        try
         {
-            // Zapis do bazy danych
+            WebSocket.Stop();
         }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
+
+        //foreach (KeyValuePair<ulong, PilotServer> pilot in Pilots)
+        //{
+        //    // Zapis do bazy danych
+        //}
     }
 }

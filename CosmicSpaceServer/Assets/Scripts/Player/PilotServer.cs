@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using System.Collections.Generic;
@@ -11,7 +12,11 @@ public class PilotServer : Opponent
 {
     public Pilot Pilot { get; set; }
 
-    public override ulong Id => Pilot.Id;
+    public override ulong Id
+    {
+        get => Pilot.Id;
+        protected set => Pilot.Id = value;
+    }
     public override string Name => Pilot.Nickname;
     protected override bool isDead
     {
@@ -97,7 +102,7 @@ public class PilotServer : Opponent
     }
     #endregion
 
-    
+
 
     public void Send(CommandData commandData)
     {
@@ -127,23 +132,10 @@ public class PilotServer : Opponent
 
     public static async Task<Pilot> GetPilot(DataRow row)
     {
-        Pilot pilot = new Pilot()
-        {
-            Id = Database.Row<ulong>(row["userid"]),
-            Nickname = Database.Row<string>(row["nickname"]),
-            Map = Server.Maps[Database.Row<int>(row["mapid"])],
-            PositionX = Database.Row<float>(row["positionx"]),
-            PositionY = Database.Row<float>(row["positiony"]),
-            Ship = Server.Ships[Database.Row<int>(row["shipid"])],
-            Experience = Database.Row<ulong>(row["experience"]),
-            Level = Database.Row<int>(row["level"]),
-            Scrap = Database.Row<double>(row["scrap"]),
-            Metal = Database.Row<double>(row["metal"]),
-            Hitpoints = Database.Row<ulong>(row["hitpoints"]),
-            Shields = Database.Row<ulong>(row["shields"]),
-            IsDead = Database.Row<bool>(row["isdead"]),
-            KillerBy = Database.Row<string>(row["killerby"]),
-        };
+        Pilot pilot = Pilot.GetPilot(row);
+
+        pilot.Map = Server.Maps[ConvertRow.Row<int>(row["mapid"])];
+        pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
         
         PilotResources resources = await Database.GetPilotResources(pilot.Id);
 

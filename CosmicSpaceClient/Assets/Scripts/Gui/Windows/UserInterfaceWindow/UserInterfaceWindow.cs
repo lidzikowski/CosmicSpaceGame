@@ -4,12 +4,12 @@ using UnityEngine.UI;
 
 public class UserInterfaceWindow : GameWindow
 {
-    public enum Pages
-    {
+    public Text UserText;
+    public Text MetalText;
+    public Text ScrapText;
 
-    }
-
-    public Text Test;
+    public Text MiniMapPanelText;
+    public Text MapPosition;
 
 
 
@@ -17,10 +17,20 @@ public class UserInterfaceWindow : GameWindow
     {
         base.Refresh();
 
-        if (Client.Pilot == null || Player.LocalShipController == null)
-            return;
+        SetText(UserText, $"UID: {Client.Pilot.Id} {Client.Pilot.Nickname}");
+        SetText(MetalText, $"Metal {Client.Pilot.Metal}");
+        SetText(ScrapText, $"Scrap {Client.Pilot.Scrap}");
 
-        Test.text = $"{Client.Pilot.Nickname} {Player.LocalShipController.Hitpoints} {Player.LocalShipController.Shields}";
-        Test.text += $"{System.Environment.NewLine} {Client.Pilot.Ammunitions.Count} {Client.Pilot.Ammunitions[0]}";
+        string position = $"{(int)Player.LocalShipController.Position.x} / {-(int)Player.LocalShipController.Position.y}";
+        if (Player.LocalShipController.Position != Player.LocalShipController.TargetPosition)
+        {
+            position += $" > {(int)Player.LocalShipController.TargetPosition.x} / {-(int)Player.LocalShipController.TargetPosition.y}";
+        }
+        SetText(MapPosition, position);
+    }
+
+    public override void ChangeLanguage()
+    {
+        SetText(MiniMapPanelText, $"{GameSettings.UserLanguage.MINIMAP} -> {Client.Pilot.Map.Name}");
     }
 }

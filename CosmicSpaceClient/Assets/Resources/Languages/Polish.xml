@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Language>
+  <SIGN_IN>Logowanie</SIGN_IN>
+  <USERNAME>Nazwa użytkownika</USERNAME>
+  <PASSWORD>Hasło</PASSWORD>
+  <REMEMBER>Zapamiętaj mnie.</REMEMBER>
+  <LOG_IN>Zaloguj</LOG_IN>
+  <CREATE_ACCOUNT>Stwórz konto</CREATE_ACCOUNT>
+  <EMAIL>Email</EMAIL>
+  <NICKNAME>Nazwa pilota</NICKNAME>
+  <RULES>Akceptuję regulamin.</RULES>
+  <REGISTER>Rejestruj</REGISTER>
+  <NEWSLETTER>Nowości</NEWSLETTER>
+  <GAME_VERSION>v. {0}</GAME_VERSION>
+  <SERVER_STATUS>Serwer jest {0}</SERVER_STATUS>
+  <REPAIR>Napraw</REPAIR>
+  <DESTROYED>Nie żyjesz</DESTROYED>
+  <MINIMAP>Minimapa</MINIMAP>
+</Language>

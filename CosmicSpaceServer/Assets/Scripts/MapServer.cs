@@ -1,7 +1,9 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,31 +15,60 @@ public class MapServer : MonoBehaviour
 
 
 
-    public List<Opponent> PilotsOnMap = new List<Opponent> ();
+    public List<PilotServer> PilotsOnMap = new List<PilotServer>();
+    ulong enemyId = 100;
+    public List<EnemyServer> EnemiesOnMap = new List<EnemyServer>();
 
 
 
-    //float timer = 0;
+    public Map CurrentMap;
+    public List<EnemyMap> EnemiesOnCurrentMap;
+    
+
+    
     private void Update()
     {
-        //timer += Time.deltaTime;
-        //bool time = timer >= 0.5f;
-
         foreach (Opponent pilotOnMap in PilotsOnMap)
         {
             FindOpponents(pilotOnMap);
 
             pilotOnMap.Update();
         }
-        //if (time)
-        //    timer = 0;
+
+        CheckEnemyOnMap();
+    }
+
+    private void CheckEnemyOnMap()
+    {
+        foreach (EnemyMap enemyMap in EnemiesOnCurrentMap)
+        {
+            int count = EnemiesOnMap.Select(o => o.ParentEnemy.Id == enemyMap.Id).Count();
+            if(count < enemyMap.Count)
+            {
+                SpawnEnemy(Server.Enemies[enemyMap.EnemyId], enemyMap.Count - count);
+            }
+        }
+    }
+
+    private void SpawnEnemy(Enemy enemy, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            EnemiesOnMap.Add(new EnemyServer(enemy, enemyId++, RandomPosition()));
+        }
     }
 
     private void FindOpponents(Opponent pilot)
     {
-        foreach (Opponent opponent in PilotsOnMap.Where(o => o != pilot))
+        SearchOpponent(pilot, PilotsOnMap.Where(o => o != pilot));
+        SearchOpponent(pilot, EnemiesOnMap);
+    }
+
+    private void SearchOpponent(Opponent pilot, IEnumerable<Opponent> opponents)
+    {
+        foreach (Opponent opponent in opponents)
         {
-            if(Distance(pilot, opponent) <= SYNC_DISTANCE)
+            if (Distance(pilot, opponent) <= SYNC_DISTANCE)
                 pilot.AddOpponentInArea(opponent);
             else
                 pilot.RemoveOpponentInArea(opponent);
@@ -49,6 +80,10 @@ public class MapServer : MonoBehaviour
         return Vector2.Distance(a.Position, b.Position);
     }
     
+    public static Vector2 RandomPosition()
+    {
+        return new Vector2(UnityEngine.Random.Range(0, 1000), -UnityEngine.Random.Range(0, 1000));
+    }
 
 
     #region Join and Leave Pilot from Map

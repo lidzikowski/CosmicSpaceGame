@@ -7,6 +7,7 @@ using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using System;
+using CosmicSpaceCommunication.Game.Enemy;
 
 public class Client : MonoBehaviour
 {
@@ -65,6 +66,11 @@ public class Client : MonoBehaviour
     public static Player PlayerScript;
 
 
+
+    private void Awake()
+    {
+        Application.targetFrameRate = 60;
+    }
 
     void Start()
     {
@@ -292,8 +298,19 @@ public class Client : MonoBehaviour
             ulong userId;
             if (!ulong.TryParse(commandData.Data.ToString(), out userId))
                 return;
-            
+
             GetComponent<Player>().SomeoneAlive(userId);
+        }
+
+
+        // DOLACZENIE / ODLACZENIE ENEMY OD SERWERA
+        else if (commandData.Command == Commands.EnemyJoin)
+        {
+            GetComponent<Player>().InitEnemy((EnemyJoin)commandData.Data);
+        }
+        else if (commandData.Command == Commands.EnemyLeave)
+        {
+            GetComponent<Player>().LeaveEnemy((ulong)commandData.Data);
         }
 
 

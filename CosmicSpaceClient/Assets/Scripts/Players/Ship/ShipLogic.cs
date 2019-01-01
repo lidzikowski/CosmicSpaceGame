@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
@@ -17,13 +18,23 @@ public class ShipLogic : MonoBehaviour
 
     [Header("Ship name")]
     public TextMesh ModelNameText;
+    public MeshRenderer PointerMeshRenderer;
+
 
 
     #region Position / New Position / Gear status
     public Vector2 Position
     {
         get => transform.position;
-        set => transform.position = value;
+        set
+        {
+            transform.position = value;
+
+            if (!LocalPlayer)
+                return;
+            
+            GuiScript.RefreshAllActiveWindow();
+        }
     }
     private Vector2 targetPosition;
     public Vector2 TargetPosition
@@ -254,14 +265,38 @@ public class ShipLogic : MonoBehaviour
     private void OnChangeHitpointsOrShields(ref ulong variable, ref ulong value)
     {
         variable = value;
-        
+
+        if (!LocalPlayer)
+            return;
+
         GuiScript.RefreshAllActiveWindow();
     }
     #endregion
 
 
 
-    public bool LocalPlayer = false;
+    private bool localPlayer = false;
+    public bool LocalPlayer
+    {
+        get => localPlayer;
+        set
+        {
+            localPlayer = value;
+
+            if(value)
+            {
+                tag = "LocalPlayer";
+                PointerMeshRenderer.gameObject.layer = 10;
+                PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/White");
+            }
+            else
+            {
+                tag = "Player";
+                PointerMeshRenderer.gameObject.layer = 11;
+                PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/Blue");
+            }
+        }
+    }
 
     #region Player / IsDead, KillerBy / Nickname / Ship / Speed
     public PlayerJoin Player;
@@ -276,17 +311,17 @@ public class ShipLogic : MonoBehaviour
             TargetGameObject = null;
             Attack = false;
 
-            if(LocalPlayer)
-            {
-                Client.Pilot.IsDead = value;
+            if (!LocalPlayer)
+                return;
 
-                if (value)
-                    GuiScript.OpenWindow(WindowTypes.RepairShip);
-                else
-                {
-                    Player.KillerBy = string.Empty;
-                    GuiScript.CloseWindow(WindowTypes.RepairShip);
-                }
+            Client.Pilot.IsDead = value;
+
+            if (value)
+                GuiScript.OpenWindow(WindowTypes.RepairShip);
+            else
+            {
+                Player.KillerBy = string.Empty;
+                GuiScript.CloseWindow(WindowTypes.RepairShip);
             }
         }
     }
@@ -359,6 +394,29 @@ public class ShipLogic : MonoBehaviour
         Instantiate(Resources.Load<GameObject>("Ships/" + player.Ship.Name), ModelTransform);
     }
     
+    public void InitShip(EnemyJoin enemy, Color nameColor)
+    {
+        transform.position = new Vector2(enemy.PositionX, enemy.PositionY);
+        TargetPosition = new Vector2(enemy.TargetPositionX, enemy.TargetPositionY);
+
+        transform.name = enemy.Id.ToString();
+
+        tag = "Enemy";
+        PointerMeshRenderer.gameObject.layer = 12;
+        PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/Red");
+
+        ModelNameText.text = enemy.ParentEnemy.Name;
+        ModelNameText.color = nameColor;
+
+        foreach (Transform t in ModelTransform)
+        {
+            Destroy(t.gameObject);
+        }
+
+        Instantiate(Resources.Load<GameObject>("Ships/Verminus"), ModelTransform);
+    }
+
+
     private List<GameObject> ChildInChild(string parent)
     {
         foreach (Transform child in transform)

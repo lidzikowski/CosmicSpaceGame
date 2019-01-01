@@ -20,9 +20,9 @@ public class GameSettings : MonoBehaviour
     IEnumerator Start()
     {
         if (Application.systemLanguage == SystemLanguage.Polish)
-            UserLanguage = new Polish();
+            UserLanguage = Language.Load(Languages.Polish);
         else
-            UserLanguage = new English();
+            UserLanguage = Language.Load(Languages.English);
 
         yield return new WaitUntil(() => GuiScript.Ready);
         GuiScript.OpenWindow(WindowTypes.MainMenu);

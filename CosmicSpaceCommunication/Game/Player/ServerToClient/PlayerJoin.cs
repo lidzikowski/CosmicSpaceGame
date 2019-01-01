@@ -12,7 +12,7 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
         public bool IsDead { get; set; }
         public string KillerBy { get; set; }
 
-        public static PlayerJoin Create(Pilot pilot)
+        public static PlayerJoin GetNewJoin(Pilot pilot)
         {
             return new PlayerJoin()
             {

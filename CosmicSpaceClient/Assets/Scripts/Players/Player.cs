@@ -1,6 +1,8 @@
-﻿using CosmicSpaceCommunication.Game.Player.ClientToServer;
+﻿using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,12 @@ public class Player : MonoBehaviour
     [Header("Local player and players")]
     public Transform LocalPlayerTransform;
     public Transform PlayersTransform;
+    public Transform EnemiesTransform;
     public GameObject PlayerPrefab;
 
     public static ShipLogic LocalShipController;
     public static Dictionary<ulong, ShipLogic> PlayersController = new Dictionary<ulong, ShipLogic>();
+    public static Dictionary<ulong, ShipLogic> EnemiesController = new Dictionary<ulong, ShipLogic>();
 
     [Header("Map and background")]
     public Transform BackgroundTransform;
@@ -36,9 +40,24 @@ public class Player : MonoBehaviour
 
         MouseControl();
         KeyboardControl();
+        
+        PlayerNewPosition();
     }
 
+    #region Update / Mouse / Keyboard
+    Vector2 TargetPosition;
+    float timer = 0;
+    private void PlayerNewPosition()
+    {
+        if (timer <= 0.1f)
+        {
+            timer += Time.deltaTime;
+            return;
+        }
+        timer = 0;
 
+        LocalShipController.TargetPosition = TargetPosition;
+    }
 
     private void MouseControl()
     {
@@ -64,7 +83,7 @@ public class Player : MonoBehaviour
             if (hit.transform.tag == "LocalPlayer")
                 return;
 
-            if (hit.transform.tag == "Player" || hit.transform.tag == "Enemy")
+            if (hit.transform.tag == "Player")
             {
                 ShipLogic target = hit.transform.gameObject.GetComponent<ShipLogic>();
                 if (!target.IsDead)
@@ -72,12 +91,16 @@ public class Player : MonoBehaviour
                 else
                     Debug.Log(target.Nickname + " nie zyje.");
             }
+            else if (hit.transform.tag == "Enemy")
+            {
+
+            }
         }
         else
         {
-            float x = (mousePosition.x - Screen.width / 2) / 20;
-            float y = (mousePosition.y - Screen.height / 2) / 20;
-            LocalShipController.TargetPosition = new Vector2(LocalShipController.Position.x + x, LocalShipController.Position.y + y);
+            float x = (mousePosition.x - Screen.width / 2) / 5;
+            float y = (mousePosition.y - Screen.height / 2) / 5;
+            TargetPosition = new Vector2(LocalShipController.Position.x + x, LocalShipController.Position.y + y);
         }
     }
 
@@ -91,19 +114,22 @@ public class Player : MonoBehaviour
                 Debug.Log("Brak celu do ataku");
         }
     }
+    #endregion
 
 
 
+    #region LocalPlayer / Player
     public void InitLocalPlayer()
     {
         ShipLogic shipController = CreatePlayer(
             LocalPlayerTransform,
             true,
-            PlayerJoin.Create(Client.Pilot),
+            PlayerJoin.GetNewJoin(Client.Pilot),
             Color.white);
 
         shipController.LocalPlayer = true;
         LocalShipController = shipController;
+        TargetPosition = LocalShipController.TargetPosition;
 
         PlayersController.Add(Client.Pilot.Id, shipController);
         
@@ -114,6 +140,9 @@ public class Player : MonoBehaviour
 
     public void InitPlayer(PlayerJoin player)
     {
+        if (PlayersController.ContainsKey(player.PlayerId))
+            return;
+
         ShipLogic shipController = CreatePlayer(
             PlayersTransform,
             false,
@@ -128,7 +157,6 @@ public class Player : MonoBehaviour
         GameObject go = Instantiate(
             PlayerPrefab,
             spawnTransform);
-        go.tag = localPlayer ? "LocalPlayer" : "Player";
 
         ShipLogic shipController = go.GetComponent<ShipLogic>();
         
@@ -148,6 +176,36 @@ public class Player : MonoBehaviour
         Destroy(PlayersController[playerId].gameObject);
         PlayersController.Remove(playerId);
     }
+    #endregion
+
+
+
+    #region Enemy
+    public void InitEnemy(EnemyJoin enemy)
+    {
+        if (EnemiesController.ContainsKey(enemy.Id))
+            return;
+
+        GameObject go = Instantiate(
+                    PlayerPrefab,
+                    EnemiesTransform);
+
+        ShipLogic shipController = go.GetComponent<ShipLogic>();
+
+        shipController.InitShip(enemy, Color.red);
+
+        EnemiesController.Add(enemy.Id, shipController);
+    }
+
+    public void LeaveEnemy(ulong enemyId)
+    {
+        if (!EnemiesController.ContainsKey(enemyId))
+            return;
+
+        Destroy(EnemiesController[enemyId].gameObject);
+        EnemiesController.Remove(enemyId);
+    }
+    #endregion
 
 
 
@@ -176,6 +234,7 @@ public class Player : MonoBehaviour
 
 
 
+    #region Events
     public void PlayerChangePosition(NewPosition newPosition)
     {
         Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
@@ -331,6 +390,7 @@ public class Player : MonoBehaviour
 
         whoShipLogic.IsDead = false;
     }
+    #endregion
 
 
 
