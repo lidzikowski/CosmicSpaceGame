@@ -146,7 +146,7 @@ public abstract class Opponent
         }
     }
     protected Opponent DeadOpponent { get; set; }
-    protected void OnDead()
+    protected virtual void OnDead()
     {
         Target = null;
 

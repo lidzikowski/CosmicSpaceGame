@@ -83,17 +83,13 @@ public class Player : MonoBehaviour
             if (hit.transform.tag == "LocalPlayer")
                 return;
 
-            if (hit.transform.tag == "Player")
+            if (hit.transform.tag == "Player" || hit.transform.tag == "Enemy")
             {
                 ShipLogic target = hit.transform.gameObject.GetComponent<ShipLogic>();
                 if (!target.IsDead)
                     LocalShipController.TargetGameObject = target.gameObject;
                 else
                     Debug.Log(target.Nickname + " nie zyje.");
-            }
-            else if (hit.transform.tag == "Enemy")
-            {
-
             }
         }
         else
@@ -309,27 +305,21 @@ public class Player : MonoBehaviour
         ShipLogic fromShipLogic = null;
         if (takeDamage.FromIsPlayer == true) // Target = Pilot
         {
-            if (PlayersController.ContainsKey(takeDamage.FromId))
-            {
-                fromShipLogic = PlayersController[takeDamage.FromId];
-            }
+            fromShipLogic = FindPilot(takeDamage.FromId);
         }
         else if (takeDamage.FromIsPlayer == false) // Target = Enemy
         {
-            // Enemy
+            fromShipLogic = FindEnemy(takeDamage.FromId);
         }
 
         ShipLogic toShipLogic = null;
         if (takeDamage.ToIsPlayer == true) // Target = Pilot
         {
-            if (PlayersController.ContainsKey(takeDamage.ToId))
-            {
-                toShipLogic = PlayersController[takeDamage.ToId];
-            }
+            toShipLogic = FindPilot(takeDamage.ToId);
         }
         else if (takeDamage.ToIsPlayer == false) // Target = Enemy
         {
-            // Enemy
+            toShipLogic = FindEnemy(takeDamage.ToId);
         }
 
         Debug.Log(fromShipLogic.name + " zadaje " + takeDamage.Damage + " obrazen " + toShipLogic.name);
@@ -344,7 +334,7 @@ public class Player : MonoBehaviour
         }
         else if (someoneDead.WhoIsPlayer == false) // Target = Enemy
         {
-            // Enemy
+            whoShipLogic = FindEnemy(someoneDead.WhoId);
         }
 
         ShipLogic byShipLogic = null;
@@ -354,7 +344,7 @@ public class Player : MonoBehaviour
         }
         else if (someoneDead.ByIsPlayer == false) // Target = Enemy
         {
-            // Enemy
+            byShipLogic = FindEnemy(someoneDead.ById);
         }
 
         if (whoShipLogic == null)
@@ -370,14 +360,19 @@ public class Player : MonoBehaviour
                 shipLogic.TargetGameObject = null;
             }
         }
-        
-        //if(whoShipLogic == LocalShipController)
+
+        foreach (ShipLogic shipLogic in EnemiesController.Values)
+        {
+            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic.gameObject)
+            {
+                shipLogic.Attack = false;
+                shipLogic.TargetGameObject = null;
+            }
+        }
+
+        //if (someoneDead.WhoIsPlayer == false)
         //{
-        //    Debug.Log("Zostales zniszczony przez " + someoneDead.ByName);
-        //}
-        //else
-        //{
-        //    Debug.Log(whoShipLogic.name + " zostal zabity przez " + byShipLogic.name);
+        //    LeaveEnemy(someoneDead.WhoId);
         //}
     }
 
@@ -399,6 +394,12 @@ public class Player : MonoBehaviour
         if (!PlayersController.ContainsKey((ulong)pilotId))
             return null;
         return PlayersController[(ulong)pilotId];
+    }
+    private ShipLogic FindEnemy(ulong? enemyId)
+    {
+        if (!EnemiesController.ContainsKey((ulong)enemyId))
+            return null;
+        return EnemiesController[(ulong)enemyId];
     }
 
 

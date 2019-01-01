@@ -54,7 +54,7 @@ public class MapServer : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            EnemiesOnMap.Add(new EnemyServer(enemy, enemyId++, RandomPosition()));
+            EnemiesOnMap.Add(new EnemyServer(enemy, enemyId++, RandomPosition(), this));
         }
     }
 
@@ -68,7 +68,9 @@ public class MapServer : MonoBehaviour
     {
         foreach (Opponent opponent in opponents)
         {
-            if (Distance(pilot, opponent) <= SYNC_DISTANCE)
+            if (Distance(pilot, opponent) <= SYNC_DISTANCE ||
+                pilot.Target == opponent ||
+                opponent.Target == pilot)
                 pilot.AddOpponentInArea(opponent);
             else
                 pilot.RemoveOpponentInArea(opponent);

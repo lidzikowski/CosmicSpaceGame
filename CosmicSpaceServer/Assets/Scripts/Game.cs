@@ -85,8 +85,7 @@ public class Game : WebSocketBehavior
                     if (!CheckPacket(newTarget.PlayerId))
                         return;
 
-                    if (newTarget.AttackerIsPlayer)
-                        PilotSelectTarget(newTarget);
+                    PilotSelectTarget(newTarget);
                     break;
 
                 case Commands.AttackTarget:
@@ -98,8 +97,7 @@ public class Game : WebSocketBehavior
                     if (!CheckPacket(attackTarget.PlayerId))
                         return;
 
-                    if (attackTarget.AttackerIsPlayer)
-                        PilotAttackTarget(attackTarget);
+                    PilotAttackTarget(attackTarget);
                     break;
 
                 case Commands.RepairShip:
@@ -220,33 +218,29 @@ public class Game : WebSocketBehavior
             return false;
         PilotServer attacker = Server.Pilots[newTarget.PlayerId];
 
+        if (!Server.MapsServer.ContainsKey(attacker.Pilot.Map.Id))
+            return false;
+        MapServer attackerMap = Server.MapsServer[attacker.Pilot.Map.Id];
+
+        ulong targetId = newTarget.TargetId ?? 0;
+        if (targetId == 0)
+            return false;
+
+        Opponent opponent = null;
         if (newTarget.TargetIsPlayer == true) // Pilot
         {
-            if (!Server.MapsServer.ContainsKey(attacker.Pilot.Map.Id))
-                return false;
-            MapServer attackerMap = Server.MapsServer[attacker.Pilot.Map.Id];
-
-            ulong targetId = newTarget.TargetId ?? 0;
-            if (targetId == 0)
-                return false;
-
-            Opponent opponent = attackerMap.PilotsOnMap.FirstOrDefault(o => o.Id == targetId);
-            if (opponent == null)
-                return false;
-            
-            attacker.Target = opponent;
-            return true; //Zaznaczono pilot
+            opponent = attackerMap.PilotsOnMap.FirstOrDefault(o => o.Id == targetId);
         }
         else if (newTarget.TargetIsPlayer == false) // Enemy
         {
+            opponent = attackerMap.EnemiesOnMap.FirstOrDefault(o => o.Id == targetId);
+        }
 
-            return true; //Zaznaczono enemy
-        }
-        else
-        {
-            attacker.Target = null;
-            return null; //Zaznaczono nic
-        }
+        if (opponent == null)
+            return false;
+
+        attacker.Target = opponent;
+        return true; //Zaznaczono
     }
 
     private void PilotAttackTarget(AttackTarget attackTarget)

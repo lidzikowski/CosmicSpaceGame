@@ -7,7 +7,9 @@ public class EnemyServer : Opponent
     
     public override ulong Id { get; protected set; }
 
-    public EnemyServer(Enemy enemy, ulong id, Vector2 position)
+    protected MapServer EnemyOnMap { get; set; }
+
+    public EnemyServer(Enemy enemy, ulong id, Vector2 position, MapServer map)
     {
         ParentEnemy = enemy;
         Id = id;
@@ -15,6 +17,21 @@ public class EnemyServer : Opponent
         shields = MaxShields;
         Position = position;
         TargetPostion = position;
+
+        EnemyOnMap = map;
+    }
+
+    protected override void OnDead()
+    {
+        base.OnDead();
+
+        if (EnemyOnMap.EnemiesOnMap.Contains(this))
+        {
+            foreach (Opponent opponent in PilotsInArea)
+                opponent.RemoveOpponentInArea(this);
+
+            EnemyOnMap.EnemiesOnMap.Remove(this);
+        }
     }
 
     public override ulong MaxHitpoints => ParentEnemy.Hitpoints;
@@ -25,5 +42,7 @@ public class EnemyServer : Opponent
 
     public override ulong Damage => ParentEnemy.Damage;
 
-    public override string Name => $"{ParentEnemy.Name} :{Id}";
+    public override string Name => ParentEnemy.Name;
+
+
 }
