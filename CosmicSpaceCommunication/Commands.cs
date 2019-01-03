@@ -29,5 +29,9 @@ namespace CosmicSpaceCommunication
 
         EnemyJoin = 340,
         EnemyLeave = 341,
+
+        NewReward = 350,
+
+
     }
 }

@@ -385,6 +385,31 @@ public class Player : MonoBehaviour
 
         whoShipLogic.IsDead = false;
     }
+
+    public void TakeReward(ServerReward reward)
+    {
+        string message = string.Empty;
+
+        if (reward.Experience != null)
+        {
+            Client.Pilot.Experience += (ulong)reward.Experience;
+            message += $"Experience {reward.Experience}";
+        }
+        if (reward.Metal != null)
+        {
+            Client.Pilot.Metal += (double)reward.Metal;
+            message += $"\nMetal {reward.Metal}";
+        }
+        if (reward.Scrap != null)
+        {
+            Client.Pilot.Scrap += (double)reward.Scrap;
+            message += $"\nScrap {reward.Scrap}";
+        }
+
+        GuiScript.CreateLogMessage(message);
+
+        MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
+    }
     #endregion
 
 

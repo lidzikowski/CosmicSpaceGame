@@ -67,4 +67,9 @@ public class GuiScript : MonoBehaviour
         else
             window.Window = null;
     }
+
+    public static void CreateLogMessage(string message)
+    {
+        (Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).CreateLogMessage(message);
+    }
 }

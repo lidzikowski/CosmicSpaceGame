@@ -2,6 +2,7 @@
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -426,8 +427,18 @@ public abstract class Opponent
         {
             DeadOpponent = opponent;
             IsDead = true;
+
+            opponent.TakeReward(ServerReward.GetReward(
+                Reward,
+                IsPlayer ? RewardReasons.KillPlayer : RewardReasons.KillEnemy,
+                Name));
         }
     }
+    #endregion
+
+    #region Reward / TakeReward
+    public abstract Reward Reward { get; }
+    public virtual void TakeReward(ServerReward reward) { }
     #endregion
 
 

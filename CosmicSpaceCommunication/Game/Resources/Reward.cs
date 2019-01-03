@@ -7,6 +7,7 @@ namespace CosmicSpaceCommunication.Game.Resources
     public class Reward
     {
         public ulong Id { get; set; }
+
         public ulong? Experience { get; set; }
         public double? Metal { get; set; }
         public double? Scrap { get; set; }

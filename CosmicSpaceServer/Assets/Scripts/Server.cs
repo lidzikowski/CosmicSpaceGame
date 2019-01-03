@@ -46,6 +46,12 @@ public class Server : MonoBehaviour
 
         Maps = await Database.GetMaps();
 
+        Ammunitions = await Database.GetAmmunitions();
+
+        Rockets = await Database.GetRockets();
+
+        Enemies = await Database.GetEnemies();
+
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);
 
@@ -61,12 +67,6 @@ public class Server : MonoBehaviour
 
             MapsServer.Add(map.Id, mapServer);
         }
-
-        Ammunitions = await Database.GetAmmunitions();
-
-        Rockets = await Database.GetRockets();
-
-        Enemies = await Database.GetEnemies();
     }
 
 

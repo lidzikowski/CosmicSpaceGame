@@ -2,11 +2,12 @@
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using UnityEngine;
-
+using WebSocketSharp.Server;
 
 public class PilotServer : Opponent
 {
@@ -35,6 +36,27 @@ public class PilotServer : Opponent
         }
     }
 
+    public override Reward Reward
+    {
+        get => Pilot.Ship.Reward;
+    }
+    public override void TakeReward(ServerReward reward)
+    {
+        if (reward.Experience != null)
+            Pilot.Experience += (ulong)reward.Experience;
+
+        if (reward.Metal != null)
+            Pilot.Metal += (double)reward.Metal;
+
+        if (reward.Scrap != null)
+            Pilot.Scrap += (double)reward.Scrap;
+
+        Send(new CommandData()
+        {
+            Command = Commands.NewReward,
+            Data = reward
+        });
+    }
 
 
     #region Socket gracza / Wyslanie danych przy inicjalizacji
@@ -111,7 +133,11 @@ public class PilotServer : Opponent
 
         try
         {
-            Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), Headers.SocketId);
+            IWebSocketSession session;
+            if (Server.WebSocket.WebSocketServices["/Game"].Sessions.TryGetSession(Headers.SocketId, out session))
+            {
+                Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), Headers.SocketId);
+            }
         }
         catch (System.Exception ex)
         {

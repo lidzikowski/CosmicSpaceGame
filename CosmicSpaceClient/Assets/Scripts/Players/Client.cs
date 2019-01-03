@@ -8,6 +8,7 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using System;
 using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Resources;
 
 public class Client : MonoBehaviour
 {
@@ -311,6 +312,13 @@ public class Client : MonoBehaviour
         else if (commandData.Command == Commands.EnemyLeave)
         {
             GetComponent<Player>().LeaveEnemy((ulong)commandData.Data);
+        }
+
+
+        // OTRZYMANIE NAGRODY
+        else if (commandData.Command == Commands.NewReward)
+        {
+            GetComponent<Player>().TakeReward((ServerReward)commandData.Data);
         }
 
 

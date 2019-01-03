@@ -16,14 +16,25 @@ public class MapServer : MonoBehaviour
 
 
     public List<PilotServer> PilotsOnMap = new List<PilotServer>();
+
     ulong enemyId = 100;
     public List<EnemyServer> EnemiesOnMap = new List<EnemyServer>();
 
 
 
     public Map CurrentMap;
-    public List<EnemyMap> EnemiesOnCurrentMap;
-    
+    private List<EnemyMap> enemiesOnCurrentMap;
+    public List<EnemyMap> EnemiesOnCurrentMap
+    {
+        get => enemiesOnCurrentMap;
+        set
+        {
+            enemiesOnCurrentMap = value;
+
+            CheckEnemyOnMap();
+        }
+    }
+
 
     
     private void Update()
@@ -34,10 +45,10 @@ public class MapServer : MonoBehaviour
 
             pilotOnMap.Update();
         }
-
-        CheckEnemyOnMap();
     }
 
+
+    #region Spawn enemy on map
     private void CheckEnemyOnMap()
     {
         foreach (EnemyMap enemyMap in EnemiesOnCurrentMap)
@@ -58,6 +69,13 @@ public class MapServer : MonoBehaviour
         }
     }
 
+    public static Vector2 RandomPosition()
+    {
+        return new Vector2(UnityEngine.Random.Range(0, 1000), -UnityEngine.Random.Range(0, 1000));
+    }
+    #endregion
+
+    #region Opponents in area
     private void FindOpponents(Opponent pilot)
     {
         SearchOpponent(pilot, PilotsOnMap.Where(o => o != pilot));
@@ -81,11 +99,8 @@ public class MapServer : MonoBehaviour
     {
         return Vector2.Distance(a.Position, b.Position);
     }
-    
-    public static Vector2 RandomPosition()
-    {
-        return new Vector2(UnityEngine.Random.Range(0, 1000), -UnityEngine.Random.Range(0, 1000));
-    }
+    #endregion
+
 
 
     #region Join and Leave Pilot from Map

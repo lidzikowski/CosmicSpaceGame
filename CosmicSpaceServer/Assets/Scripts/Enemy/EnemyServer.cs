@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Resources;
 using UnityEngine;
 
 public class EnemyServer : Opponent
@@ -32,6 +33,11 @@ public class EnemyServer : Opponent
 
             EnemyOnMap.EnemiesOnMap.Remove(this);
         }
+    }
+
+    public override Reward Reward
+    {
+        get => ParentEnemy.Reward;
     }
 
     public override ulong MaxHitpoints => ParentEnemy.Hitpoints;
