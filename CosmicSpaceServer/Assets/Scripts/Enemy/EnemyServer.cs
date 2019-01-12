@@ -1,26 +1,104 @@
 ﻿using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Linq;
 using UnityEngine;
 
 public class EnemyServer : Opponent
 {
     public Enemy ParentEnemy { get; set; }
     
-    public override ulong Id { get; protected set; }
-
     protected MapServer EnemyOnMap { get; set; }
+
+
 
     public EnemyServer(Enemy enemy, ulong id, Vector2 position, MapServer map)
     {
         ParentEnemy = enemy;
-        Id = id;
-        hitpoints = MaxHitpoints;
-        shields = MaxShields;
-        Position = position;
-        TargetPostion = position;
 
         EnemyOnMap = map;
+
+        Id = id;
+
+        hitpoints = MaxHitpoints;
+        shields = MaxShields;
+
+        Position = position;
+        NewPostion = position;
+
+        Ammunition = 1;
     }
+
+
+
+    public override ulong Id { get; protected set; }
+
+    public override Reward Reward => ParentEnemy.Reward;
+
+    public override long MaxHitpoints => ParentEnemy.Hitpoints;
+
+    public override long MaxShields => ParentEnemy.Shields;
+
+    public override int Speed => ParentEnemy.Speed;
+
+    public override long Damage => ParentEnemy.Damage;
+
+    protected override int ShotDistance => ParentEnemy.ShotDistance;
+
+    public override string Name => ParentEnemy.Name;
+    
+    int lostTargetTime = 0;
+    Vector2 lastTargetPosition;
+    public override void Update()
+    {
+        if (IsDead)
+            return;
+
+        base.Update();
+
+        if (timer >= UPDATE_TIME)
+        {
+            if(TargetIsNull)
+            {
+                if (ParentEnemy.IsAggressive && OpponentsInArea.Count > 0)
+                {
+                    Opponent opponent = OpponentsInArea.FirstOrDefault(o => MapServer.Distance(o, this) <= ShotDistance);
+                    if (opponent != null)
+                    {
+                        Target = opponent;
+                        Attack = true;
+                    }
+                }
+
+                if (Position == NewPostion)
+                {
+                    NewPostion = MapServer.RandomPosition();
+                }
+            }
+            else
+            {
+                if (Target.Position != lastTargetPosition)
+                {
+                    lastTargetPosition = Target.Position;
+                    NewPostion = MapServer.RandomCircle(lastTargetPosition, 15);
+                }
+
+                if (lostTargetTime > 5)
+                {
+                    Target = null;
+                    lostTargetTime = 0;
+                }
+                else
+                {
+                    if (MapServer.Distance(this, Target) > ShotDistance)
+                        lostTargetTime++;
+                    else
+                        lostTargetTime = 0;
+                }
+            }
+        }
+    }
+
+    
 
     protected override void OnDead()
     {
@@ -35,20 +113,20 @@ public class EnemyServer : Opponent
         }
     }
 
-    public override Reward Reward
+    public override void OnTakeDamage(Opponent opponent, long? receivedDamage, int ammunition, bool type)
     {
-        get => ParentEnemy.Reward;
+        base.OnTakeDamage(opponent, receivedDamage, ammunition, type);
+
+        if (!opponent.IsPlayer)
+            return;
+
+        if (opponent.IsDead)
+            return;
+
+        if (TargetIsNull)
+        {
+            Target = opponent;
+            Attack = true;
+        }
     }
-
-    public override ulong MaxHitpoints => ParentEnemy.Hitpoints;
-
-    public override ulong MaxShields => ParentEnemy.Shields;
-
-    public override int Speed => ParentEnemy.Speed;
-
-    public override ulong Damage => ParentEnemy.Damage;
-
-    public override string Name => ParentEnemy.Name;
-
-
 }

@@ -143,17 +143,11 @@ public class Game : WebSocketBehavior
         {
             Database.LogUser(GetHeaders(), Commands.LogIn, true, userId);
 
-            PilotServer pilotServer = new PilotServer()
-            {
-                Pilot = await Database.GetPilot((ulong)userId)
-            };
-            pilotServer.TargetPostion = pilotServer.Position;
-            pilotServer.Headers = GetHeaders();
+            PilotServer pilotServer = new PilotServer(await Database.GetPilot((ulong)userId), GetHeaders());
 
             if (Server.Pilots.ContainsKey(pilotServer.Pilot.Id))
             {
                 Server.Pilots[pilotServer.Pilot.Id].Headers = pilotServer.Headers;
-
             }
             else
             {
@@ -209,7 +203,7 @@ public class Game : WebSocketBehavior
         if (pilotServer == null)
             return;
 
-        pilotServer.TargetPostion = new Vector2(newPosition.PositionX, newPosition.PositionY);
+        pilotServer.NewPostion = new Vector2(newPosition.PositionX, newPosition.PositionY);
     }
     
     private bool? PilotSelectTarget(NewTarget newTarget)

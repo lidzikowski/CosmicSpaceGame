@@ -5,12 +5,18 @@ using CosmicSpaceCommunication.Game.Resources;
 namespace CosmicSpaceCommunication.Game.Player.ServerToClient
 {
     [Serializable]
-    public class PlayerJoin : NewPosition
+    public class PlayerJoin : NewPosition, HitpointsShields
     {
         public string Nickname { get; set; }
         public Ship Ship { get; set; }
         public bool IsDead { get; set; }
         public string KillerBy { get; set; }
+
+        public long Hitpoints { get; set; }
+        public long MaxHitpoints { get; set; }
+        public long Shields { get; set; }
+        public long MaxShields { get; set; }
+
 
         public static PlayerJoin GetNewJoin(Pilot pilot)
         {
@@ -24,6 +30,10 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
                 TargetPositionX = pilot.PositionX,
                 TargetPositionY = pilot.PositionY,
                 Speed = pilot.Ship.Speed,
+                Hitpoints = pilot.Hitpoints,
+                MaxHitpoints = pilot.MaxHitpoints,
+                Shields = pilot.Shields,
+                MaxShields = pilot.MaxShields,
 
                 Nickname = pilot.Nickname,
                 Ship = pilot.Ship,

@@ -11,7 +11,7 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
         public ulong ToId { get; set; }
         public bool ToIsPlayer { get; set; }
 
-        public ulong? Damage { get; set; }
+        public long? Damage { get; set; }
 
         public int AmmunitionId { get; set; }
         /// <summary>

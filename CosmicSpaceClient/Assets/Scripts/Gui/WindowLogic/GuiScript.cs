@@ -68,8 +68,17 @@ public class GuiScript : MonoBehaviour
             window.Window = null;
     }
 
-    public static void CreateLogMessage(string message)
+    public static void CreateLogMessage(List<string> messages)
     {
+        string message = string.Empty;
+
+        for (int i = 0; i < messages.Count; i++)
+        {
+            message += messages[i];
+            if (i != messages.Count - 1)
+                message += "\n";
+        }
+
         (Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).CreateLogMessage(message);
     }
 }

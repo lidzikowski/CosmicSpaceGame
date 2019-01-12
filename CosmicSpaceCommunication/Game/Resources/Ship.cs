@@ -12,7 +12,7 @@ namespace CosmicSpaceCommunication.Game.Resources
         public int Extras { get; set; }
         public int Speed { get; set; }
         public int Cargo { get; set; }
-        public ulong Hitpoints { get; set; }
+        public long Hitpoints { get; set; }
         public Reward Reward { get; set; }
 
         public static Ship GetShip(DataRow row)
@@ -30,7 +30,7 @@ namespace CosmicSpaceCommunication.Game.Resources
                 Extras = ConvertRow.Row<int>(row["extras"]),
                 Speed = ConvertRow.Row<int>(row["speed"]),
                 Cargo = ConvertRow.Row<int>(row["cargo"]),
-                Hitpoints = ConvertRow.Row<ulong>(row["hitpoints"]),
+                Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Reward = Reward.GetReward(row),
             };
         }

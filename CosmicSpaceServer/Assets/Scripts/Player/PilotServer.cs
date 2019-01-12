@@ -1,9 +1,7 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
-using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
-using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,12 +9,24 @@ using WebSocketSharp.Server;
 
 public class PilotServer : Opponent
 {
+    public PilotServer(Pilot pilot, Headers head)
+    {
+        Pilot = pilot;
+        NewPostion = Position;
+        CalculateStatistics();
+
+        Headers = head;
+    }
+
+
+
+    #region Pilot / Id / Name / isDead
     public Pilot Pilot { get; set; }
 
     public override ulong Id
     {
         get => Pilot.Id;
-        protected set => Pilot.Id = value;
+        protected set { }
     }
     public override string Name => Pilot.Nickname;
     protected override bool isDead
@@ -24,41 +34,19 @@ public class PilotServer : Opponent
         get => Pilot.IsDead;
         set
         {
-            if (Pilot.IsDead == value)
+            if (Pilot.IsDead.Equals(value))
                 return;
 
             Pilot.IsDead = value;
 
             if(value)
-                Pilot.KillerBy = DeadOpponent.Name;
+                Pilot.KillerBy = DeadOpponent?.Name;
             else
                 Pilot.KillerBy = string.Empty;
         }
     }
-
-    public override Reward Reward
-    {
-        get => Pilot.Ship.Reward;
-    }
-    public override void TakeReward(ServerReward reward)
-    {
-        if (reward.Experience != null)
-            Pilot.Experience += (ulong)reward.Experience;
-
-        if (reward.Metal != null)
-            Pilot.Metal += (double)reward.Metal;
-
-        if (reward.Scrap != null)
-            Pilot.Scrap += (double)reward.Scrap;
-
-        Send(new CommandData()
-        {
-            Command = Commands.NewReward,
-            Data = reward
-        });
-    }
-
-
+    #endregion
+    
     #region Socket gracza / Wyslanie danych przy inicjalizacji
     private Headers headers;
     public Headers Headers
@@ -83,72 +71,133 @@ public class PilotServer : Opponent
     }
     #endregion
 
+
+
     #region Position
     protected override Vector2 position
     {
         get => new Vector2(Pilot.PositionX, Pilot.PositionY);
         set
         {
-            Pilot.PositionX = value.x;
-            Pilot.PositionY = value.y;
+            if (!Pilot.PositionX.Equals(value.x))
+                Pilot.PositionX = value.x;
+
+            if (!Pilot.PositionY.Equals(value.y))
+                Pilot.PositionY = value.y;
         }
     }
     #endregion
 
+
+
     #region Hitpoints / MaxHitpoints
-    protected override ulong hitpoints
+    protected override long hitpoints
     {
         get => Pilot.Hitpoints;
-        set => Pilot.Hitpoints = value;
+        set
+        {
+            if (Pilot.Hitpoints.Equals(value))
+                return;
+
+            Pilot.Hitpoints = value;
+        }
     }
-    public override ulong MaxHitpoints => Pilot.Ship.Hitpoints; // + dodatki
+    public override long MaxHitpoints
+    {
+        get => Pilot.MaxHitpoints;
+    }
     #endregion
 
     #region Shields / MaxShields
-    protected override ulong shields
+    protected override long shields
     {
         get => Pilot.Shields;
-        set => Pilot.Shields = value;
+        set
+        {
+            if (Pilot.Shields.Equals(value))
+                return;
+
+            Pilot.Shields = value;
+        }
     }
-    public override ulong MaxShields => 100; // Z wyposazenia + dodatki
+    public override long MaxShields
+    {
+        get => Pilot.MaxShields;
+    }
     #endregion
 
     #region Speed
-    public override int Speed => Pilot.Ship.Speed; // + wyposazenie + dodatki
+    public override int Speed
+    {
+        get => Pilot.Speed;
+    }
     #endregion
 
-    #region Damage
-    public override ulong Damage
+    #region Calculate MaxHitpoints / MaxShields / Speed
+    protected void CalculateStatistics()
     {
-        get => 10000;
+        Pilot.MaxHitpoints = Pilot.Ship.Hitpoints;
+        Pilot.MaxShields = 1000;
+        Pilot.Speed = Pilot.Ship.Speed;
     }
     #endregion
 
 
 
+    #region Damage / ShotDistance
+    public override long Damage
+    {
+        get => 300;
+    }
+    protected override int ShotDistance
+    {
+        get => 50;
+    }
+    #endregion
+    
+
+
+    #region Reward / TakeReward
+    public override Reward Reward
+    {
+        get => Pilot.Ship.Reward;
+    }
+    public override void TakeReward(ServerReward reward)
+    {
+        if (!reward.Experience.Equals(null))
+            Pilot.Experience += (ulong)reward.Experience;
+
+        if (!reward.Metal.Equals(null))
+            Pilot.Metal += (double)reward.Metal;
+
+        if (!reward.Scrap.Equals(null))
+            Pilot.Scrap += (double)reward.Scrap;
+
+        Send(new CommandData()
+        {
+            Command = Commands.NewReward,
+            Data = reward
+        });
+    }
+    #endregion
+
+
+
+    #region Komunikacja z graczem
     public void Send(CommandData commandData)
     {
         if (Headers == null)
             return;
 
-        try
-        {
-            IWebSocketSession session;
-            if (Server.WebSocket.WebSocketServices["/Game"].Sessions.TryGetSession(Headers.SocketId, out session))
-            {
-                Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), Headers.SocketId);
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.Log(ex.Message);
-        }
+        Send(commandData, Headers);
     }
     public static void Send(CommandData commandData, Headers headers)
     {
         try
         {
-            Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), headers.SocketId);
+            IWebSocketSession session;
+            if (Server.WebSocket.WebSocketServices["/Game"].Sessions.TryGetSession(headers.SocketId, out session))
+                Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), headers.SocketId);
         }
         catch (System.Exception ex)
         {
@@ -170,4 +219,5 @@ public class PilotServer : Opponent
         
         return pilot;
     }
+    #endregion
 }

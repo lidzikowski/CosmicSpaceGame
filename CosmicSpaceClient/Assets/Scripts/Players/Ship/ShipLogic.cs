@@ -1,4 +1,5 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
@@ -8,8 +9,8 @@ using UnityEngine;
 
 public class ShipLogic : MonoBehaviour
 {
-    public List<GameObject> Lasers => ChildInChild("Lasers");
-    public List<GameObject> Gears => ChildInChild("Gears");
+    public List<Transform> Lasers => ChildInChild("Lasers");
+    public List<Transform> Gears => ChildInChild("Gears");
 
     [Header("Ship transform rotate/spawn")]
     public Transform RotationTransform;
@@ -19,6 +20,44 @@ public class ShipLogic : MonoBehaviour
     [Header("Ship name")]
     public TextMesh ModelNameText;
     public MeshRenderer PointerMeshRenderer;
+
+    [Header("Hitpoints and shields")]
+    private bool targetInterface = false;
+    public bool TargetInterface
+    {
+        get => targetInterface;
+        set
+        {
+            if (targetInterface == value)
+                return;
+
+            targetInterface = value;
+
+            ShowTargetInterface(value);
+        }
+    }
+    public GameObject TargetInterfaceGameObject;
+    public TextMesh HitpointsText;
+    public TextMesh ShieldsText;
+
+
+
+    private void Start()
+    {
+        TargetInterface = LocalPlayer;
+    }
+
+
+
+    public void ShowTargetInterface(bool status)
+    {
+        TargetInterfaceGameObject.SetActive(status);
+        if (status)
+        {
+            HitpointsText.text = string.Format("{0}/{1}", Hitpoints, MaxHitpoints);
+            ShieldsText.text = string.Format("{0}/{1}", Shields, MaxShields);
+        }
+    }
 
 
 
@@ -69,7 +108,7 @@ public class ShipLogic : MonoBehaviour
         }
     }
 
-    protected bool gearsStatus;
+    protected bool gearsStatus = true;
     public bool GearsStatus
     {
         get
@@ -78,21 +117,18 @@ public class ShipLogic : MonoBehaviour
         }
         set
         {
-            if (value == gearsStatus)
-                return;
-
             gearsStatus = value;
 
-            //if (value)
-            //{
-            //    foreach (ParticleSystem engine in engines)
-            //        engine.Play();
-            //}
-            //else
-            //{
-            //    foreach (ParticleSystem engine in engines)
-            //        engine.Stop();
-            //}
+            if (value)
+            {
+                foreach (Transform t in Gears)
+                    t.GetComponent<ParticleSystem>().Play();
+            }
+            else
+            {
+                foreach (Transform t in Gears)
+                    t.GetComponent<ParticleSystem>().Stop();
+            }
         }
     }
     #endregion
@@ -110,6 +146,7 @@ public class ShipLogic : MonoBehaviour
             if (targetGameObject == value)
                 return;
 
+            GameObject oldTarget = targetGameObject;
             targetGameObject = value;
             Attack = false;
             
@@ -118,6 +155,12 @@ public class ShipLogic : MonoBehaviour
 
             if (!LocalPlayer)
                 return;
+
+            if (oldTarget != null)
+                oldTarget.GetComponent<ShipLogic>().TargetInterface = false;
+
+            if (value != null)
+                value.GetComponent<ShipLogic>().TargetInterface = true;
 
             Client.SendToSocket(new CommandData()
             {
@@ -178,26 +221,8 @@ public class ShipLogic : MonoBehaviour
     #endregion
 
     #region Hitpoints / Shields
-    private ulong localHitpoints;
-    private ulong hitpoints
-    {
-        get
-        {
-            if(LocalPlayer)
-                return Client.Pilot.Hitpoints;
-            return localHitpoints;
-        }
-        set
-        {
-            if (LocalPlayer)
-            {
-                Client.Pilot.Hitpoints = value;
-                return;
-            }
-            localHitpoints = value;
-        }
-    }
-    public ulong Hitpoints
+    private long hitpoints;
+    public long Hitpoints
     {
         get => hitpoints;
         set
@@ -208,8 +233,8 @@ public class ShipLogic : MonoBehaviour
         }
     }
 
-    private ulong maxHitpoints;
-    public ulong MaxHitpoints
+    private long maxHitpoints;
+    public long MaxHitpoints
     {
         get => maxHitpoints;
         set
@@ -219,27 +244,9 @@ public class ShipLogic : MonoBehaviour
             maxHitpoints = x;
         }
     }
-    
-    private ulong localShields;
-    private ulong shields
-    {
-        get
-        {
-            if (LocalPlayer)
-                return Client.Pilot.Shields;
-            return localShields;
-        }
-        set
-        {
-            if (LocalPlayer)
-            {
-                Client.Pilot.Shields = value;
-                return;
-            }
-            localShields = value;
-        }
-    }
-    public ulong Shields
+
+    private long shields;
+    public long Shields
     {
         get => shields;
         set
@@ -250,8 +257,8 @@ public class ShipLogic : MonoBehaviour
         }
     }
 
-    private ulong maxShields;
-    public ulong MaxShields
+    private long maxShields;
+    public long MaxShields
     {
         get => maxShields;
         set
@@ -262,14 +269,17 @@ public class ShipLogic : MonoBehaviour
         }
     }
     
-    private void OnChangeHitpointsOrShields(ref ulong variable, ref ulong value)
+    private void OnChangeHitpointsOrShields(ref long variable, ref long value)
     {
         variable = value;
+
+        ShowTargetInterface(TargetInterface);
 
         if (!LocalPlayer)
             return;
 
-        GuiScript.RefreshAllActiveWindow();
+        if (Player.LocalShipController != null)
+            GuiScript.RefreshAllActiveWindow();
     }
     #endregion
 
@@ -298,15 +308,14 @@ public class ShipLogic : MonoBehaviour
         }
     }
 
-    #region Player / IsDead, KillerBy / Nickname / Ship / Speed
-    public PlayerJoin Player;
-
+    #region IsDead / KillerBy / Nickname / Ship / Speed
+    public bool isDead = false;
     public bool IsDead
     {
-        get => Player.IsDead;
+        get => isDead;
         set
         {
-            Player.IsDead = value;
+            isDead = value;
 
             TargetGameObject = null;
             Attack = false;
@@ -320,15 +329,13 @@ public class ShipLogic : MonoBehaviour
                 GuiScript.OpenWindow(WindowTypes.RepairShip);
             else
             {
-                Player.KillerBy = string.Empty;
+                KillerBy = string.Empty;
                 GuiScript.CloseWindow(WindowTypes.RepairShip);
             }
         }
     }
-    public string KillerBy => Player.KillerBy;
-    public string Nickname => Player.Nickname;
-    public Ship Ship => Player.Ship;
-    public int Speed => Player.Speed;
+    public string KillerBy { get; set; }
+    public int Speed { get; set; }
     #endregion
 
 
@@ -371,62 +378,76 @@ public class ShipLogic : MonoBehaviour
             GearsStatus = false;
     }
 
+
+
     public void InitShip(PlayerJoin player, Color nameColor, bool localPlayer)
     {
-        Player = player;
+        InitPosition(player);
+        InitHitpointsShields(player);
+        InitShip(player.Ship.Name);
+        InitName(player.Nickname, nameColor);
+
         LocalPlayer = localPlayer;
-
         IsDead = player.IsDead;
-        
-        transform.position = new Vector2(player.PositionX, player.PositionY);
-        TargetPosition = new Vector2(player.TargetPositionX, player.TargetPositionY);
-
-        transform.name = player.PlayerId.ToString();
-        
-        ModelNameText.text = player.Nickname;
-        ModelNameText.color = nameColor;
-
-        foreach (Transform t in ModelTransform)
-        {
-            Destroy(t.gameObject);
-        }
-
-        Instantiate(Resources.Load<GameObject>("Ships/" + player.Ship.Name), ModelTransform);
+        KillerBy = player.KillerBy;
     }
     
     public void InitShip(EnemyJoin enemy, Color nameColor)
     {
-        transform.position = new Vector2(enemy.PositionX, enemy.PositionY);
-        TargetPosition = new Vector2(enemy.TargetPositionX, enemy.TargetPositionY);
+        InitPosition(enemy);
+        InitHitpointsShields(enemy);
+        InitShip("Executor");
+        InitName(enemy.ParentEnemy.Name, nameColor);
 
-        transform.name = enemy.Id.ToString();
-
-        tag = "Enemy";
         PointerMeshRenderer.gameObject.layer = 12;
         PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/Red");
+    }
 
-        ModelNameText.text = enemy.ParentEnemy.Name;
-        ModelNameText.color = nameColor;
+    private void InitPosition(NewPosition newPosition)
+    {
+        transform.position = new Vector2(newPosition.PositionX, newPosition.PositionY);
+        TargetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
 
+        transform.name = newPosition.PlayerId.ToString();
+        tag = newPosition.IsPlayer ? "Player" : "Enemy";
+        Speed = newPosition.Speed;
+    }
+
+    private void InitHitpointsShields(HitpointsShields hitpointsShields)
+    {
+        Hitpoints = hitpointsShields.Hitpoints;
+        MaxHitpoints = hitpointsShields.MaxHitpoints;
+        Shields = hitpointsShields.Shields;
+        MaxShields = hitpointsShields.MaxShields;
+    }
+
+    private void InitShip(string shipName)
+    {
         foreach (Transform t in ModelTransform)
         {
             Destroy(t.gameObject);
         }
+        Instantiate(Resources.Load<GameObject>("Ships/" + shipName), ModelTransform);
+    }
 
-        Instantiate(Resources.Load<GameObject>("Ships/Verminus"), ModelTransform);
+    private void InitName(string name, Color color)
+    {
+        ModelNameText.text = name;
+        ModelNameText.color = color;
     }
 
 
-    private List<GameObject> ChildInChild(string parent)
+
+    private List<Transform> ChildInChild(string parent)
     {
-        foreach (Transform child in transform)
+        foreach (Transform child in ModelTransform.GetChild(0))
         {
             if (child.name == parent)
             {
-                List<GameObject> objects = new List<GameObject>();
+                List<Transform> objects = new List<Transform>();
                 foreach (Transform t in child)
                 {
-                    objects.Add(t.gameObject);
+                    objects.Add(t);
                 }
                 return objects;
             }

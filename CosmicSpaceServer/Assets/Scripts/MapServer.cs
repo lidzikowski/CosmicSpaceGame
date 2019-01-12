@@ -45,6 +45,11 @@ public class MapServer : MonoBehaviour
 
             pilotOnMap.Update();
         }
+
+        foreach (Opponent enemyOnMap in EnemiesOnMap)
+        {
+            enemyOnMap.Update();
+        }
     }
 
 
@@ -53,8 +58,8 @@ public class MapServer : MonoBehaviour
     {
         foreach (EnemyMap enemyMap in EnemiesOnCurrentMap)
         {
-            int count = EnemiesOnMap.Select(o => o.ParentEnemy.Id == enemyMap.Id).Count();
-            if(count < enemyMap.Count)
+            int count = EnemiesOnMap.Where(o => o.ParentEnemy.Id == enemyMap.EnemyId).Count();
+            if (count < enemyMap.Count)
             {
                 SpawnEnemy(Server.Enemies[enemyMap.EnemyId], enemyMap.Count - count);
             }
@@ -72,6 +77,16 @@ public class MapServer : MonoBehaviour
     public static Vector2 RandomPosition()
     {
         return new Vector2(UnityEngine.Random.Range(0, 1000), -UnityEngine.Random.Range(0, 1000));
+    }
+
+    public static Vector3 RandomCircle(Vector3 center, float radius)
+    {
+        float ang = UnityEngine.Random.value * 360;
+        return new Vector3()
+        {
+            x = center.x + radius * Mathf.Sin(ang * Mathf.Deg2Rad),
+            y = center.y + radius * Mathf.Cos(ang * Mathf.Deg2Rad),
+        };
     }
     #endregion
 
@@ -116,8 +131,8 @@ public class MapServer : MonoBehaviour
     {
         if (PilotsOnMap.Contains(pilot))
         {
-            foreach (Opponent opponent in pilot.PilotsInArea)
-                opponent.RemoveOpponentInArea(pilot);
+            foreach (Opponent opponent in pilot.OpponentsInArea)
+                opponent.RemoveOpponentInArea(pilot, false);
 
             PilotsOnMap.Remove(pilot);
         }

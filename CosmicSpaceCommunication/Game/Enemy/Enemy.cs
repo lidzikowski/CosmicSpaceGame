@@ -9,10 +9,12 @@ namespace CosmicSpaceCommunication.Game.Enemy
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public ulong Hitpoints { get; set; }
-        public ulong Shields { get; set; }
+        public long Hitpoints { get; set; }
+        public long Shields { get; set; }
         public int Speed { get; set; }
-        public ulong Damage { get; set; }
+        public long Damage { get; set; }
+        public int ShotDistance { get; set; }
+        public bool IsAggressive { get; set; }
 
         public Reward Reward { get; set; }
 
@@ -22,10 +24,12 @@ namespace CosmicSpaceCommunication.Game.Enemy
             {
                 Id = ConvertRow.Row<int>(row["enemyid"]),
                 Name = ConvertRow.Row<string>(row["enemyname"]),
-                Hitpoints = ConvertRow.Row<ulong>(row["hitpoints"]),
-                Shields = ConvertRow.Row<ulong>(row["shields"]),
+                Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
+                Shields = ConvertRow.Row<long>(row["shields"]),
                 Speed = ConvertRow.Row<int>(row["speed"]),
-                Damage = ConvertRow.Row<ulong>(row["damage"]),
+                Damage = ConvertRow.Row<long>(row["damage"]),
+                ShotDistance = ConvertRow.Row<int>(row["shotdistance"]),
+                IsAggressive = ConvertRow.Row<bool>(row["isaggressive"]),
                 Reward = Reward.GetReward(row)
             };
         }

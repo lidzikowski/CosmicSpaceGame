@@ -165,7 +165,7 @@ public class Client : MonoBehaviour
 
     private void SocketMessage(CommandData commandData)
     {
-        // LOGOWANIE / REJESTRACJA
+        #region LOGOWANIE / REJESTRACJA
         if (commandData.Command == Commands.LogIn)
         {
             bool status = (bool)commandData.Data;
@@ -184,16 +184,16 @@ public class Client : MonoBehaviour
         {
             Debug.Log($"NICKNAME_OCCUPIED");
         }
+        #endregion
 
-
-        // INICJALIZACJA ZALOGOWANEGO GRACZA
+        #region INICJALIZACJA ZALOGOWANEGO GRACZA
         else if (commandData.Command == Commands.UserData)
         {
             Pilot = (Pilot)commandData.Data;
         }
+        #endregion
 
-
-        // DOLACZENIE / ODLACZENIE GRACZA OD SERWERA
+        #region DOLACZENIE / ODLACZENIE GRACZA OD SERWERA
         else if (commandData.Command == Commands.PlayerJoin)
         {
             GetComponent<Player>().InitPlayer((PlayerJoin)commandData.Data);
@@ -202,9 +202,9 @@ public class Client : MonoBehaviour
         {
             GetComponent<Player>().LeavePlayer((ulong)commandData.Data);
         }
+        #endregion
 
-
-        // ZDARZENIE NA ZMIANE POZYCJI GRACZA
+        #region ZDARZENIE NA ZMIANE POZYCJI
         else if (commandData.Command == Commands.NewPosition)
         {
             NewPosition newPosition = (NewPosition)commandData.Data;
@@ -212,12 +212,11 @@ public class Client : MonoBehaviour
             if (newPosition == null)
                 return;
 
-            if (newPosition.IsPlayer)
-                GetComponent<Player>().PlayerChangePosition(newPosition);
+            GetComponent<Player>().ChangePosition(newPosition);
         }
+        #endregion
 
-
-        // ZDARZENIE NA ZMIANE HITPOINTS
+        #region ZDARZENIE NA ZMIANE HITPOINTS
         else if (commandData.Command == Commands.ChangeHitpoints)
         {
             NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
@@ -225,12 +224,11 @@ public class Client : MonoBehaviour
             if (newValue == null)
                 return;
 
-            if (newValue.IsPlayer)
-                GetComponent<Player>().PlayerHitpointsOrShields(newValue, true);
+            GetComponent<Player>().HitpointsOrShields(newValue, true);
         }
+        #endregion
 
-
-        // ZDARZENIE NA ZMIANE SHIELDS
+        #region ZDARZENIE NA ZMIANE SHIELDS
         else if (commandData.Command == Commands.ChangeShields)
         {
             NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
@@ -238,12 +236,11 @@ public class Client : MonoBehaviour
             if (newValue == null)
                 return;
 
-            if (newValue.IsPlayer)
-                GetComponent<Player>().PlayerHitpointsOrShields(newValue, false);
+            GetComponent<Player>().HitpointsOrShields(newValue, false);
         }
+        #endregion
 
-
-        // ZDARZENIE NA ZMIANE TARGET
+        #region ZDARZENIE NA ZMIANE TARGET
         else if (commandData.Command == Commands.SelectTarget)
         {
             NewTarget newTarget = (NewTarget)commandData.Data;
@@ -251,12 +248,11 @@ public class Client : MonoBehaviour
             if (newTarget == null)
                 return;
 
-            if (newTarget.AttackerIsPlayer)
-                GetComponent<Player>().PlayerSelectTarget(newTarget);
+            GetComponent<Player>().SelectTarget(newTarget);
         }
+        #endregion
 
-
-        // ZDARZENIE NA ATAK TARGETU
+        #region ZDARZENIE NA ATAK TARGETU
         else if (commandData.Command == Commands.AttackTarget)
         {
             AttackTarget attackTarget = (AttackTarget)commandData.Data;
@@ -264,12 +260,12 @@ public class Client : MonoBehaviour
             if (attackTarget == null)
                 return;
 
-            if (attackTarget.AttackerIsPlayer)
-                GetComponent<Player>().PlayerAttackTarget(attackTarget);
+            GetComponent<Player>().AttackTarget(attackTarget);
         }
+        #endregion
 
 
-        // ZDARZENIE NA OTRZYMYWANIE OBRAZEN
+        #region ZDARZENIE NA OTRZYMYWANIE OBRAZEN
         else if (commandData.Command == Commands.GetDamage)
         {
             TakeDamage takeDamage = (TakeDamage)commandData.Data;
@@ -279,9 +275,10 @@ public class Client : MonoBehaviour
 
             GetComponent<Player>().SomeoneTakeDamage(takeDamage);
         }
+        #endregion
 
 
-        // ZDARZENIE NA SMIERC
+        #region ZDARZENIE NA SMIERC
         else if (commandData.Command == Commands.Dead)
         {
             SomeoneDead someoneDead = (SomeoneDead)commandData.Data;
@@ -291,9 +288,10 @@ public class Client : MonoBehaviour
 
             GetComponent<Player>().SomeoneDead(someoneDead);
         }
+        #endregion
 
 
-        // ZDARZENIE NA ODRODZENIE
+        #region ZDARZENIE NA ODRODZENIE
         else if (commandData.Command == Commands.RepairShip)
         {
             ulong userId;
@@ -302,9 +300,10 @@ public class Client : MonoBehaviour
 
             GetComponent<Player>().SomeoneAlive(userId);
         }
+        #endregion
 
 
-        // DOLACZENIE / ODLACZENIE ENEMY OD SERWERA
+        #region DOLACZENIE / ODLACZENIE ENEMY OD SERWERA
         else if (commandData.Command == Commands.EnemyJoin)
         {
             GetComponent<Player>().InitEnemy((EnemyJoin)commandData.Data);
@@ -313,13 +312,15 @@ public class Client : MonoBehaviour
         {
             GetComponent<Player>().LeaveEnemy((ulong)commandData.Data);
         }
+        #endregion
 
 
-        // OTRZYMANIE NAGRODY
+        #region OTRZYMANIE NAGRODY
         else if (commandData.Command == Commands.NewReward)
         {
             GetComponent<Player>().TakeReward((ServerReward)commandData.Data);
         }
+        #endregion
 
 
 
@@ -336,8 +337,19 @@ public class Client : MonoBehaviour
     private void Socket_OnClose(object sender, CloseEventArgs e)
     {
         MainThread.Instance().Enqueue(() => SocketConnected = false);
-        
-        Debug.Log($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
+
+        switch(e.Code)
+        {
+            case 1001:
+                //Debug.LogError($"OnClose - Server close");
+                break;
+            case 1005:
+                //Debug.LogError($"OnClose - Client close");
+                break;
+            default:
+                Debug.LogError($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
+                break;
+        }
     }
 
     private void Socket_OnOpen(object sender, EventArgs e)
@@ -356,7 +368,7 @@ public class Client : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.Log(ex.Message);
+            Debug.LogError(ex.Message);
         }
     }
 }

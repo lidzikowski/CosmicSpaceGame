@@ -18,13 +18,21 @@ namespace CosmicSpaceCommunication.Game.Player
         public int Level { get; set; }
         public double Scrap { get; set; }
         public double Metal { get; set; }
-        public ulong Hitpoints { get; set; }
-        public ulong Shields { get; set; }
+        public long Hitpoints { get; set; }
+        public long Shields { get; set; }
         public bool IsDead { get; set; }
         public string KillerBy { get; set; }
 
         public List<ulong> Ammunitions { get; set; }
         public List<ulong> Rockets { get; set; }
+
+
+
+        public long MaxHitpoints { get; set; }
+        public long MaxShields { get; set; }
+        public int Speed { get; set; }
+
+
 
         public static Pilot GetPilot(DataRow row)
         {
@@ -38,8 +46,8 @@ namespace CosmicSpaceCommunication.Game.Player
                 Level = ConvertRow.Row<int>(row["level"]),
                 Scrap = ConvertRow.Row<double>(row["scrap"]),
                 Metal = ConvertRow.Row<double>(row["metal"]),
-                Hitpoints = ConvertRow.Row<ulong>(row["hitpoints"]),
-                Shields = ConvertRow.Row<ulong>(row["shields"]),
+                Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
+                Shields = ConvertRow.Row<long>(row["shields"]),
                 IsDead = ConvertRow.Row<bool>(row["isdead"]),
                 KillerBy = ConvertRow.Row<string>(row["killerby"]),
             };

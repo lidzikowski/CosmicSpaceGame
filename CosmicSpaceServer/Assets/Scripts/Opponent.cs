@@ -11,7 +11,10 @@ public abstract class Opponent
 {
     protected static readonly float UPDATE_TIME = 1;
     protected static readonly float REPAIR_EVERY_UPDATE = 5;
-    protected static readonly float SHOT_DISTANCE = 50;
+
+
+
+    protected virtual int ShotDistance => 50;
 
 
 
@@ -54,7 +57,13 @@ public abstract class Opponent
                 Data = new EnemyJoin(
                     joinOpponent.Id,
                     (joinOpponent as EnemyServer).ParentEnemy,
-                    joinOpponent.Position.x, joinOpponent.Position.y)
+                    joinOpponent.Position.x, 
+                    joinOpponent.Position.y,
+                    joinOpponent.NewPostion.x,
+                    joinOpponent.NewPostion.y,
+                    joinOpponent.Hitpoints,
+                    joinOpponent.Shields
+                    )
             });
         }
     }
@@ -73,11 +82,11 @@ public abstract class Opponent
     }
     protected void Leave(Opponent leaveOpponent)
     {
-        if (!IsPlayer) // Jakby obiekt byl npc - brak synchronizacji do niego
-            return;
-
         if (Target == leaveOpponent)
             Target = null;
+
+        if (!IsPlayer)
+            return;
 
         PilotServer pilot = this as PilotServer;
 
@@ -102,9 +111,9 @@ public abstract class Opponent
 
     protected void SendToPilotsInArea(CommandData commandData)
     {
-        foreach (PilotServer pilot in PilotsInArea)
+        foreach (Opponent pilot in PilotsInArea)
         {
-            pilot.Send(commandData);
+            (pilot as PilotServer).Send(commandData);
         }
     }
     protected void SendToPilotsInArea(CommandData commandData, bool andLocalPilot)
@@ -118,10 +127,15 @@ public abstract class Opponent
 
 
 
-    #region Id / Name / IsPlayer
+    #region Id / Name / IsPlayer / Opponent
     public abstract ulong Id { get; protected set; }
     public abstract string Name { get; }
-    public bool IsPlayer => this is PilotServer;
+    public bool IsPlayer { get; private set; }
+
+    public Opponent()
+    {
+        IsPlayer = this is PilotServer;
+    }
     #endregion
     
     #region IsDead
@@ -183,7 +197,7 @@ public abstract class Opponent
     public virtual int? Rocket { get; set; }
     #endregion
 
-    #region Position / TargetPosition
+    #region Position / NewPosition
     protected virtual Vector2 position { get; set; }
     public Vector2 Position
     {
@@ -194,12 +208,23 @@ public abstract class Opponent
                 return;
 
             position = value;
+        }
+    }
+    protected Vector2 newPostion { get; set; }
+    public Vector2 NewPostion
+    {
+        get => newPostion;
+        set
+        {
+            if (newPostion == value)
+                return;
+
+            newPostion = value;
 
             OnChangePosition();
         }
     }
-    public Vector2 TargetPostion { get; set; }
-    
+
     protected void OnChangePosition()
     {
         SendToPilotsInArea(new CommandData()
@@ -211,17 +236,17 @@ public abstract class Opponent
                 IsPlayer = IsPlayer,
                 PositionX = Position.x,
                 PositionY = Position.y,
-                TargetPositionX = TargetPostion.x,
-                TargetPositionY = TargetPostion.y,
+                TargetPositionX = NewPostion.x,
+                TargetPositionY = NewPostion.y,
                 Speed = Speed
             }
-        });
+        }, IsPlayer);
     }
     #endregion
 
     #region Hitpoints
-    protected virtual ulong hitpoints { get; set; }
-    public virtual ulong Hitpoints
+    protected virtual long hitpoints { get; set; }
+    public virtual long Hitpoints
     {
         get => hitpoints;
         set
@@ -234,8 +259,8 @@ public abstract class Opponent
             OnChangeHitpoints();
         }
     }
+    public abstract long MaxHitpoints { get; }
 
-    public abstract ulong MaxHitpoints { get; }
     public virtual bool CanRepearHitpoints => Hitpoints != MaxHitpoints;
     protected void OnChangeHitpoints()
     {
@@ -254,8 +279,8 @@ public abstract class Opponent
     #endregion
 
     #region Shields
-    protected virtual ulong shields { get; set; }
-    public ulong Shields
+    protected virtual long shields { get; set; }
+    public long Shields
     {
         get => shields;
         set
@@ -268,9 +293,9 @@ public abstract class Opponent
             OnChangeShields();
         }
     }
-    public abstract ulong MaxShields { get; }
-    public virtual bool CanRepearShields => Shields != MaxShields;
+    public abstract long MaxShields { get; }
 
+    public virtual bool CanRepearShields => Shields != MaxShields;
     protected void OnChangeShields()
     {
         SendToPilotsInArea(new CommandData()
@@ -285,7 +310,6 @@ public abstract class Opponent
             }
         }, true);
     }
-
     #endregion
 
     #region Speed
@@ -378,12 +402,12 @@ public abstract class Opponent
     #endregion
 
     #region Damage
-    public abstract ulong Damage { get; }
+    public abstract long Damage { get; }
     #endregion
 
     #region TakeDamage
     protected float LastTakeDamage = 0;
-    public void OnTakeDamage(Opponent opponent, ulong? receivedDamage, int ammunition, bool type)
+    public virtual void OnTakeDamage(Opponent opponent, long? receivedDamage, int ammunition, bool type)
     {
         if (IsDead)
             return;
@@ -410,20 +434,39 @@ public abstract class Opponent
         
         if (receivedDamage != null)
         {
-            TakeDamage((ulong)receivedDamage);
+            TakeDamage((long)receivedDamage);
             CheckIfDead(opponent);
         }
     }
-    protected void TakeDamage(ulong damage)
+    protected void TakeDamage(long damage)
     {
-        if (Hitpoints - damage <= MaxHitpoints)
-            Hitpoints -= damage;
+        long dmgHp = 0;
+
+        if (Shields > 0)
+        {
+            long dmgShd = (long)(damage * 0.7);
+            if (Shields - dmgShd >= 0)
+            {
+                dmgHp = damage - dmgShd;
+                Shields -= dmgShd;
+            }
+            else
+            {
+                dmgHp = damage - Shields;
+                Shields = 0;
+            }
+        }
+        else
+            dmgHp = damage;
+        
+        if (Hitpoints - dmgHp >= 0)
+            Hitpoints -= dmgHp;
         else
             Hitpoints = 0;
     }
     protected void CheckIfDead(Opponent opponent)
     {
-        if (Hitpoints == 0)
+        if (Hitpoints.Equals(0))
         {
             DeadOpponent = opponent;
             IsDead = true;
@@ -458,7 +501,7 @@ public abstract class Opponent
 
             if (Attack)
             {
-                if(MapServer.Distance(this, Target) <= SHOT_DISTANCE)
+                if(MapServer.Distance(this, Target) <= ShotDistance)
                 {
                     if (Ammunition != null)
                     {
@@ -480,11 +523,11 @@ public abstract class Opponent
     
 
     #region Fly
-    public void Fly()
+    public virtual void Fly()
     {
-        if (TargetPostion == Position)
+        if (NewPostion == Position)
             return;
-        Position = Vector3.MoveTowards(Position, TargetPostion, Time.deltaTime * Speed);
+        Position = Vector3.MoveTowards(Position, NewPostion, Time.deltaTime * Speed);
     }
     #endregion
 

@@ -88,15 +88,16 @@ public class Player : MonoBehaviour
                 ShipLogic target = hit.transform.gameObject.GetComponent<ShipLogic>();
                 if (!target.IsDead)
                     LocalShipController.TargetGameObject = target.gameObject;
-                else
-                    Debug.Log(target.Nickname + " nie zyje.");
             }
         }
         else
         {
-            float x = (mousePosition.x - Screen.width / 2) / 5;
-            float y = (mousePosition.y - Screen.height / 2) / 5;
-            TargetPosition = new Vector2(LocalShipController.Position.x + x, LocalShipController.Position.y + y);
+            if (Camera.current == null)
+                return;
+
+            Vector3 tmp = Camera.current.ScreenToViewportPoint(mousePosition);
+            Vector2 position = new Vector2(tmp.x - 0.5f, tmp.y - 0.5f) * 100;
+            TargetPosition = new Vector2(LocalShipController.Position.x + position.x, LocalShipController.Position.y + position.y);
         }
     }
 
@@ -117,19 +118,18 @@ public class Player : MonoBehaviour
     #region LocalPlayer / Player
     public void InitLocalPlayer()
     {
-        ShipLogic shipController = CreatePlayer(
+        LocalShipController = CreatePlayer(
             LocalPlayerTransform,
             true,
             PlayerJoin.GetNewJoin(Client.Pilot),
             Color.white);
 
-        shipController.LocalPlayer = true;
-        LocalShipController = shipController;
+        LocalShipController.LocalPlayer = true;
         TargetPosition = LocalShipController.TargetPosition;
 
-        PlayersController.Add(Client.Pilot.Id, shipController);
+        PlayersController.Add(Client.Pilot.Id, LocalShipController);
         
-        PlayerCamera.TargetGameObject = shipController.gameObject;
+        PlayerCamera.TargetGameObject = LocalShipController.gameObject;
 
         CreateBackground(Client.Pilot.Map);
     }
@@ -231,149 +231,120 @@ public class Player : MonoBehaviour
 
 
     #region Events
-    public void PlayerChangePosition(NewPosition newPosition)
+    public void ChangePosition(NewPosition newPosition)
     {
+        ShipLogic shipLogic = newPosition.IsPlayer ? FindPilot(newPosition.PlayerId) : FindEnemy(newPosition.PlayerId);
+
+        if (shipLogic == null)
+            return;
+
         Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
         Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
 
-        ShipLogic pilot = FindPilot(newPosition.PlayerId);
-        if (pilot == null)
-            return;
-
-        pilot.Position = position;
-        pilot.TargetPosition = targetPosition;
-        pilot.Player.Speed = newPosition.Speed;
+        shipLogic.Position = position;
+        shipLogic.TargetPosition = targetPosition;
+        shipLogic.Speed = newPosition.Speed;
     }
 
-    public void PlayerHitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
+    public void HitpointsOrShields(NewHitpointsOrShields newValue, bool hitpoints)
     {
-        ShipLogic pilot = FindPilot(newValue.PlayerId);
-        if (pilot == null)
+        ShipLogic shipLogic = newValue.IsPlayer ? FindPilot(newValue.PlayerId) : FindEnemy(newValue.PlayerId);
+        
+        if (shipLogic == null)
             return;
 
         if (hitpoints)
         {
-            pilot.Hitpoints = newValue.Value;
-            pilot.MaxHitpoints = newValue.MaxValue;
+            shipLogic.Hitpoints = newValue.Value;
+            shipLogic.MaxHitpoints = newValue.MaxValue;
         }
         else
         {
-            pilot.Shields = newValue.Value;
-            pilot.MaxShields = newValue.MaxValue;
+            shipLogic.Shields = newValue.Value;
+            shipLogic.MaxShields = newValue.MaxValue;
         }
     }
 
-    public void PlayerSelectTarget(NewTarget newTarget)
+    public ShipLogic SelectTarget(NewTarget newTarget)
     {
-        ShipLogic targetShipLogic = null;
-        if (newTarget.TargetIsPlayer == true) // Target = Pilot
-        {
-            if(newTarget.TargetId != null)
-            {
-                targetShipLogic = FindPilot(newTarget.TargetId);
-            }
-        }
-        else if (newTarget.TargetIsPlayer == false) // Target = Enemy
-        {
-            // Enemy
-        }
+        if (newTarget.TargetIsPlayer == null)
+            return null;
 
-        GameObject target = null;
-        if (targetShipLogic != null)
-            target = targetShipLogic.gameObject;
+        ShipLogic targetShipLogic = newTarget.TargetIsPlayer == true ? FindPilot(newTarget.PlayerId) : FindEnemy(newTarget.PlayerId);
 
-        ShipLogic pilot = FindPilot(newTarget.PlayerId);
-        if (pilot == null)
-            return;
+        if (targetShipLogic == null)
+            return null;
+        
+        ShipLogic attackerShipLogic = newTarget.AttackerIsPlayer == true ? FindPilot(newTarget.TargetId) : FindEnemy(newTarget.TargetId);
 
-        pilot.TargetGameObject = target;
+        if (attackerShipLogic == null)
+            return null;
+
+        attackerShipLogic.TargetGameObject = targetShipLogic.gameObject;
+
+        return attackerShipLogic;
     }
 
-    public void PlayerAttackTarget(AttackTarget attackTarget)
+    public void AttackTarget(AttackTarget attackTarget)
     {
-        PlayerSelectTarget(attackTarget);
+        ShipLogic shipLogic = null;
+        if (attackTarget.Attack)
+            shipLogic = SelectTarget(attackTarget);
+        else
+            shipLogic = attackTarget.TargetIsPlayer == true ? FindPilot(attackTarget.PlayerId) : FindEnemy(attackTarget.PlayerId);
 
-        ShipLogic pilot = FindPilot(attackTarget.PlayerId);
-        if (pilot == null)
+        if (shipLogic == null)
             return;
 
-        pilot.Attack = attackTarget.Attack;
+        shipLogic.Attack = attackTarget.Attack;
     }
 
     public void SomeoneTakeDamage(TakeDamage takeDamage)
     {
-        ShipLogic fromShipLogic = null;
-        if (takeDamage.FromIsPlayer == true) // Target = Pilot
-        {
-            fromShipLogic = FindPilot(takeDamage.FromId);
-        }
-        else if (takeDamage.FromIsPlayer == false) // Target = Enemy
-        {
-            fromShipLogic = FindEnemy(takeDamage.FromId);
-        }
+        ShipLogic fromShipLogic = takeDamage.FromIsPlayer == true ? FindPilot(takeDamage.FromId) : FindEnemy(takeDamage.FromId);
 
-        ShipLogic toShipLogic = null;
-        if (takeDamage.ToIsPlayer == true) // Target = Pilot
-        {
-            toShipLogic = FindPilot(takeDamage.ToId);
-        }
-        else if (takeDamage.ToIsPlayer == false) // Target = Enemy
-        {
-            toShipLogic = FindEnemy(takeDamage.ToId);
-        }
+        if (fromShipLogic == null)
+            return;
 
-        Debug.Log(fromShipLogic.name + " zadaje " + takeDamage.Damage + " obrazen " + toShipLogic.name);
+        ShipLogic toShipLogic = takeDamage.ToIsPlayer == true ? FindPilot(takeDamage.ToId) : FindEnemy(takeDamage.ToId);
+
+        if (toShipLogic == null)
+            return;
+        
+        fromShipLogic.TargetGameObject = toShipLogic.gameObject;
+        fromShipLogic.Attack = true;
+
+        //Debug.Log(fromShipLogic.name + " zadaje " + takeDamage.Damage + " obrazen " + toShipLogic.name);
     }
 
     public void SomeoneDead(SomeoneDead someoneDead)
     {
-        ShipLogic whoShipLogic = null;
-        if (someoneDead.WhoIsPlayer == true) // Target = Pilot
-        {
-            whoShipLogic = FindPilot(someoneDead.WhoId);
-        }
-        else if (someoneDead.WhoIsPlayer == false) // Target = Enemy
-        {
-            whoShipLogic = FindEnemy(someoneDead.WhoId);
-        }
-
-        ShipLogic byShipLogic = null;
-        if (someoneDead.ByIsPlayer == true) // Target = Pilot
-        {
-            byShipLogic = FindPilot(someoneDead.ById);
-        }
-        else if (someoneDead.ByIsPlayer == false) // Target = Enemy
-        {
-            byShipLogic = FindEnemy(someoneDead.ById);
-        }
+        ShipLogic whoShipLogic = someoneDead.WhoIsPlayer == true ? FindPilot(someoneDead.WhoId) : FindEnemy(someoneDead.WhoId);
 
         if (whoShipLogic == null)
             return;
 
+        ShipLogic byShipLogic = someoneDead.ByIsPlayer == true ? FindPilot(someoneDead.ById) : FindEnemy(someoneDead.ById);
+        
         whoShipLogic.IsDead = true;
 
         foreach(ShipLogic shipLogic in PlayersController.Values)
         {
-            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic.gameObject)
+            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic?.gameObject)
             {
-                shipLogic.Attack = false;
                 shipLogic.TargetGameObject = null;
+                shipLogic.Attack = false;
             }
         }
 
         foreach (ShipLogic shipLogic in EnemiesController.Values)
         {
-            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic.gameObject)
+            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic?.gameObject)
             {
-                shipLogic.Attack = false;
                 shipLogic.TargetGameObject = null;
+                shipLogic.Attack = false;
             }
         }
-
-        //if (someoneDead.WhoIsPlayer == false)
-        //{
-        //    LeaveEnemy(someoneDead.WhoId);
-        //}
     }
 
     public void SomeoneAlive(ulong userId)
@@ -388,25 +359,25 @@ public class Player : MonoBehaviour
 
     public void TakeReward(ServerReward reward)
     {
-        string message = string.Empty;
+        List<string> messages = new List<string>();
 
         if (reward.Experience != null)
         {
             Client.Pilot.Experience += (ulong)reward.Experience;
-            message += $"Experience {reward.Experience}";
+            messages.Add($"Experience {reward.Experience}");
         }
         if (reward.Metal != null)
         {
             Client.Pilot.Metal += (double)reward.Metal;
-            message += $"\nMetal {reward.Metal}";
+            messages.Add($"Metal {reward.Metal}");
         }
         if (reward.Scrap != null)
         {
             Client.Pilot.Scrap += (double)reward.Scrap;
-            message += $"\nScrap {reward.Scrap}";
+            messages.Add($"Scrap {reward.Scrap}");
         }
 
-        GuiScript.CreateLogMessage(message);
+        GuiScript.CreateLogMessage(messages);
 
         MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
     }

@@ -7,7 +7,7 @@ namespace CosmicSpaceCommunication.Game.Player.ServerToClient
     public class NewHitpointsOrShields : Communication
     {
         public bool IsPlayer { get; set; }
-        public ulong Value { get; set; }
-        public ulong MaxValue { get; set; }
+        public long Value { get; set; }
+        public long MaxValue { get; set; }
     }
 }
