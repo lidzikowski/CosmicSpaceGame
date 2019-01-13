@@ -4,7 +4,6 @@ using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -76,13 +75,20 @@ public class MapServer : MonoBehaviour
 
     public static Vector2 RandomPosition()
     {
-        return new Vector2(UnityEngine.Random.Range(0, 1000), -UnityEngine.Random.Range(0, 1000));
+        return new Vector2(Random.Range(0, 1000), -Random.Range(0, 1000));
+    }
+    public static Vector2 RandomPosition(Vector3 position)
+    {
+        Vector2 pos = RandomCircle(position, Random.Range(5, 50));
+        if (pos.x >= 0 && pos.x <= 1000 && pos.y <= 0 && pos.y >= -1000)
+            return pos;
+        return RandomPosition();
     }
 
-    public static Vector3 RandomCircle(Vector3 center, float radius)
+    public static Vector2 RandomCircle(Vector2 center, float radius)
     {
-        float ang = UnityEngine.Random.value * 360;
-        return new Vector3()
+        float ang = Random.value * 360;
+        return new Vector2()
         {
             x = center.x + radius * Mathf.Sin(ang * Mathf.Deg2Rad),
             y = center.y + radius * Mathf.Cos(ang * Mathf.Deg2Rad),

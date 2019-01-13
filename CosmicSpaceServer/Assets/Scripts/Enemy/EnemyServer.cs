@@ -71,7 +71,8 @@ public class EnemyServer : Opponent
 
                 if (Position == NewPostion)
                 {
-                    NewPostion = MapServer.RandomPosition();
+                    if (Random.Range(0, 100) > 80)
+                        NewPostion = MapServer.RandomPosition(Position);
                 }
             }
             else
