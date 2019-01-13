@@ -443,7 +443,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2167429e2cb00ef4dbcbc6d8d8ea3c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraDistance: {x: 0, y: -14, z: -50}
   CameraSpeed: 5
 --- !u!20 &519420031
 Camera:
