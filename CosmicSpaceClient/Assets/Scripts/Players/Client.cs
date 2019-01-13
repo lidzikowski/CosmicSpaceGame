@@ -346,6 +346,9 @@ public class Client : MonoBehaviour
             case 1005:
                 //Debug.LogError($"OnClose - Client close");
                 break;
+            case 1006:
+                //Debug.LogError($"OnClose - Client close");
+                break;
             default:
                 Debug.LogError($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
                 break;

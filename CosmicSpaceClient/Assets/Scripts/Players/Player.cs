@@ -2,8 +2,6 @@
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,13 +24,22 @@ public class Player : MonoBehaviour
     public GameObject StarsGameObject;
     public List<GameObject> MapsGameObject = new List<GameObject>();
 
+    [Header("Explosions")]
+    public List<GameObject> ExplosionsGameObject = new List<GameObject>();
+
+    [Header("Blasters")]
+    public List<GameObject> BlastersGameObject = new List<GameObject>();
+    
 
 
     private void Start()
     {
         ClearGameArea();
-    }
 
+        LoadExplosions();
+        LoadBlasters();
+    }
+    
     private void Update()
     {
         if (Client.Pilot == null || LocalShipController == null)
@@ -43,8 +50,8 @@ public class Player : MonoBehaviour
         
         PlayerNewPosition();
     }
-
-    #region Update / Mouse / Keyboard
+    
+    #region Mouse / Keyboard
     Vector2 TargetPosition;
     float timer = 0;
     private void PlayerNewPosition()
@@ -228,6 +235,25 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void LoadExplosions()
+    {
+        ExplosionsGameObject = new List<GameObject>();
+        ExplosionsGameObject.AddRange(Resources.LoadAll<GameObject>("100ExplosionPack/Prefabs"));
+    }
+
+    private void LoadBlasters()
+    {
+        BlastersGameObject = new List<GameObject>();
+        BlastersGameObject.AddRange(Resources.LoadAll<GameObject>("Blasters/Prefabs/BulletsWithFlySFX"));
+    }
+    
+    private void CreateExplosion(Vector3 position)
+    {
+        GameObject explosion = Instantiate(ExplosionsGameObject[Random.Range(0, ExplosionsGameObject.Count - 1)], position, Quaternion.identity);
+        explosion.AddComponent<ParticleSystemAutoDestroy>();
+        explosion.transform.localScale = new Vector3(3, 3, 3);
+    }
+
 
 
     #region Events
@@ -313,8 +339,7 @@ public class Player : MonoBehaviour
         
         fromShipLogic.TargetGameObject = toShipLogic.gameObject;
         fromShipLogic.Attack = true;
-
-        //Debug.Log(fromShipLogic.name + " zadaje " + takeDamage.Damage + " obrazen " + toShipLogic.name);
+        fromShipLogic.ShotToTarget(takeDamage.Damage, BlastersGameObject[Random.Range(0, BlastersGameObject.Count - 1)]);
     }
 
     public void SomeoneDead(SomeoneDead someoneDead)
@@ -325,10 +350,11 @@ public class Player : MonoBehaviour
             return;
 
         ShipLogic byShipLogic = someoneDead.ByIsPlayer == true ? FindPilot(someoneDead.ById) : FindEnemy(someoneDead.ById);
-        
-        whoShipLogic.IsDead = true;
 
-        foreach(ShipLogic shipLogic in PlayersController.Values)
+        whoShipLogic.IsDead = true;
+        CreateExplosion(whoShipLogic.transform.position);
+
+        foreach (ShipLogic shipLogic in PlayersController.Values)
         {
             if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic?.gameObject)
             {

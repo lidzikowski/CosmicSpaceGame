@@ -39,8 +39,27 @@ public class ShipLogic : MonoBehaviour
     public GameObject TargetInterfaceGameObject;
     public TextMesh HitpointsText;
     public TextMesh ShieldsText;
+    
+    public void ShotToTarget(long? damage, GameObject bullet)
+    {
+        if (TargetIsNull)
+            return;
 
+        if (damage == null)
+            return;
 
+        long dmg = (long)damage;
+
+        foreach (Transform t in Lasers)
+        {
+            GameObject go = Instantiate(bullet, t.position, Quaternion.identity);
+            go.AddComponent<BulletLogic>().TargetGameObject = TargetGameObject;
+        }
+
+        Debug.Log(dmg);
+    }
+
+    
 
     private void Start()
     {
@@ -179,7 +198,7 @@ public class ShipLogic : MonoBehaviour
     #endregion
 
     #region Attack
-    public bool attack;
+    private bool attack;
     public bool Attack
     {
         get => attack;
@@ -309,7 +328,7 @@ public class ShipLogic : MonoBehaviour
     }
 
     #region IsDead / KillerBy / Nickname / Ship / Speed
-    public bool isDead = false;
+    private bool isDead = false;
     public bool IsDead
     {
         get => isDead;

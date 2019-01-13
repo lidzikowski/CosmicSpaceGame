@@ -362,6 +362,18 @@ MonoBehaviour:
     type: 3}
   MapsGameObject:
   - {fileID: 4803577662759731977, guid: 8e59e97080c26bf419c017c3472dfe4c, type: 3}
+  ExplosionsGameObject:
+  - {fileID: 1400946313707326, guid: e7b3dd21fb4ba4f4394bb13133bb2129, type: 3}
+  - {fileID: 1400946313707326, guid: d0e41463f05673945b21fa41af0aca07, type: 3}
+  - {fileID: 1400946313707326, guid: 9141f652113ca8c43a878bb3b60d4deb, type: 3}
+  - {fileID: 1400946313707326, guid: 4d45790194d8ede48b7176e2da150124, type: 3}
+  - {fileID: 1400946313707326, guid: 554c85864f6146d419df9bcd4abdf53b, type: 3}
+  - {fileID: 1400946313707326, guid: d7b40acfb431aa14eacf35a2a8882d05, type: 3}
+  - {fileID: 1400946313707326, guid: 9eff77e3329df5b46ab72893d5deffb5, type: 3}
+  - {fileID: 1400946313707326, guid: c3262078777cb0642b1882234c2dab76, type: 3}
+  - {fileID: 1400946313707326, guid: 5624a0935f7b0f24386dfde054340226, type: 3}
+  - {fileID: 1400946313707326, guid: e9ae39aad2128c043985a67b1d8016f9, type: 3}
+  BlastersGameObject: []
 --- !u!114 &286036866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -659,7 +671,6 @@ GameObject:
   m_Component:
   - component: {fileID: 898538623}
   - component: {fileID: 898538625}
-  - component: {fileID: 898538624}
   m_Layer: 0
   m_Name: MiniMapCamera
   m_TagString: Untagged
@@ -681,14 +692,6 @@ Transform:
   m_Father: {fileID: 286036864}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!81 &898538624
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 898538622}
-  m_Enabled: 1
 --- !u!20 &898538625
 Camera:
   m_ObjectHideFlags: 0
@@ -1144,7 +1147,7 @@ PrefabInstance:
     - target: {fileID: 8654256572049743716, guid: bcebbe6c12c414f47838c7806f3ecad2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.049987793
+      value: 0.050048828
       objectReference: {fileID: 0}
     - target: {fileID: 8654256572049743716, guid: bcebbe6c12c414f47838c7806f3ecad2,
         type: 3}
@@ -1169,7 +1172,7 @@ PrefabInstance:
     - target: {fileID: 7471456394841834136, guid: bcebbe6c12c414f47838c7806f3ecad2,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.030002594
+      value: 0.02999878
       objectReference: {fileID: 0}
     - target: {fileID: 52180709309392362, guid: bcebbe6c12c414f47838c7806f3ecad2,
         type: 3}
@@ -1200,6 +1203,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.x
       value: -0.00025177002
+      objectReference: {fileID: 0}
+    - target: {fileID: 1327828814466703680, guid: bcebbe6c12c414f47838c7806f3ecad2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -0.0000076293945
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077996612057414481, guid: bcebbe6c12c414f47838c7806f3ecad2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.000091552734
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bcebbe6c12c414f47838c7806f3ecad2, type: 3}

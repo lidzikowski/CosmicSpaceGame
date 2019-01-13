@@ -358,7 +358,14 @@ MonoBehaviour:
   TargetInterfaceGameObject: {fileID: 6791095339598380120}
   HitpointsText: {fileID: 9119305024726202276}
   ShieldsText: {fileID: 3823497726461917982}
-  attack: 0
+  Bullets:
+  - {fileID: 1452043023141516, guid: ecd5aa37695acf94c9813203c7d69882, type: 3}
+  - {fileID: 1452043023141516, guid: aa3012ee17196004caa3b353e751f967, type: 3}
+  - {fileID: 1452043023141516, guid: 00fc9e4fd7cd0ba4b8b02dd995990b70, type: 3}
+  - {fileID: 1452043023141516, guid: 14b083fa0fa32c9449b03de549c2a784, type: 3}
+  - {fileID: 1452043023141516, guid: 4f5fa7040d56cbb49b77ccae6be4f3c0, type: 3}
+  - {fileID: 1452043023141516, guid: 5e469fc5f91b45e41bc0d0fad74a7fe1, type: 3}
+  Bullet: 4
 --- !u!1 &6499379950828206854
 GameObject:
   m_ObjectHideFlags: 0
