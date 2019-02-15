@@ -9,7 +9,7 @@ namespace CosmicSpaceCommunication
     [Serializable]
     public class GameData
     {
-        public static string ServerIP = "ws://89.66.152.91:24231";
+        public static string ServerIP = "ws://localhost:24231";
         public static string Salt = "a$10${0}rBV2J";
         
 

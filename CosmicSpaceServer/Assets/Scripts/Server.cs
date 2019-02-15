@@ -77,7 +77,7 @@ public class Server : MonoBehaviour
 
         try
         {
-            WebSocket = new WebSocketServer("ws://192.168.1.144:24231");
+            WebSocket = new WebSocketServer(GameData.ServerIP);
             WebSocket.AddWebSocketService<Game>("/Game");
             WebSocket.Start();
         }
