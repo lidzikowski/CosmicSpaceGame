@@ -15,10 +15,11 @@ public class Database
     #region ConnectionString
     private static readonly string connectionString = new MySqlConnectionStringBuilder()
     {
-        Server = "127.0.0.1",
+        Server = "77.55.212.240",
+        //Server = "192.168.1.144",
         Port = 3306,
         UserID = "root",
-        //Password = "pHqD6wxEeuZTuSk5FDhpBcwf4R7Z5LCgaSN5vCa2",
+        Password = "pHqD6wxEeuZTuSk5FDhpBcwf4R7Z5LCgaSN5vCa2",
         Database = "cosmicspace",
         SslMode = MySqlSslMode.None
     }.ToString();
@@ -67,7 +68,7 @@ public class Database
                         cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
                     }
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         DataTable dataTable = new DataTable("Result");
