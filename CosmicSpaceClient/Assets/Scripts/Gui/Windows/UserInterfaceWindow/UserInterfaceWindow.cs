@@ -53,10 +53,10 @@ public class UserInterfaceWindow : GameWindow
         SetText(MiniMapPanelText, $"{GameSettings.UserLanguage.MINIMAP} -> {Client.Pilot.Map.Name}");
     }
 
-    public void CreateLogMessage(string message)
+    public void CreateLogMessage(string message, float time)
     {
         GameObject go = Instantiate(LogGameObject, LogTransform);
-        go.GetComponent<LogScript>().SetText(message);
+        go.GetComponent<LogScript>().SetText(message, time);
     }
 
     void SendMessageButton_Clicked()

@@ -1,14 +1,16 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Interfaces;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
-using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ShipLogic : MonoBehaviour
 {
+    public ulong ID;
+
     public List<Transform> Lasers => ChildInChild("Lasers");
     public List<Transform> Gears => ChildInChild("Gears");
 
@@ -403,8 +405,7 @@ public class ShipLogic : MonoBehaviour
     {
         InitPosition(player);
         InitHitpointsShields(player);
-        InitShip(player.Ship.Name);
-        InitName(player.Nickname, nameColor);
+        InitName(player.Nickname, player.PlayerId, player.Ship, nameColor);
 
         LocalPlayer = localPlayer;
         IsDead = player.IsDead;
@@ -415,8 +416,7 @@ public class ShipLogic : MonoBehaviour
     {
         InitPosition(enemy);
         InitHitpointsShields(enemy);
-        InitShip("Executor");
-        InitName(enemy.ParentEnemy.Name, nameColor);
+        InitName(enemy.ParentEnemy.Name, enemy.Id, enemy.ParentEnemy, nameColor);
 
         PointerMeshRenderer.gameObject.layer = 12;
         PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/Red");
@@ -440,19 +440,32 @@ public class ShipLogic : MonoBehaviour
         MaxShields = hitpointsShields.MaxShields;
     }
 
-    private void InitShip(string shipName)
+    private void InitShip(IShip ship)
     {
         foreach (Transform t in ModelTransform)
         {
             Destroy(t.gameObject);
         }
-        Instantiate(Resources.Load<GameObject>("Ships/" + shipName), ModelTransform);
+        Instantiate(Resources.Load<GameObject>("Ships/" + ship.PrefabName), ModelTransform);
+
+        //if (Player.DebugMode)
+        //    GuiScript.CreateLogMessage(new List<string>() { $"InitShip '{ship.Name} [{ship.Id}]' ship_type:'{ship.PrefabName} [{ship.PrefabId}]'" });
     }
 
-    private void InitName(string name, Color color)
+    private void InitName(string name, ulong id, IShip ship, Color color)
     {
+        ID = id;
+
+        InitShip(ship);
+
         ModelNameText.text = name;
         ModelNameText.color = color;
+
+        if (Player.DebugMode)
+        {
+            ModelNameText.text = $"{ModelNameText.text} [ID:{ID}]";
+            ModelNameText.text += $"\n({ship.PrefabName} [ID:{ship.Id}])";
+        }
     }
 
 

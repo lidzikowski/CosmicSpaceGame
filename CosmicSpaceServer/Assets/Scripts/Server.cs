@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp.Server;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Resources;
-using System.Threading.Tasks;
 using CosmicSpaceCommunication.Game.Enemy;
 using System;
 
@@ -26,21 +24,21 @@ public class Server : MonoBehaviour
 
 
 
-    async void Start()
+    void Start()
     {
         //if (Application.version != GameData.GameVersion)
         //    Debug.Log($"Wersja: {Application.version} DLL: {GameData.GameVersion}");
 
         Application.targetFrameRate = 60;
 
-        await GameResourcesFromDatabase();
+        GameResourcesFromDatabase();
 
         CreateWebSocket();
     }
 
 
 
-    private async Task GameResourcesFromDatabase()
+    private async void GameResourcesFromDatabase()
     {
         Ships = await Database.GetShips();
 
@@ -83,7 +81,7 @@ public class Server : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.Log(ex);
+            Debug.Log(ex.Message);
         }
 
         Debug.Log($"Server: {(WebSocket.IsListening ? "ONLINE" : "OFFLINE")}");

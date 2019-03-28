@@ -169,20 +169,20 @@ public class Client : MonoBehaviour
         if (commandData.Command == Commands.LogIn)
         {
             bool status = (bool)commandData.Data;
-            Debug.Log($"LOG_IN_STATUS: {status}");
+            //Debug.Log($"LOG_IN_STATUS: {status}");
         }
         else if (commandData.Command == Commands.Register)
         {
             bool status = (bool)commandData.Data;
-            Debug.Log($"REGISTER_STATUS: {status}");
+            //Debug.Log($"REGISTER_STATUS: {status}");
         }
         else if (commandData.Command == Commands.AccountOccupied)
         {
-            Debug.Log($"ACCOUNT_OCCUPIED");
+            //Debug.Log($"ACCOUNT_OCCUPIED");
         }
         else if (commandData.Command == Commands.NicknameOccupied)
         {
-            Debug.Log($"NICKNAME_OCCUPIED");
+            //Debug.Log($"NICKNAME_OCCUPIED");
         }
         #endregion
 

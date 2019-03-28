@@ -118,6 +118,8 @@ public class MapServer : MonoBehaviour
 
     public static float Distance(Opponent a, Opponent b)
     {
+        if (a == null || b == null)
+            return float.MaxValue;
         return Vector2.Distance(a.Position, b.Position);
     }
     #endregion

@@ -1,11 +1,12 @@
-﻿using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication.Game.Interfaces;
+using CosmicSpaceCommunication.Game.Resources;
 using System;
 using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Enemy
 {
     [Serializable]
-    public class Enemy
+    public class Enemy : IShip
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -17,6 +18,8 @@ namespace CosmicSpaceCommunication.Game.Enemy
         public bool IsAggressive { get; set; }
 
         public Reward Reward { get; set; }
+        public int PrefabId { get; set; }
+        public string PrefabName { get; set; }
 
         public static Enemy GetEnemy(DataRow row)
         {
@@ -24,6 +27,8 @@ namespace CosmicSpaceCommunication.Game.Enemy
             {
                 Id = ConvertRow.Row<int>(row["enemyid"]),
                 Name = ConvertRow.Row<string>(row["enemyname"]),
+                PrefabId = ConvertRow.Row<int>(row["prefabid"]),
+                PrefabName = ConvertRow.Row<string>(row["prefabname"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
                 Speed = ConvertRow.Row<int>(row["speed"]),

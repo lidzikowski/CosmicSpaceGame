@@ -10,7 +10,7 @@ namespace CosmicSpaceCommunication
     public class GameData
     {
         //public static string ServerIP = "ws://77.55.212.240:24231";
-        public static string ServerIP = "ws://192.168.1.144:24231";
+        public static string ServerIP = "ws://127.0.0.1:24231";
         public static string Salt = "a$10${0}rBV2J";
         
 

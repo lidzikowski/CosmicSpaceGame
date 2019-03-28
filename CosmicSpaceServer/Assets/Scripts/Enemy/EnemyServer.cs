@@ -34,6 +34,8 @@ public class EnemyServer : Opponent
 
     public override Reward Reward => ParentEnemy.Reward;
 
+    public override RewardReasons RewardReason => RewardReasons.KillEnemy;
+
     public override long MaxHitpoints => ParentEnemy.Hitpoints;
 
     public override long MaxShields => ParentEnemy.Shields;
@@ -61,7 +63,7 @@ public class EnemyServer : Opponent
             {
                 if (ParentEnemy.IsAggressive && OpponentsInArea.Count > 0)
                 {
-                    Opponent opponent = OpponentsInArea.FirstOrDefault(o => MapServer.Distance(o, this) <= ShotDistance);
+                    Opponent opponent = OpponentsInArea.Where(o => !o.IsDead && !o.IsCover).FirstOrDefault(o => MapServer.Distance(o, this) <= ShotDistance);
                     if (opponent != null)
                     {
                         Target = opponent;
@@ -77,6 +79,12 @@ public class EnemyServer : Opponent
             }
             else
             {
+                if (TargetIsDead)
+                {
+                    Target = null;
+                    return;
+                }
+
                 if (Target.Position != lastTargetPosition)
                 {
                     lastTargetPosition = Target.Position;

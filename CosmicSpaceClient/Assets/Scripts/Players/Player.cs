@@ -9,6 +9,8 @@ using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
+    public static bool DebugMode = false;
+
     [Header("Local player and players")]
     public Transform LocalPlayerTransform;
     public Transform PlayersTransform;
@@ -38,6 +40,10 @@ public class Player : MonoBehaviour
 
         LoadExplosions();
         LoadBlasters();
+
+        #if DEBUG
+        DebugMode = true;
+        #endif
     }
     
     private void Update()
@@ -102,9 +108,7 @@ public class Player : MonoBehaviour
             if (Camera.current == null)
                 return;
 
-            Vector3 tmp = Camera.current.ScreenToViewportPoint(mousePosition);
-            Vector2 position = new Vector2(tmp.x - 0.5f, tmp.y - 0.5f) * 100;
-            TargetPosition = new Vector2(LocalShipController.Position.x + position.x, LocalShipController.Position.y + position.y);
+            TargetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z * -1));
         }
     }
 
@@ -138,6 +142,8 @@ public class Player : MonoBehaviour
         
         PlayerCamera.TargetGameObject = LocalShipController.gameObject;
 
+        GuiScript.CreateLogMessage(new List<string>() { "Hello world!" });
+
         CreateBackground(Client.Pilot.Map);
     }
 
@@ -167,6 +173,9 @@ public class Player : MonoBehaviour
             player,
             nicknameColor,
             localPlayer);
+
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"InitPlayer '{player.Nickname} [ID:{player.PlayerId}]' ship:'{player.Ship.Name} [ID:{player.Ship.Id}]'" });
 
         return shipController;
     }
@@ -198,6 +207,9 @@ public class Player : MonoBehaviour
         shipController.InitShip(enemy, Color.red);
 
         EnemiesController.Add(enemy.Id, shipController);
+
+        //if (DebugMode)
+        //    GuiScript.CreateLogMessage(new List<string>() { $"InitEnemy '{enemy.ParentEnemy.Name} [ID:{enemy.ParentEnemy.Id}]' aggresive:'{enemy.ParentEnemy.IsAggressive}' shot_range:'{enemy.ParentEnemy.ShotDistance}'" });
     }
 
     public void LeaveEnemy(ulong enemyId)
@@ -205,7 +217,7 @@ public class Player : MonoBehaviour
         if (!EnemiesController.ContainsKey(enemyId))
             return;
 
-        Destroy(EnemiesController[enemyId].gameObject);
+        Destroy(EnemiesController[enemyId]?.gameObject);
         EnemiesController.Remove(enemyId);
     }
     #endregion
@@ -233,6 +245,9 @@ public class Player : MonoBehaviour
             if (background != null)
                 Instantiate(background, BackgroundTransform);
         }
+
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"CreateBackground map:'{map.Name} [ID:{map.Id}]' pvp:'{map.IsPvp}' level:'{map.RequiredLevel}'" });
     }
 
     private void LoadExplosions()
@@ -306,6 +321,9 @@ public class Player : MonoBehaviour
         if (attackerShipLogic == null)
             return null;
 
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"SelectTarget '{GuiScript.IsPlayer(targetShipLogic, newTarget.AttackerIsPlayer)}' by '{attackerShipLogic.name} {GuiScript.IsPlayer(attackerShipLogic, newTarget.TargetIsPlayer == true)}'" });
+
         attackerShipLogic.TargetGameObject = targetShipLogic.gameObject;
 
         return attackerShipLogic;
@@ -322,6 +340,9 @@ public class Player : MonoBehaviour
         if (shipLogic == null)
             return;
 
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"AttackTarget '{GuiScript.IsPlayer(shipLogic, attackTarget.TargetIsPlayer == true)}' [{attackTarget.Attack}]" });
+
         shipLogic.Attack = attackTarget.Attack;
     }
 
@@ -336,7 +357,10 @@ public class Player : MonoBehaviour
 
         if (toShipLogic == null)
             return;
-        
+
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"SomeoneTakeDamage '{GuiScript.IsPlayer(fromShipLogic, takeDamage.FromIsPlayer)}' shot to '{GuiScript.IsPlayer(toShipLogic, takeDamage.ToIsPlayer)}' [{takeDamage.Damage}]" });
+
         fromShipLogic.TargetGameObject = toShipLogic.gameObject;
         fromShipLogic.Attack = true;
         fromShipLogic.ShotToTarget(takeDamage.Damage, BlastersGameObject[Random.Range(0, BlastersGameObject.Count - 1)]);
@@ -353,6 +377,9 @@ public class Player : MonoBehaviour
 
         whoShipLogic.IsDead = true;
         CreateExplosion(whoShipLogic.transform.position);
+
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"SomeoneDead '{GuiScript.IsPlayer(whoShipLogic, someoneDead.WhoIsPlayer)}' by '{GuiScript.IsPlayer(byShipLogic, someoneDead.ByIsPlayer)}'" });
 
         foreach (ShipLogic shipLogic in PlayersController.Values)
         {
@@ -380,6 +407,9 @@ public class Player : MonoBehaviour
         if (whoShipLogic == null)
             return;
 
+        if (DebugMode)
+            GuiScript.CreateLogMessage(new List<string>() { $"SomeoneAlive '{GuiScript.IsPlayer(whoShipLogic, true)}'" });
+
         whoShipLogic.IsDead = false;
     }
 
@@ -387,10 +417,20 @@ public class Player : MonoBehaviour
     {
         List<string> messages = new List<string>();
 
+        switch(reward.Reason)
+        {
+            case RewardReasons.KillPlayer:
+                messages.Add(string.Format(GameSettings.UserLanguage.DEFEATED_PLAYER, reward.Data));
+                break;
+            case RewardReasons.KillEnemy:
+                messages.Add(string.Format(GameSettings.UserLanguage.DEFEATED_ENEMY, reward.Data));
+                break;
+        }
+
         if (reward.Experience != null)
         {
             Client.Pilot.Experience += (ulong)reward.Experience;
-            messages.Add($"Experience {reward.Experience}");
+            messages.Add(string.Format(GameSettings.UserLanguage.EXPERIENCE, reward.Experience));
         }
         if (reward.Metal != null)
         {
@@ -403,7 +443,7 @@ public class Player : MonoBehaviour
             messages.Add($"Scrap {reward.Scrap}");
         }
 
-        GuiScript.CreateLogMessage(messages);
+        GuiScript.CreateLogMessage(messages, 6);
 
         MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
     }
@@ -428,15 +468,13 @@ public class Player : MonoBehaviour
 
     public void ClearGameArea()
     {
-        foreach (Transform t in LocalPlayerTransform)
-            Destroy(t.gameObject);
-
-        foreach (Transform t in PlayersTransform)
-            Destroy(t.gameObject);
-
-        foreach (Transform t in BackgroundTransform)
-            Destroy(t.gameObject);
+        for (int i = 1; i < transform.childCount; i++)
+        {
+            foreach (Transform t in transform.GetChild(i))
+                Destroy(t.gameObject);
+        }
 
         PlayersController.Clear();
+        EnemiesController.Clear();
     }
 }

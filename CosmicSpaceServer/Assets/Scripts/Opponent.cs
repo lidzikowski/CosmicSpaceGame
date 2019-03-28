@@ -137,8 +137,10 @@ public abstract class Opponent
         IsPlayer = this is PilotServer;
     }
     #endregion
-    
-    #region IsDead
+
+    #region IsDead / IsCover
+    public virtual float IsCoverTimer { get; set; }
+    public virtual bool IsCover { get; set; }
     protected virtual bool isDead { get; set; }
     public bool IsDead
     {
@@ -178,11 +180,16 @@ public abstract class Opponent
                 ByName = DeadOpponent.Name
             }
         }, true);
+
+        DeadOpponent = null;
     }
     protected void OnAlive()
     {
         Hitpoints = 1000;
         LastTakeDamage = 0;
+
+        IsCoverTimer = 10;
+        IsCover = true;
 
         SendToPilotsInArea(new CommandData()
         {
@@ -425,13 +432,16 @@ public abstract class Opponent
                 FromId = opponent.Id,
                 FromIsPlayer = opponent.IsPlayer,
 
-                Damage = receivedDamage,
+                Damage = IsCover ? null : receivedDamage,
 
                 AmmunitionId = ammunition,
                 IsAmmunition = type
             }
         }, true);
-        
+
+        if (IsCover)
+            return;
+
         if (receivedDamage != null)
         {
             TakeDamage((long)receivedDamage);
@@ -473,7 +483,7 @@ public abstract class Opponent
 
             opponent.TakeReward(ServerReward.GetReward(
                 Reward,
-                IsPlayer ? RewardReasons.KillPlayer : RewardReasons.KillEnemy,
+                RewardReason,
                 Name));
         }
     }
@@ -481,6 +491,7 @@ public abstract class Opponent
 
     #region Reward / TakeReward
     public abstract Reward Reward { get; }
+    public abstract RewardReasons RewardReason { get; }
     public virtual void TakeReward(ServerReward reward) { }
     #endregion
 
@@ -488,6 +499,7 @@ public abstract class Opponent
 
     #region Update
     protected float timer = 0;
+
     public virtual void Update()
     {
         if (IsDead)
@@ -499,9 +511,15 @@ public abstract class Opponent
         {
             timer = 0;
 
+            CheckCover();
+
             if (Attack)
             {
-                if(MapServer.Distance(this, Target) <= ShotDistance)
+                if (TargetIsDead)
+                {
+                    Target = null;
+                }
+                else if(MapServer.Distance(this, Target) <= ShotDistance)
                 {
                     if (Ammunition != null)
                     {
@@ -522,12 +540,22 @@ public abstract class Opponent
 
     
 
-    #region Fly
+    #region Fly / Cover
     public virtual void Fly()
     {
         if (NewPostion == Position)
             return;
         Position = Vector3.MoveTowards(Position, NewPostion, Time.deltaTime * Speed);
+    }
+
+    public virtual void CheckCover()
+    {
+        if(IsCover)
+        {
+            IsCoverTimer -= UPDATE_TIME;
+            if (IsCoverTimer <= 0)
+                IsCover = false;
+        }
     }
     #endregion
 

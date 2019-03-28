@@ -67,4 +67,18 @@ public class Language
 
     [XmlElement("MINIMAP")]
     public string MINIMAP { get; set; }
+
+    #region Game
+
+    [XmlElement("DEFEATED_PLAYER")]
+    public string DEFEATED_PLAYER { get; set; }
+
+    [XmlElement("DEFEATED_ENEMY")]
+    public string DEFEATED_ENEMY { get; set; }
+
+    [XmlElement("EXPERIENCE")]
+    public string EXPERIENCE { get; set; }
+
+
+    #endregion
 }

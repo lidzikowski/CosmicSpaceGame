@@ -68,7 +68,7 @@ public class GuiScript : MonoBehaviour
             window.Window = null;
     }
 
-    public static void CreateLogMessage(List<string> messages)
+    public static void CreateLogMessage(List<string> messages, float time = 3)
     {
         string message = string.Empty;
 
@@ -79,6 +79,14 @@ public class GuiScript : MonoBehaviour
                 message += "\n";
         }
 
-        (Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).CreateLogMessage(message);
+        if(Windows[WindowTypes.UserInterface].Script is UserInterfaceWindow userInterface)
+        {
+            userInterface.CreateLogMessage(message, time);
+        }
+    }
+
+    public static string IsPlayer(ShipLogic shipLogic, bool isPlayer)
+    {
+        return $"{shipLogic.name} [ID: {(isPlayer ? "P" : "E")} {shipLogic.ID}]";
     }
 }

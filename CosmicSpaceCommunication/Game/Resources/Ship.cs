@@ -1,9 +1,10 @@
-﻿using System.Data;
+﻿using CosmicSpaceCommunication.Game.Interfaces;
+using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Resources
 {
     [System.Serializable]
-    public class Ship : ReqLevel
+    public class Ship : ReqLevel, IShip
     {
         public double? ScrapPrice { get; set; }
         public double? MetalPrice { get; set; }
@@ -14,6 +15,8 @@ namespace CosmicSpaceCommunication.Game.Resources
         public int Cargo { get; set; }
         public long Hitpoints { get; set; }
         public Reward Reward { get; set; }
+        public int PrefabId { get; set; }
+        public string PrefabName { get; set; }
 
         public static Ship GetShip(DataRow row)
         {
@@ -21,6 +24,8 @@ namespace CosmicSpaceCommunication.Game.Resources
             {
                 Id = ConvertRow.Row<int>(row["shipid"]),
                 Name = ConvertRow.Row<string>(row["shipname"]),
+                PrefabId = ConvertRow.Row<int>(row["prefabid"]),
+                PrefabName = ConvertRow.Row<string>(row["prefabname"]),
                 RequiredLevel = ConvertRow.Row<int>(row["requiredlevel"]),
 
                 ScrapPrice = ConvertRow.Row<double?>(row["scrapprice"]),

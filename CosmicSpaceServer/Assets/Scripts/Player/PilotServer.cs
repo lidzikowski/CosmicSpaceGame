@@ -162,6 +162,7 @@ public class PilotServer : Opponent
     {
         get => Pilot.Ship.Reward;
     }
+    public override RewardReasons RewardReason => RewardReasons.KillPlayer;
     public override void TakeReward(ServerReward reward)
     {
         if (!reward.Experience.Equals(null))

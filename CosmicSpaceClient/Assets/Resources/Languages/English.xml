@@ -16,4 +16,7 @@
   <REPAIR>Repair</REPAIR>
   <DESTROYED>You're Dead</DESTROYED>
   <MINIMAP>Minimap</MINIMAP>
+  <DEFEATED_PLAYER>You defeated the player {0}</DEFEATED_PLAYER>
+  <DEFEATED_ENEMY>You defeated the enemy {0}</DEFEATED_ENEMY>
+  <EXPERIENCE>Experience {0}</EXPERIENCE>
 </Language>

@@ -16,4 +16,7 @@
   <REPAIR>Napraw</REPAIR>
   <DESTROYED>Nie żyjesz</DESTROYED>
   <MINIMAP>Minimapa</MINIMAP>
+  <DEFEATED_PLAYER>Pokonałeś gracza {0}</DEFEATED_PLAYER>
+  <DEFEATED_ENEMY>Pokonałeś przeciwnika {0}</DEFEATED_ENEMY>
+  <EXPERIENCE>Doświadczenie {0}</EXPERIENCE>
 </Language>

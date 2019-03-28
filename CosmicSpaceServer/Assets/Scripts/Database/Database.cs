@@ -15,11 +15,11 @@ public class Database
     #region ConnectionString
     private static readonly string connectionString = new MySqlConnectionStringBuilder()
     {
-        Server = "77.55.212.240",
-        //Server = "192.168.1.144",
+        //Server = "127.0.0.1",
+        Server = "127.0.0.1",
         Port = 3306,
         UserID = "root",
-        Password = "pHqD6wxEeuZTuSk5FDhpBcwf4R7Z5LCgaSN5vCa2",
+        //Password = "pHqD6wxEeuZTuSk5FDhpBcwf4R7Z5LCgaSN5vCa2",
         Database = "cosmicspace",
         SslMode = MySqlSslMode.None
     }.ToString();
