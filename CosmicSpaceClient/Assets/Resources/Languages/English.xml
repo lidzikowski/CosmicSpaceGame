@@ -19,4 +19,7 @@
   <DEFEATED_PLAYER>You defeated the player {0}</DEFEATED_PLAYER>
   <DEFEATED_ENEMY>You defeated the enemy {0}</DEFEATED_ENEMY>
   <EXPERIENCE>Experience {0}</EXPERIENCE>
+  <COMMAND_NOT_FOUND>Command '{0}' not found, try use '/help'.</COMMAND_NOT_FOUND>
+  <EMPTY_MESSAGE>You can't send an empty message.</EMPTY_MESSAGE>
+  
 </Language>

@@ -79,6 +79,12 @@ public class Language
     [XmlElement("EXPERIENCE")]
     public string EXPERIENCE { get; set; }
 
+    [XmlElement("COMMAND_NOT_FOUND")]
+    public string COMMAND_NOT_FOUND { get; set; }
+
+    [XmlElement("EMPTY_MESSAGE")]
+    public string EMPTY_MESSAGE { get; set; }
+    
 
     #endregion
 }

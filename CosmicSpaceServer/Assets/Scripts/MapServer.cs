@@ -1,8 +1,4 @@
-﻿using CosmicSpaceCommunication;
-using CosmicSpaceCommunication.Game.Enemy;
-using CosmicSpaceCommunication.Game.Player;
-using CosmicSpaceCommunication.Game.Player.ClientToServer;
-using CosmicSpaceCommunication.Game.Player.ServerToClient;
+﻿using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Linq;

@@ -33,5 +33,9 @@ namespace CosmicSpaceCommunication
         NewReward = 350,
 
 
+
+        ChatMessage = 360,
+
+
     }
 }

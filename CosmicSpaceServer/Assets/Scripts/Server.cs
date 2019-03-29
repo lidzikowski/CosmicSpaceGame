@@ -18,9 +18,12 @@ public class Server : MonoBehaviour
     public static Dictionary<int, Rocket> Rockets;
     public static Dictionary<int, Enemy> Enemies;
 
-    //private int mapId = 1000; // Instancje
+    //private int mapId = 1000; // Instancje map
     public static Dictionary<int, MapServer> MapsServer;
     public static Dictionary<ulong, PilotServer> Pilots;
+
+    //private ulong chatChannelId = 1000; // Instancje kanalow
+    public static Dictionary<ulong, ChatChannel> ChatChannels;
 
 
 
@@ -65,6 +68,10 @@ public class Server : MonoBehaviour
 
             MapsServer.Add(map.Id, mapServer);
         }
+
+        ChatChannels = new Dictionary<ulong, ChatChannel>();
+        // Global channel:
+        ChatChannels.Add(100, new ChatChannel(100, "Global"));
     }
 
 
@@ -76,7 +83,8 @@ public class Server : MonoBehaviour
         try
         {
             WebSocket = new WebSocketServer(GameData.ServerIP);
-            WebSocket.AddWebSocketService<Game>("/Game");
+            WebSocket.AddWebSocketService<GameService>("/Game");
+            WebSocket.AddWebSocketService<ChatService>("/Chat");
             WebSocket.Start();
         }
         catch (Exception ex)

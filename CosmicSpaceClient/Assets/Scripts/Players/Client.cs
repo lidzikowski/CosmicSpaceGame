@@ -1,14 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using WebSocketSharp;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
-using System;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
+using CosmicSpaceCommunication.Game.Chat;
 
 public class Client : MonoBehaviour
 {
@@ -37,6 +36,8 @@ public class Client : MonoBehaviour
                 {
                     GuiScript.OpenWindow(WindowTypes.UserInterface);
                     PlayerScript?.InitLocalPlayer();
+
+                    (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).CreateChatSocket();
                 }
             });
         }
@@ -51,15 +52,9 @@ public class Client : MonoBehaviour
             if (socketConnected == value)
                 return;
 
-            if (value)
-            {
-                socketConnected = true;
-            }
-            else
-            {
-                socketConnected = false;
+            socketConnected = value;
+            if (!value)
                 Pilot = null;
-            }
             
             MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
         }
@@ -111,7 +106,7 @@ public class Client : MonoBehaviour
             }
             catch (Exception ex)
             {
-                Debug.Log(ex);
+                Debug.Log(ex.Message);
                 CreateSocket();
             }
         }
@@ -137,7 +132,7 @@ public class Client : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.Log(ex);
+            Debug.Log(ex.Message);
         }
     }
 
@@ -324,35 +319,19 @@ public class Client : MonoBehaviour
 
 
 
+
     }
 
     private void Socket_OnError(object sender, ErrorEventArgs e)
     {
         MainThread.Instance().Enqueue(() => SocketConnected = false);
-
-
         Debug.LogError($"OnError {Environment.NewLine} {e.Exception} {Environment.NewLine} {e.Message}");
     }
 
     private void Socket_OnClose(object sender, CloseEventArgs e)
     {
         MainThread.Instance().Enqueue(() => SocketConnected = false);
-
-        switch(e.Code)
-        {
-            case 1001:
-                //Debug.LogError($"OnClose - Server close");
-                break;
-            case 1005:
-                //Debug.LogError($"OnClose - Client close");
-                break;
-            case 1006:
-                //Debug.LogError($"OnClose - Client close");
-                break;
-            default:
-                Debug.LogError($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
-                break;
-        }
+        SocketErrorSwitch(e);
     }
 
     private void Socket_OnOpen(object sender, EventArgs e)
@@ -372,6 +351,25 @@ public class Client : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError(ex.Message);
+        }
+    }
+
+    public static void SocketErrorSwitch(CloseEventArgs e)
+    {
+        switch (e.Code)
+        {
+            case 1001:
+                //Debug.LogError($"OnClose - Server close");
+                break;
+            case 1005:
+                //Debug.LogError($"OnClose - Client close");
+                break;
+            case 1006:
+                //Debug.LogError($"OnClose - Client close");
+                break;
+            default:
+                Debug.LogError($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
+                break;
         }
     }
 }

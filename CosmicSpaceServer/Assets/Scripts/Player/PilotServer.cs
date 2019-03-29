@@ -69,6 +69,8 @@ public class PilotServer : Opponent
             });
         }
     }
+
+    public Headers ChatHeaders;
     #endregion
 
 
@@ -192,18 +194,26 @@ public class PilotServer : Opponent
 
         Send(commandData, Headers);
     }
-    public static void Send(CommandData commandData, Headers headers)
+    public static void Send(CommandData commandData, Headers headers, string channel = "/Game")
     {
         try
         {
             IWebSocketSession session;
-            if (Server.WebSocket.WebSocketServices["/Game"].Sessions.TryGetSession(headers.SocketId, out session))
-                Server.WebSocket.WebSocketServices["/Game"].Sessions.SendTo(GameData.Serialize(commandData), headers.SocketId);
+            if (Server.WebSocket.WebSocketServices[channel].Sessions.TryGetSession(headers.SocketId, out session))
+                Server.WebSocket.WebSocketServices[channel].Sessions.SendTo(GameData.Serialize(commandData), headers.SocketId);
         }
         catch (System.Exception ex)
         {
             Debug.Log(ex.Message);
         }
+    }
+
+    public void SendChat(CommandData commandData)
+    {
+        if (ChatHeaders == null)
+            return;
+
+        Send(commandData, ChatHeaders, "/Chat");
     }
 
     public static async Task<Pilot> GetPilot(DataRow row)

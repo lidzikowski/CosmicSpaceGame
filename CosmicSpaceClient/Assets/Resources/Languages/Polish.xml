@@ -19,4 +19,7 @@
   <DEFEATED_PLAYER>Pokonałeś gracza {0}</DEFEATED_PLAYER>
   <DEFEATED_ENEMY>Pokonałeś przeciwnika {0}</DEFEATED_ENEMY>
   <EXPERIENCE>Doświadczenie {0}</EXPERIENCE>
+  <COMMAND_NOT_FOUND>Komenda '{0}' nie istnieje, spróbuj użyć '/help'.</COMMAND_NOT_FOUND>
+  <EMPTY_MESSAGE>Nie możesz wysłać pustej wiadomości.</EMPTY_MESSAGE>
+  
 </Language>

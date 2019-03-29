@@ -1,5 +1,4 @@
 ﻿using WebSocketSharp;
-using WebSocketSharp.Server;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -8,13 +7,8 @@ using CosmicSpaceCommunication.Account;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 
-public class Game : WebSocketBehavior
+public class GameService : WebSocket
 {
-    protected override void OnOpen()
-    {
-        //Debug.Log("OnOpen");
-    }
-
     protected override void OnClose(CloseEventArgs e)
     {
         PilotDisconnect();
@@ -23,7 +17,7 @@ public class Game : WebSocketBehavior
     protected override void OnError(ErrorEventArgs e)
     {
         PilotDisconnect();
-        Debug.LogError($"{e.Exception} {Environment.NewLine} {e.Message}");
+        base.OnError(e);
     }
 
     private void PilotDisconnect()
@@ -37,6 +31,7 @@ public class Game : WebSocketBehavior
 
         Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
         Server.Pilots.Remove(pilotServer.Pilot.Id);
+        Server.ChatChannels[100].Disconnect(pilotServer.Pilot.Id);
     }
 
     protected override void OnMessage(MessageEventArgs e)
@@ -54,14 +49,17 @@ public class Game : WebSocketBehavior
                     LoginUser(logInUser);
                     break;
 
+
                 case Commands.Register:
                     RegisterUser registerUser = (RegisterUser)commandData.Data;
                     RegisterUser(registerUser);
                     break;
 
+
                 case Commands.PlayerLeave:
                     PilotDisconnect();
                     break;
+
 
                 case Commands.NewPosition:
                     NewPosition newPosition = (NewPosition)commandData.Data;
@@ -76,6 +74,7 @@ public class Game : WebSocketBehavior
                         PilotChangePosition(newPosition);
                     break;
 
+
                 case Commands.SelectTarget:
                     NewTarget newTarget = (NewTarget)commandData.Data;
 
@@ -87,6 +86,7 @@ public class Game : WebSocketBehavior
 
                     PilotSelectTarget(newTarget);
                     break;
+
 
                 case Commands.AttackTarget:
                     AttackTarget attackTarget = (AttackTarget)commandData.Data;
@@ -100,8 +100,8 @@ public class Game : WebSocketBehavior
                     PilotAttackTarget(attackTarget);
                     break;
 
-                case Commands.RepairShip:
 
+                case Commands.RepairShip:
                     ulong userId;
                     if (!ulong.TryParse(commandData.Data.ToString(), out userId))
                         return;
@@ -110,31 +110,17 @@ public class Game : WebSocketBehavior
                         return;
 
                     Server.Pilots[userId].IsDead = false;
-
                     break;
+
+
+
             }
         }
         catch (Exception ex)
         {
-            Debug.Log(ex);
+            Debug.Log(ex.Message);
         }
     }
-
-    private Headers GetHeaders()
-    {
-        return new Headers()
-        {
-            SocketId = ID,
-            UserAgent = Headers["User-Agent"],
-            Host = Headers["Host"]
-        };
-    }
-
-    private bool CheckPacket(ulong userId)
-    {
-        return Server.Pilots[userId].Headers.SocketId == ID;
-    }
-
 
     private async void LoginUser(LogInUser logInUser)
     {
@@ -153,6 +139,7 @@ public class Game : WebSocketBehavior
             {
                 Server.Pilots.Add(pilotServer.Pilot.Id, pilotServer);
                 Server.MapsServer[pilotServer.Pilot.Map.Id].Join(pilotServer);
+                Server.ChatChannels[100].Connect(pilotServer.Pilot.Id);
             }
         }
         else
@@ -252,4 +239,9 @@ public class Game : WebSocketBehavior
             attacker.Attack = attackTarget.Attack;
         }
     }
+
+
+
+
+
 }
