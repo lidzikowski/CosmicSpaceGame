@@ -84,7 +84,19 @@ public class Language
 
     [XmlElement("EMPTY_MESSAGE")]
     public string EMPTY_MESSAGE { get; set; }
-    
+
+    [XmlElement("CONNECTING_TO_CHAT")]
+    public string CONNECTING_TO_CHAT { get; set; }
+
+    [XmlElement("CHAT_CONNECTED")]
+    public string CHAT_CONNECTED { get; set; }
+
+    [XmlElement("CHAT_DISCONNECTED")]
+    public string CHAT_DISCONNECTED { get; set; }
+
+    [XmlElement("YOU")]
+    public string YOU { get; set; }
+
 
     #endregion
 }

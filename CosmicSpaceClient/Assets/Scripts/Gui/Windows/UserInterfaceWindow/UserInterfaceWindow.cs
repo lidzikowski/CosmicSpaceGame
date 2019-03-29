@@ -82,7 +82,7 @@ public class UserInterfaceWindow : GameWindow
 
     void SendMessageButton_Clicked()
     {
-        if (string.IsNullOrEmpty(MessageInputField.text))
+        if (!ChatSocketConnected || string.IsNullOrEmpty(MessageInputField.text))
             return;
 
         string text = MessageInputField.text;
@@ -245,6 +245,8 @@ public class UserInterfaceWindow : GameWindow
         ChatSocket.OnClose += ChatSocket_OnClose;
         ChatSocket.OnError += ChatSocket_OnError;
         ChatSocket.OnMessage += ChatSocket_OnMessage;
+
+        ShowChatMessage(new ChatData() { SenderName = "Server", Message = $"<color=#E0E0E0>{GameSettings.UserLanguage.CONNECTING_TO_CHAT}</color>" });
     }
 
     private void ChatSocket_OnMessage(object sender, MessageEventArgs e)
@@ -279,6 +281,22 @@ public class UserInterfaceWindow : GameWindow
                 return;
             ShowChatMessage(chatData);
         }
+        else if (commandData.Command == Commands.ChatConnected)
+        {
+            ChatData chatData = (ChatData)commandData.Data;
+            if (chatData == null)
+                return;
+            chatData.Message = string.Format(GameSettings.UserLanguage.CHAT_CONNECTED, chatData.Message);
+            ShowChatMessage(chatData);
+        }
+        else if (commandData.Command == Commands.ChatDisconnected)
+        {
+            ChatData chatData = (ChatData)commandData.Data;
+            if (chatData == null)
+                return;
+            chatData.Message = string.Format(GameSettings.UserLanguage.CHAT_DISCONNECTED, chatData.Message);
+            ShowChatMessage(chatData);
+        }
         #endregion
     }
 
@@ -286,13 +304,27 @@ public class UserInterfaceWindow : GameWindow
     {
         string text;
 
-        if(chatData.RecipientId != null)
+        string sender, message;
+        if (chatData.SenderName == "Server")
         {
-            text = $"{chatData.SenderName} -> {chatData.RecipientName}: {chatData.Message}";
+            sender = $"<b><color=#FF5722>{chatData.SenderName}</color></b>";
+            message = $"<color=#FF9100>{chatData.Message}</color>";
         }
         else
         {
-            text = $"{chatData.SenderName}: {chatData.Message}";
+            sender = $"<b><color=#40C4FF>{chatData.SenderName}</color></b>";
+            message = $"<color=#E0E0E0>{chatData.Message}</color>";
+        }
+
+
+        if (chatData.RecipientId != null)
+        {
+            string recipient = chatData.RecipientId == Client.Pilot.Id ? GameSettings.UserLanguage.YOU : chatData.RecipientName;
+            text = $"  {sender} <color=FFD740>>></color> <color=#FFD740>{recipient}</color>: {message}";
+        }
+        else
+        {
+            text = $"{sender}<color=9E9E9E>:</color> {message}";
         }
 
         GameObject go = Instantiate(MessageGameObject, ContentTransform);
@@ -314,6 +346,11 @@ public class UserInterfaceWindow : GameWindow
     private void ChatSocket_OnOpen(object sender, EventArgs e)
     {
         MainThread.Instance().Enqueue(() => {
+            foreach (Transform child in ContentTransform)
+            {
+                Destroy(child.gameObject);
+            }
+
             ChatSocketConnected = true;
 
             SendToChatSocket(new CommandData()

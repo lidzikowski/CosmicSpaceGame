@@ -31,7 +31,11 @@ public class GameService : WebSocket
 
         Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
         Server.Pilots.Remove(pilotServer.Pilot.Id);
-        Server.ChatChannels[100].Disconnect(pilotServer.Pilot.Id);
+
+        foreach (ChatChannel chatChannel in Server.ChatChannels.Values)
+        {
+            chatChannel.Disconnect(pilotServer.Pilot.Id);
+        }
     }
 
     protected override void OnMessage(MessageEventArgs e)
@@ -139,7 +143,6 @@ public class GameService : WebSocket
             {
                 Server.Pilots.Add(pilotServer.Pilot.Id, pilotServer);
                 Server.MapsServer[pilotServer.Pilot.Map.Id].Join(pilotServer);
-                Server.ChatChannels[100].Connect(pilotServer.Pilot.Id);
             }
         }
         else

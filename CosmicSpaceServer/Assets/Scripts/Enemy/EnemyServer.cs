@@ -66,7 +66,6 @@ public class EnemyServer : Opponent
                     Opponent opponent = OpponentsInArea.Where(o => !o.IsDead && !o.IsCover).FirstOrDefault(o => MapServer.Distance(o, this) <= ShotDistance);
                     if (opponent != null)
                     {
-                        Debug.Log("Test");
                         Target = opponent;
                         Attack = true;
                     }

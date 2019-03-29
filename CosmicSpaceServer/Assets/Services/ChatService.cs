@@ -44,6 +44,7 @@ public class ChatService : WebSocket
                     {
                         if(Server.Pilots.ContainsKey(userId))
                             Server.Pilots[userId].ChatHeaders = GetHeaders();
+                        Server.ChatChannels[100].Connect(userId);
                     }
                     break;
                 

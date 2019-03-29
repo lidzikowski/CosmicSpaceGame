@@ -35,6 +35,8 @@ namespace CosmicSpaceCommunication
 
 
         ChatMessage = 360,
+        ChatConnected = 361,
+        ChatDisconnected = 362,
 
 
     }

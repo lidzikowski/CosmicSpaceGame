@@ -21,5 +21,9 @@
   <EXPERIENCE>Experience {0}</EXPERIENCE>
   <COMMAND_NOT_FOUND>Command '{0}' not found, try use '/help'.</COMMAND_NOT_FOUND>
   <EMPTY_MESSAGE>You can't send an empty message.</EMPTY_MESSAGE>
+  <CONNECTING_TO_CHAT>Connecting...</CONNECTING_TO_CHAT>
+  <CHAT_CONNECTED>Connected {0}</CHAT_CONNECTED>
+  <CHAT_DISCONNECTED>Disconnected {0}</CHAT_DISCONNECTED>
+  <YOU>You</YOU>
   
 </Language>

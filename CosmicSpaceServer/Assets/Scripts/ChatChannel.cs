@@ -54,8 +54,8 @@ public class ChatChannel
         {
             SenderId = ulong.MaxValue,
             SenderName = "Server",
-            Message = $"{pilot.Name} is {(status ? "" : "dis")}connected.."
-        });
+            Message = pilot.Name
+        }, status ? Commands.ChatConnected : Commands.ChatDisconnected);
     }
 
 
@@ -121,13 +121,13 @@ public class ChatChannel
 
 
 
-    public void Broadcast(ChatData chatData)
+    public void Broadcast(ChatData chatData, Commands command = Commands.ChatMessage)
     {
         foreach (ulong pilotId in Users)
-            SendToPilot(pilotId, chatData);
+            SendToPilot(pilotId, chatData, command);
     }
 
-    public void SendToPilot(ulong id, ChatData chatData)
+    public void SendToPilot(ulong id, ChatData chatData, Commands command = Commands.ChatMessage)
     {
         PilotServer pilot = GetPilotById(id);
         if (pilot == null)
@@ -135,7 +135,7 @@ public class ChatChannel
 
         pilot.SendChat(new CommandData()
         {
-            Command = Commands.ChatMessage,
+            Command = command,
             Data = chatData
         });
     }
