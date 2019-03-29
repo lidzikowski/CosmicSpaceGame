@@ -20,6 +20,6 @@ public class WindowInstance
             }
         }
     }
-    public GameWindow Script => window.GetComponent<GameWindow>();
+    public GameWindow Script => window?.GetComponent<GameWindow>();
     public bool Active => window != null;
 }

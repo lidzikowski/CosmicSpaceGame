@@ -311,12 +311,12 @@ public class Player : MonoBehaviour
         if (newTarget.TargetIsPlayer == null)
             return null;
 
-        ShipLogic targetShipLogic = newTarget.TargetIsPlayer == true ? FindPilot(newTarget.PlayerId) : FindEnemy(newTarget.PlayerId);
+        ShipLogic targetShipLogic = newTarget.TargetIsPlayer == true ? FindPilot(newTarget.TargetId) : FindEnemy(newTarget.TargetId);
 
         if (targetShipLogic == null)
             return null;
         
-        ShipLogic attackerShipLogic = newTarget.AttackerIsPlayer == true ? FindPilot(newTarget.TargetId) : FindEnemy(newTarget.TargetId);
+        ShipLogic attackerShipLogic = newTarget.AttackerIsPlayer == true ? FindPilot(newTarget.PlayerId) : FindEnemy(newTarget.PlayerId);
 
         if (attackerShipLogic == null)
             return null;

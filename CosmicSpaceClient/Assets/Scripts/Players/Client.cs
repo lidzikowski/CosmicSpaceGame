@@ -36,8 +36,11 @@ public class Client : MonoBehaviour
                 {
                     GuiScript.OpenWindow(WindowTypes.UserInterface);
                     PlayerScript?.InitLocalPlayer();
+                }
 
-                    (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).CreateChatSocket();
+                if (GuiScript.Windows[WindowTypes.UserInterface].Script is UserInterfaceWindow userInterface)
+                {
+                    userInterface.CreateChatSocket();
                 }
             });
         }

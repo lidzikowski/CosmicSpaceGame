@@ -53,6 +53,7 @@ public class ChatChannel
         Broadcast(new ChatData()
         {
             SenderId = ulong.MaxValue,
+            SenderName = "Server",
             Message = $"{pilot.Name} is {(status ? "" : "dis")}connected.."
         });
     }

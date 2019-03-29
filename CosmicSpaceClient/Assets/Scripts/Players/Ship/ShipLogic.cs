@@ -10,6 +10,7 @@ using UnityEngine;
 public class ShipLogic : MonoBehaviour
 {
     public ulong ID;
+    public string ObjectName;
 
     public List<Transform> Lasers => ChildInChild("Lasers");
     public List<Transform> Gears => ChildInChild("Gears");
@@ -458,12 +459,13 @@ public class ShipLogic : MonoBehaviour
 
         InitShip(ship);
 
-        ModelNameText.text = name;
+        ObjectName = name;
+        ModelNameText.text = ObjectName;
         ModelNameText.color = color;
 
         if (Player.DebugMode)
         {
-            ModelNameText.text = $"{ModelNameText.text} [ID:{ID}]";
+            ModelNameText.text = $"{ObjectName} [ID:{ID}]";
             ModelNameText.text += $"\n({ship.PrefabName} [ID:{ship.Id}])";
         }
     }

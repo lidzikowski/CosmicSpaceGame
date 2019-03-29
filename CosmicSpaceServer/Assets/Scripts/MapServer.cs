@@ -95,6 +95,9 @@ public class MapServer : MonoBehaviour
     #region Opponents in area
     private void FindOpponents(Opponent pilot)
     {
+        if (pilot == null)
+            return;
+
         SearchOpponent(pilot, PilotsOnMap.Where(o => o != pilot));
         SearchOpponent(pilot, EnemiesOnMap);
     }

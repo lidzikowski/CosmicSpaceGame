@@ -87,6 +87,6 @@ public class GuiScript : MonoBehaviour
 
     public static string IsPlayer(ShipLogic shipLogic, bool isPlayer)
     {
-        return $"{shipLogic.name} [ID: {(isPlayer ? "P" : "E")} {shipLogic.ID}]";
+        return $"{shipLogic.ObjectName} [ID: {(isPlayer ? "P" : "E")} {shipLogic.ID}]";
     }
 }

@@ -70,7 +70,10 @@ public class SignInPage : GameWindow
 
     void CreateAccountButton_Clicked()
     {
-        (GuiScript.Windows[WindowTypes.MainMenu].Script as MainMenuWindow).ShowPage(MainMenuWindow.Pages.CreateAccountPage);
+        if (GuiScript.Windows[WindowTypes.UserInterface].Script is MainMenuWindow mainMenuWindow)
+        {
+            mainMenuWindow.ShowPage(MainMenuWindow.Pages.CreateAccountPage);
+        }
     }
 
     public override void Refresh()
