@@ -97,6 +97,18 @@ public class Language
     [XmlElement("YOU")]
     public string YOU { get; set; }
 
+    [XmlElement("CHAT_USER_NOT_FOUND")]
+    public string CHAT_USER_NOT_FOUND { get; set; }
 
+    [XmlElement("CHAT_HELP_LIST")]
+    public string CHAT_HELP_LIST { get; set; }
+
+    [XmlElement("CHAT_HELP_ONLINE")]
+    public string CHAT_HELP_ONLINE { get; set; }
+
+    [XmlElement("CHAT_HELP_PRIVATE")]
+    public string CHAT_HELP_PRIVATE { get; set; }
+
+    
     #endregion
 }

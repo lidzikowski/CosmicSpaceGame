@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class UserInterfaceWindow : GameWindow
 {
@@ -80,13 +81,38 @@ public class UserInterfaceWindow : GameWindow
         go.GetComponent<LogScript>().SetText(message, time);
     }
 
+    private System.Collections.IEnumerator SenderTimer()
+    {
+        CanSend = false;
+        yield return new WaitForSeconds(1);
+        CanSend = true;
+    }
+
+    private bool CanSend = true;
     void SendMessageButton_Clicked()
     {
-        if (!ChatSocketConnected || string.IsNullOrEmpty(MessageInputField.text))
+        if (!CanSend)
             return;
+        StartCoroutine(SenderTimer());
 
-        string text = MessageInputField.text;
+        if (!ChatSocketConnected || string.IsNullOrEmpty(MessageInputField.text) || string.IsNullOrWhiteSpace(MessageInputField.text))
+        {
+            MessageInputField.text = string.Empty;
+            return;
+        }
+
+
+        string text = MessageInputField.text.Trim('\r', '\n', '\t');
         MessageInputField.text = string.Empty;
+
+        // Usuwanie spacji, przerw oraz zbednych odstepow
+        string msg = string.Empty;
+        foreach (string m in text.ToString().Split().Where(o => o != string.Empty))
+        {
+            msg += $"{m} ";
+        }
+        msg.Remove(msg.Length - 1, 1);
+        text = msg;
 
         if (text[0] == '/')
         {
@@ -103,16 +129,18 @@ public class UserInterfaceWindow : GameWindow
                     }, 5);
                     return;
                 }
-                text = text.Remove(0, inputText[0].Length); // Usuniecie znalezionej komendy
+                text = text.Remove(0, inputText[0].Length + 1); // Usuniecie znalezionej komendy
 
                 switch (command)
                 {
                     case ChatCommands.help:
                     case ChatCommands.h:
-                        ChatData chatData = new ChatData() { SenderName = "System" };
-                        string helpString = $"\n/{ChatCommands.help.ToString()}, /{ChatCommands.h.ToString()} - Help guide.\n" + $"/{ChatCommands.users.ToString()}, /{ChatCommands.u.ToString()}, /{ChatCommands.online.ToString()} - Online users on this channel.\n" + $"/{ChatCommands.message.ToString()}, /{ChatCommands.msg.ToString()}, /{ChatCommands.m.ToString()}, /{ChatCommands.pw.ToString()} - Private message to other online user (/pw username message...).";
+                        ChatData chatData = new ChatData() { SenderName = "Server" };
+                        chatData.Message = $"\n<color=#00E676>/{ChatCommands.help.ToString()}, /{ChatCommands.h.ToString()}</color> - {GameSettings.UserLanguage.CHAT_HELP_LIST}\n" + $"<color=#00E676>/{ChatCommands.users.ToString()}, /{ChatCommands.u.ToString()}, /{ChatCommands.online.ToString()}</color> - {GameSettings.UserLanguage.CHAT_HELP_ONLINE}\n" + $"<color=#00E676>/{ChatCommands.message.ToString()}, /{ChatCommands.msg.ToString()}, /{ChatCommands.m.ToString()}, /{ChatCommands.pw.ToString()}</color> - {GameSettings.UserLanguage.CHAT_HELP_PRIVATE}";
 
-                        chatData.Message = helpString;
+                        chatData.SenderName = "Server";
+                        chatData.RecipientId = Client.Pilot.Id;
+                        chatData.RecipientName = Client.Pilot.Nickname;
                         ShowChatMessage(chatData);
                         return;
 
@@ -140,8 +168,8 @@ public class UserInterfaceWindow : GameWindow
                         string recipientName = string.Empty;
                         if (inputText.Length > 1 && !string.IsNullOrEmpty(inputText[1]) && !string.IsNullOrWhiteSpace(inputText[1]))
                         {
-                            recipientName = inputText[1];
-                            text = text.Remove(0, inputText[1].Length); // Usuniecie nazwy odbiorcy
+                            recipientName = inputText[1].Trim(' ');
+                            text = text.Remove(0, inputText[1].Length + 1); // Usuniecie nazwy odbiorcy
                         }
                         else
                         {
@@ -196,13 +224,16 @@ public class UserInterfaceWindow : GameWindow
 
 
 
-    float timer = 9;
+    float timer = 14;
     void Update()
     {
+        if (MessageInputField.isFocused && (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter)))
+            SendMessageButton_Clicked();
+
         if (ChatSocketConnected)
             return;
 
-        if (timer >= 10)
+        if (timer >= 15)
         {
             timer = 0;
             try
@@ -239,14 +270,14 @@ public class UserInterfaceWindow : GameWindow
 
     public void CreateChatSocket()
     {
+        ShowChatMessage(new ChatData() { SenderName = "Server", Message = GameSettings.UserLanguage.CONNECTING_TO_CHAT });
+
         ChatSocket = new WebSocket($"{GameData.ServerIP}/Chat");
 
         ChatSocket.OnOpen += ChatSocket_OnOpen;
         ChatSocket.OnClose += ChatSocket_OnClose;
         ChatSocket.OnError += ChatSocket_OnError;
         ChatSocket.OnMessage += ChatSocket_OnMessage;
-
-        ShowChatMessage(new ChatData() { SenderName = "Server", Message = $"<color=#E0E0E0>{GameSettings.UserLanguage.CONNECTING_TO_CHAT}</color>" });
     }
 
     private void ChatSocket_OnMessage(object sender, MessageEventArgs e)
@@ -297,6 +328,14 @@ public class UserInterfaceWindow : GameWindow
             chatData.Message = string.Format(GameSettings.UserLanguage.CHAT_DISCONNECTED, chatData.Message);
             ShowChatMessage(chatData);
         }
+        else if (commandData.Command == Commands.ChatUserNotFound)
+        {
+            ChatData chatData = (ChatData)commandData.Data;
+            if (chatData == null)
+                return;
+            chatData.Message = string.Format(GameSettings.UserLanguage.CHAT_USER_NOT_FOUND, $"<color=#FFE082>{chatData.Message}</color>");
+            ShowChatMessage(chatData);
+        }
         #endregion
     }
 
@@ -319,8 +358,11 @@ public class UserInterfaceWindow : GameWindow
 
         if (chatData.RecipientId != null)
         {
-            string recipient = chatData.RecipientId == Client.Pilot.Id ? GameSettings.UserLanguage.YOU : chatData.RecipientName;
-            text = $"  {sender} <color=FFD740>>></color> <color=#FFD740>{recipient}</color>: {message}";
+            if (chatData.SenderId == Client.Pilot.Id)
+                sender = $"<b><color=#FFD740>{GameSettings.UserLanguage.YOU}</color></b>";
+
+            string recipient = chatData.RecipientId == Client.Pilot.Id ? $"<b><color=#FFD740>{GameSettings.UserLanguage.YOU}</color></b>" : $"<b><color=#40C4FF>{chatData.RecipientName}</color></b>";
+            text = $"{sender} <color=616161>></color> {recipient}: {message}";
         }
         else
         {

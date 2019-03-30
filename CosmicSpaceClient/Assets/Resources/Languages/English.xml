@@ -25,5 +25,9 @@
   <CHAT_CONNECTED>Connected {0}</CHAT_CONNECTED>
   <CHAT_DISCONNECTED>Disconnected {0}</CHAT_DISCONNECTED>
   <YOU>You</YOU>
+  <CHAT_USER_NOT_FOUND>I did not find a user '{0}' :&lt;</CHAT_USER_NOT_FOUND>
+  <CHAT_HELP_LIST>List of commands.</CHAT_HELP_LIST>
+  <CHAT_HELP_ONLINE>Online users on this channel.</CHAT_HELP_ONLINE>
+  <CHAT_HELP_PRIVATE>A private message to another user (/pw &lt;username&gt; &lt;message&gt;).</CHAT_HELP_PRIVATE>
   
 </Language>

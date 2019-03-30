@@ -47,7 +47,7 @@ public class ChatService : WebSocket
                         Server.ChatChannels[100].Connect(userId);
                     }
                     break;
-                
+
 
                 case Commands.ChatMessage:
                     ChatData chatData = (ChatData)commandData.Data;

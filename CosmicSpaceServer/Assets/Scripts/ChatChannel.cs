@@ -69,8 +69,6 @@ public class ChatChannel
         chatData.Date = DateTime.Now;
         chatData.SenderName = chatData.SenderId == ulong.MaxValue ? "Server" : GetPilotById(chatData.SenderId)?.Name;
 
-        // Cenzura wiadomosci
-
         Messages.Add(chatData.MessageId, chatData);
 
         switch (chatData.Command)
@@ -87,19 +85,26 @@ public class ChatChannel
             case ChatCommands.pw:
                 if(!string.IsNullOrEmpty(chatData.RecipientName))
                 {
-                    PilotServer pilot = GetPilotByName(chatData.RecipientName);
-                    if (pilot == null)
-                        return;
-
-                    chatData.RecipientId = pilot.Id;
+                    chatData.RecipientId = GetPilotByName(chatData.RecipientName)?.Id;
                 }
                 else if (chatData.RecipientId is ulong recipientId && recipientId > ulong.MinValue)
                 {
                     chatData.RecipientName = GetPilotById(recipientId)?.Name;
                 }
 
-                if (chatData.RecipientId < 1)
+                if (chatData.RecipientId == null || chatData.RecipientId < 1)
+                {
+                    chatData.Message = chatData.RecipientName;
+
+                    chatData.RecipientId = chatData.SenderId;
+                    chatData.RecipientName = chatData.SenderName;
+
+                    ulong pwid = chatData.SenderId;
+                    chatData.SenderId = ulong.MaxValue;
+                    chatData.SenderName = "Server";
+                    SendToPilot(pwid, chatData, Commands.ChatUserNotFound);
                     return;
+                }
 
                 foreach (ChatChannel chatChannel in Server.ChatChannels.Values)
                 {
@@ -113,8 +118,13 @@ public class ChatChannel
             case ChatCommands.u:
             case ChatCommands.online:
                 chatData.Message = GetUsers();
+                chatData.RecipientId = chatData.SenderId;
+                chatData.RecipientName = chatData.SenderName;
+
+                ulong onlineid = chatData.SenderId;
+                chatData.SenderId = ulong.MaxValue;
                 chatData.SenderName = "Server";
-                SendToPilot(chatData.SenderId, chatData);
+                SendToPilot(onlineid, chatData);
                 break;
         }
     }
@@ -132,6 +142,16 @@ public class ChatChannel
         PilotServer pilot = GetPilotById(id);
         if (pilot == null)
             return;
+
+        // Cenzura wiadomosci:
+        // Usuwanie spacji, przerw oraz zbednych odstepow
+        string msg = string.Empty;
+        foreach (string m in chatData.Message.ToString().Split().Where(o => o != string.Empty))
+        {
+            msg += $"{m} ";
+        }
+        msg.Remove(msg.Length - 1, 1);
+        chatData.Message = msg;
 
         pilot.SendChat(new CommandData()
         {

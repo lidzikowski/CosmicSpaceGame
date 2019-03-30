@@ -25,5 +25,9 @@
   <CHAT_CONNECTED>Połączono {0}</CHAT_CONNECTED>
   <CHAT_DISCONNECTED>Rozłączono {0}</CHAT_DISCONNECTED>
   <YOU>Ty</YOU>
+  <CHAT_USER_NOT_FOUND>Nie znalazłem użytkownika '{0}' :&lt;</CHAT_USER_NOT_FOUND>
+  <CHAT_HELP_LIST>Lista komend.</CHAT_HELP_LIST>
+  <CHAT_HELP_ONLINE>Aktywni użytkownicy kanału.</CHAT_HELP_ONLINE>
+  <CHAT_HELP_PRIVATE>Prywatna wiadomość do innego użytkownika (/pw &lt;użytkownik&gt; &lt;wiadomość&gt;).</CHAT_HELP_PRIVATE>
   
 </Language>
