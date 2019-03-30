@@ -1,1 +1,0 @@
-These shaders are used with the stars, the star shader is used to give a fresnel effect and the planet atmosphere is used with the corona to make it invisible if viewed at an angle and only visible if viewed straight ahead.

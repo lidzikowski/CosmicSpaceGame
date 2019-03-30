@@ -259,7 +259,7 @@ public class Player : MonoBehaviour
     private void LoadBlasters()
     {
         BlastersGameObject = new List<GameObject>();
-        BlastersGameObject.AddRange(Resources.LoadAll<GameObject>("Blasters/Prefabs/BulletsWithFlySFX"));
+        BlastersGameObject.AddRange(Resources.LoadAll<GameObject>("BulletsWithFlySFX"));
     }
     
     private void CreateExplosion(Vector3 position)
