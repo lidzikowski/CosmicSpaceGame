@@ -68,7 +68,6 @@ public class Player : MonoBehaviour
             return;
         }
         timer = 0;
-
         LocalShipController.TargetPosition = TargetPosition;
     }
 
@@ -282,8 +281,11 @@ public class Player : MonoBehaviour
         Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
         Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
 
-        shipLogic.Position = position;
-        shipLogic.TargetPosition = targetPosition;
+        if (!shipLogic.LocalPlayer)
+        {
+            shipLogic.Position = position;
+            shipLogic.TargetPosition = targetPosition;
+        }
         shipLogic.Speed = newPosition.Speed;
     }
 

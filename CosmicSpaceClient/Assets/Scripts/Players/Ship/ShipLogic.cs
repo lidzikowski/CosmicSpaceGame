@@ -103,7 +103,7 @@ public class ShipLogic : MonoBehaviour
         get => targetPosition;
         set
         {
-            Vector2 position = new Vector2(float.Parse(value.x.ToString("F2")), float.Parse(value.y.ToString("F2")));
+            Vector2 position = new Vector2((int)value.x, (int)value.y);
 
             if (targetPosition == position)
                 return;
@@ -112,6 +112,8 @@ public class ShipLogic : MonoBehaviour
 
             if (!LocalPlayer)
                 return;
+
+            //Debug.Log($"Aktalizacja {position.x} {position.y}");
 
             if (IsDead)
                 return;

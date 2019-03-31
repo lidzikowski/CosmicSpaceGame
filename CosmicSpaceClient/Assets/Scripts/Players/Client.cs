@@ -7,11 +7,13 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
-using CosmicSpaceCommunication.Game.Chat;
+using System.Net;
+using System.Net.Sockets;
 
 public class Client : MonoBehaviour
 {
     public static WebSocket Socket;
+    public const string SERVER_IP = "ws://77.55.212.240:24231";
 
     private static Pilot pilot;
     public static Pilot Pilot
@@ -83,7 +85,7 @@ public class Client : MonoBehaviour
 
     void CreateSocket()
     {
-        Socket = new WebSocket($"{GameData.ServerIP}/Game");
+        Socket = new WebSocket($"{SERVER_IP}/Game");
 
         Socket.OnOpen += Socket_OnOpen;
         Socket.OnClose += Socket_OnClose;

@@ -15,7 +15,6 @@ public class Database
     #region ConnectionString
     private static readonly string connectionString = new MySqlConnectionStringBuilder()
     {
-        //Server = "127.0.0.1",
         Server = "127.0.0.1",
         Port = 3306,
         UserID = "root",

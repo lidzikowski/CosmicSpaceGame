@@ -272,7 +272,7 @@ public class UserInterfaceWindow : GameWindow
     {
         ShowChatMessage(new ChatData() { SenderName = "Server", Message = GameSettings.UserLanguage.CONNECTING_TO_CHAT });
 
-        ChatSocket = new WebSocket($"{GameData.ServerIP}/Chat");
+        ChatSocket = new WebSocket($"{Client.SERVER_IP}/Chat");
 
         ChatSocket.OnOpen += ChatSocket_OnOpen;
         ChatSocket.OnClose += ChatSocket_OnClose;
