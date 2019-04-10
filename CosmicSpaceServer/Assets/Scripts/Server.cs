@@ -64,7 +64,9 @@ public class Server : MonoBehaviour
             MapServer mapServer = go.AddComponent<MapServer>();
 
             mapServer.CurrentMap = map;
+
             mapServer.EnemiesOnCurrentMap = await Database.GetEnemyMap(map.Id);
+            mapServer.Portals = await Database.GetPortals(map.Id);
 
             MapsServer.Add(map.Id, mapServer);
         }

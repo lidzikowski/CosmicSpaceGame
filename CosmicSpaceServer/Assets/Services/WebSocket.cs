@@ -32,6 +32,9 @@ public class WebSocket : WebSocketBehavior
 
     protected bool CheckPacket(ulong userId, bool game = true)
     {
+        if (!Server.Pilots.ContainsKey(userId))
+            return false;
+
         if (game)
             return Server.Pilots[userId].Headers?.SocketId == ID;
         return Server.Pilots[userId].ChatHeaders?.SocketId == ID;

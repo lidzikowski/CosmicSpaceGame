@@ -36,6 +36,7 @@ public class Database
         getrockets,
         getenemies,
         getenemymap,
+        getportals,
 
         occupiedaccount,
         ocuppiednickname,
@@ -215,6 +216,25 @@ public class Database
                 enemies.Add(ConvertRow.Row<int>(row["enemyid"]), Enemy.GetEnemy(row));
             }
             return enemies;
+        }
+        return null;
+    }
+
+    public static async Task<List<Portal>> GetPortals(int mapId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getportals, new Dictionary<string, object>()
+        {
+            { "inmapid", mapId }
+        });
+
+        if (dt != null)
+        {
+            List<Portal> portals = new List<Portal>();
+            foreach (DataRow row in dt.Rows)
+            {
+                portals.Add(Portal.GetPortal(row));
+            }
+            return portals;
         }
         return null;
     }

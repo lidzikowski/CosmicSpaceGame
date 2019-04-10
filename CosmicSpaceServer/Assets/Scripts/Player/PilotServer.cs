@@ -9,13 +9,12 @@ using WebSocketSharp.Server;
 
 public class PilotServer : Opponent
 {
-    public PilotServer(Pilot pilot, Headers head)
+    public PilotServer(Pilot pilot)
     {
         Pilot = pilot;
+
         NewPostion = Position;
         CalculateStatistics();
-
-        Headers = head;
     }
 
 
@@ -222,7 +221,7 @@ public class PilotServer : Opponent
 
         pilot.Map = Server.Maps[ConvertRow.Row<int>(row["mapid"])];
         pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
-        
+
         PilotResources resources = await Database.GetPilotResources(pilot.Id);
 
         pilot.Ammunitions = resources.Ammunitions;

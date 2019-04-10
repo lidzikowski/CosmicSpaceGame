@@ -4,6 +4,7 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Interfaces;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -443,13 +444,14 @@ public class ShipLogic : MonoBehaviour
         MaxShields = hitpointsShields.MaxShields;
     }
 
-    private void InitShip(IShip ship)
+    private void InitShip(IPrefab prefab)
     {
         foreach (Transform t in ModelTransform)
         {
             Destroy(t.gameObject);
         }
-        Instantiate(Resources.Load<GameObject>("Ships/" + ship.PrefabName), ModelTransform);
+
+        Instantiate(Resources.Load<GameObject>($"{prefab.PrefabTypeName}/{prefab.PrefabName}"), ModelTransform);
 
         //if (Player.DebugMode)
         //    GuiScript.CreateLogMessage(new List<string>() { $"InitShip '{ship.Name} [{ship.Id}]' ship_type:'{ship.PrefabName} [{ship.PrefabId}]'" });
@@ -459,7 +461,7 @@ public class ShipLogic : MonoBehaviour
     {
         ID = id;
 
-        InitShip(ship);
+        InitShip(ship.Prefab);
 
         ObjectName = name;
         ModelNameText.text = ObjectName;
@@ -468,7 +470,7 @@ public class ShipLogic : MonoBehaviour
         if (Player.DebugMode)
         {
             ModelNameText.text = $"{ObjectName} [ID:{ID}]";
-            ModelNameText.text += $"\n({ship.PrefabName} [ID:{ship.Id}])";
+            ModelNameText.text += $"\n({ship.Prefab.PrefabName} [ID:{ship.Id}])";
         }
     }
 

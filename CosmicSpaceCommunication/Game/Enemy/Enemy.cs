@@ -18,8 +18,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
         public bool IsAggressive { get; set; }
 
         public Reward Reward { get; set; }
-        public int PrefabId { get; set; }
-        public string PrefabName { get; set; }
+        public Prefab Prefab { get; set; }
 
         public static Enemy GetEnemy(DataRow row)
         {
@@ -27,15 +26,14 @@ namespace CosmicSpaceCommunication.Game.Enemy
             {
                 Id = ConvertRow.Row<int>(row["enemyid"]),
                 Name = ConvertRow.Row<string>(row["enemyname"]),
-                PrefabId = ConvertRow.Row<int>(row["prefabid"]),
-                PrefabName = ConvertRow.Row<string>(row["prefabname"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
                 Speed = ConvertRow.Row<int>(row["speed"]),
                 Damage = ConvertRow.Row<long>(row["damage"]),
                 ShotDistance = ConvertRow.Row<int>(row["shotdistance"]),
                 IsAggressive = ConvertRow.Row<bool>(row["isaggressive"]),
-                Reward = Reward.GetReward(row)
+                Reward = Reward.GetReward(row),
+                Prefab = new Prefab(row),
             };
         }
     }

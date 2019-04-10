@@ -1,6 +1,5 @@
 ﻿using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using System;
-using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Enemy
 {

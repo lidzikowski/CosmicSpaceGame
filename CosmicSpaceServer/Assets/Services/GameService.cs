@@ -118,6 +118,7 @@ public class GameService : WebSocket
 
 
 
+
             }
         }
         catch (Exception ex)
@@ -133,7 +134,7 @@ public class GameService : WebSocket
         {
             Database.LogUser(GetHeaders(), Commands.LogIn, true, userId);
 
-            PilotServer pilotServer = new PilotServer(await Database.GetPilot((ulong)userId), GetHeaders());
+            PilotServer pilotServer = new PilotServer(await Database.GetPilot((ulong)userId));
 
             if (Server.Pilots.ContainsKey(pilotServer.Pilot.Id))
             {
@@ -142,6 +143,7 @@ public class GameService : WebSocket
             else
             {
                 Server.Pilots.Add(pilotServer.Pilot.Id, pilotServer);
+                Server.Pilots[pilotServer.Pilot.Id].Headers = GetHeaders();
                 Server.MapsServer[pilotServer.Pilot.Map.Id].Join(pilotServer);
             }
         }

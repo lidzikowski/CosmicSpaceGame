@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class MapServer : MonoBehaviour
 {
-    protected static readonly float SYNC_DISTANCE = 150;
+    protected static readonly float SYNC_DISTANCE = 200;
+    protected static readonly int MAP_SIZE = 1000;
 
 
 
@@ -29,6 +30,8 @@ public class MapServer : MonoBehaviour
             CheckEnemyOnMap();
         }
     }
+
+    public List<Portal> Portals { get; set; }
 
 
     
@@ -71,12 +74,12 @@ public class MapServer : MonoBehaviour
 
     public static Vector2 RandomPosition()
     {
-        return new Vector2(Random.Range(0, 1000), -Random.Range(0, 1000));
+        return new Vector2(Random.Range(0, MAP_SIZE), -Random.Range(0, MAP_SIZE));
     }
     public static Vector2 RandomPosition(Vector3 position)
     {
         Vector2 pos = RandomCircle(position, Random.Range(5, 50));
-        if (pos.x >= 0 && pos.x <= 1000 && pos.y <= 0 && pos.y >= -1000)
+        if (pos.x >= 0 && pos.x <= MAP_SIZE && pos.y <= 0 && pos.y >= -MAP_SIZE)
             return pos;
         return RandomPosition();
     }
