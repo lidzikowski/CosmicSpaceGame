@@ -29,5 +29,10 @@
   <CHAT_HELP_LIST>List of commands.</CHAT_HELP_LIST>
   <CHAT_HELP_ONLINE>Online users on this channel.</CHAT_HELP_ONLINE>
   <CHAT_HELP_PRIVATE>A private message to another user (/pw &lt;username&gt; &lt;message&gt;).</CHAT_HELP_PRIVATE>
+  <PORTAL_NOT_FOUND>Portal was not found.</PORTAL_NOT_FOUND>
+  <PORTAL_FOUND>Intergalactic jump on the map {0}</PORTAL_FOUND>
+  <TARGET_NOT_FOUND>No target has been selected to perform the attack.</TARGET_NOT_FOUND>
+  
+  
   
 </Language>

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp.Server;
-using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Resources;
 using CosmicSpaceCommunication.Game.Enemy;
 using System;
@@ -66,7 +65,7 @@ public class Server : MonoBehaviour
             mapServer.CurrentMap = map;
 
             mapServer.EnemiesOnCurrentMap = await Database.GetEnemyMap(map.Id);
-            mapServer.Portals = await Database.GetPortals(map.Id);
+            map.Portals = await Database.GetPortals(map.Id);
 
             MapsServer.Add(map.Id, mapServer);
         }

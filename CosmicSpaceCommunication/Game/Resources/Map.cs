@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Resources
 {
@@ -6,6 +7,9 @@ namespace CosmicSpaceCommunication.Game.Resources
     public class Map : ReqLevel
     {
         public bool IsPvp { get; set; }
+        public List<Portal> Portals { get; set; }
+
+
 
         public static Map GetMap(DataRow row)
         {

@@ -12,7 +12,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
         public string Name { get; set; }
         public long Hitpoints { get; set; }
         public long Shields { get; set; }
-        public int Speed { get; set; }
+        public float Speed { get; set; }
         public long Damage { get; set; }
         public int ShotDistance { get; set; }
         public bool IsAggressive { get; set; }
@@ -28,7 +28,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
                 Name = ConvertRow.Row<string>(row["enemyname"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
-                Speed = ConvertRow.Row<int>(row["speed"]),
+                Speed = ConvertRow.Row<float>(row["speed"]) / 4.0f,
                 Damage = ConvertRow.Row<long>(row["damage"]),
                 ShotDistance = ConvertRow.Row<int>(row["shotdistance"]),
                 IsAggressive = ConvertRow.Row<bool>(row["isaggressive"]),

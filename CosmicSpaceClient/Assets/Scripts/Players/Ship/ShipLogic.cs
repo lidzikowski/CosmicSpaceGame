@@ -114,8 +114,6 @@ public class ShipLogic : MonoBehaviour
             if (!LocalPlayer)
                 return;
 
-            //Debug.Log($"Aktalizacja {position.x} {position.y}");
-
             if (IsDead)
                 return;
 
@@ -360,7 +358,7 @@ public class ShipLogic : MonoBehaviour
         }
     }
     public string KillerBy { get; set; }
-    public int Speed { get; set; }
+    public float Speed { get; set; }
     #endregion
 
 

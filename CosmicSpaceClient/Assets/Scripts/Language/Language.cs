@@ -109,6 +109,15 @@ public class Language
     [XmlElement("CHAT_HELP_PRIVATE")]
     public string CHAT_HELP_PRIVATE { get; set; }
 
+    [XmlElement("PORTAL_NOT_FOUND")]
+    public string PORTAL_NOT_FOUND { get; set; }
+
+    [XmlElement("PORTAL_FOUND")]
+    public string PORTAL_FOUND { get; set; }
+
+    [XmlElement("TARGET_NOT_FOUND")]
+    public string TARGET_NOT_FOUND { get; set; }
+
     
     #endregion
 }

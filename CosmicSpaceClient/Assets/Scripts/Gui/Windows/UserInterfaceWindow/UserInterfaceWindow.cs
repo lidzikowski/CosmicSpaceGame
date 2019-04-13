@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.EventSystems;
 
 public class UserInterfaceWindow : GameWindow
 {
@@ -32,8 +33,10 @@ public class UserInterfaceWindow : GameWindow
     public Text ScrapText;
 
     [Header("Mini Map")]
-    public Text MiniMapPanelText;
     public Text MapPosition;
+    public GameObject MapGameObject;
+    public Button CloseMapWindowButton;
+    public GameObject MapBackgroundGameObject;
 
     [Header("Log")]
     public Transform LogTransform;
@@ -44,6 +47,18 @@ public class UserInterfaceWindow : GameWindow
     public GameObject MessageGameObject;
     public InputField MessageInputField;
     public Button SendMessageButton;
+    public GameObject ChatGameObject;
+    public Button CloseChatWindowButton;
+
+    [Header("Menu Buttons")]
+    public Button MapButton;
+    public Button ChatButton;
+    public Button SettingsButton;
+    public Button CloseButton;
+
+    [Header("Menu Background")]
+    public Sprite ActiveSprite;
+    public Sprite DisactiveSprite;
 
 
 
@@ -52,6 +67,22 @@ public class UserInterfaceWindow : GameWindow
         base.Start();
 
         ButtonListener(SendMessageButton, SendMessageButton_Clicked);
+
+        ButtonListener(CloseMapWindowButton, CloseMapWindowButton_Clicked);
+        ButtonListener(MapButton, CloseMapWindowButton_Clicked);
+
+        ButtonListener(CloseChatWindowButton, CloseChatWindowButton_Clicked);
+        ButtonListener(ChatButton, CloseChatWindowButton_Clicked);
+
+        ButtonListener(SettingsButton, SettingsButton_Clicked);
+        ButtonListener(CloseButton, CloseButton_Clicked);
+
+        EventTrigger.Entry entry = new EventTrigger.Entry()
+        {
+            eventID = EventTriggerType.PointerDown
+        };
+        entry.callback.AddListener((data) => { ClickMap((PointerEventData)data); });
+        MapBackgroundGameObject.GetComponent<EventTrigger>().triggers.Add(entry);
     }
 
     public override void Refresh()
@@ -62,17 +93,17 @@ public class UserInterfaceWindow : GameWindow
         SetText(MetalText, $"Metal {Client.Pilot.Metal}");
         SetText(ScrapText, $"Scrap {Client.Pilot.Scrap}");
 
-        string position = $"{(int)Player.LocalShipController.Position.x} / {-(int)Player.LocalShipController.Position.y}";
+        string position = $"{(int)Player.LocalShipController.Position.x};{-(int)Player.LocalShipController.Position.y}";
         if (Player.LocalShipController.Position != Player.LocalShipController.TargetPosition)
         {
-            position += $" > {(int)Player.LocalShipController.TargetPosition.x} / {-(int)Player.LocalShipController.TargetPosition.y}";
+            position += $" > {(int)Player.LocalShipController.TargetPosition.x};{-(int)Player.LocalShipController.TargetPosition.y}";
         }
-        SetText(MapPosition, position);
+        SetText(MapPosition, $"{Client.Pilot.Map.Name} [{position}]");
     }
 
     public override void ChangeLanguage()
     {
-        SetText(MiniMapPanelText, $"{GameSettings.UserLanguage.MINIMAP} -> {Client.Pilot.Map.Name}");
+
     }
 
     public void CreateLogMessage(string message, float time)
@@ -92,7 +123,10 @@ public class UserInterfaceWindow : GameWindow
     void SendMessageButton_Clicked()
     {
         if (!CanSend)
+        {
+            MessageInputField.text = MessageInputField.text;
             return;
+        }
         StartCoroutine(SenderTimer());
 
         if (!ChatSocketConnected || string.IsNullOrEmpty(MessageInputField.text) || string.IsNullOrWhiteSpace(MessageInputField.text))
@@ -416,5 +450,46 @@ public class UserInterfaceWindow : GameWindow
         {
             Debug.LogError(ex.Message);
         }
+    }
+
+    private void CloseMapWindowButton_Clicked()
+    {
+        SetActiveWindow(MapGameObject, MapButton);
+    }
+
+    private void CloseChatWindowButton_Clicked()
+    {
+        SetActiveWindow(ChatGameObject, ChatButton);
+    }
+
+    private void SetActiveWindow(GameObject windowGameObject, Button windowButton)
+    {
+        bool status = !windowGameObject.activeSelf;
+        windowGameObject?.SetActive(status);
+
+        if (windowButton != null)
+            SetAvtiveButton(windowButton, status);
+    }
+
+    private void SetAvtiveButton(Button windowButton, bool status)
+    {
+        windowButton.gameObject.GetComponent<Image>().sprite = status ? ActiveSprite : DisactiveSprite;
+    }
+
+    private void SettingsButton_Clicked()
+    {
+
+    }
+
+    private void CloseButton_Clicked()
+    {
+        Application.Quit();
+    }
+
+    public void ClickMap(PointerEventData data)
+    {
+        RectTransform Map = MapBackgroundGameObject.transform as RectTransform;
+        Vector3 localPosition = MapBackgroundGameObject.transform.InverseTransformPoint(data.pressPosition);
+        Player.TargetPosition = new Vector2(Map.rect.width / 2 + localPosition.x, -(Map.rect.height / 2 - localPosition.y)) * 4;
     }
 }

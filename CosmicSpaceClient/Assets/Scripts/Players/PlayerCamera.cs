@@ -24,7 +24,7 @@ public class PlayerCamera : MonoBehaviour
     private void Start()
     {
         CameraPosition = new Vector3(0, -10, -50);
-        Index = 5;
+        Index = 3;
         CameraSpeed = 1;
     }
 
@@ -44,7 +44,7 @@ public class PlayerCamera : MonoBehaviour
         if (axis != 0f)
         {
             int x = axis > 0 ? -1 : 1;
-            if (Index + x >= 0 && Index + x <= 10)
+            if (Index + x >= 0 && Index + x <= 6)
                 Index += x;
         }
     }

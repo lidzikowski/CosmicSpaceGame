@@ -12,7 +12,7 @@ namespace CosmicSpaceCommunication.Game.Resources
         public int Lasers { get; set; }
         public int Generators { get; set; }
         public int Extras { get; set; }
-        public int Speed { get; set; }
+        public float Speed { get; set; }
         public int Cargo { get; set; }
         public long Hitpoints { get; set; }
         public Reward Reward { get; set; }
@@ -30,7 +30,7 @@ namespace CosmicSpaceCommunication.Game.Resources
                 Lasers = ConvertRow.Row<int>(row["lasers"]),
                 Generators = ConvertRow.Row<int>(row["generators"]),
                 Extras = ConvertRow.Row<int>(row["extras"]),
-                Speed = ConvertRow.Row<int>(row["speed"]),
+                Speed = ConvertRow.Row<float>(row["speed"]) / 4.0f,
                 Cargo = ConvertRow.Row<int>(row["cargo"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Reward = Reward.GetReward(row),

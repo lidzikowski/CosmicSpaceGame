@@ -320,7 +320,7 @@ public abstract class Opponent
     #endregion
 
     #region Speed
-    public abstract int Speed { get; }
+    public abstract float Speed { get; }
     #endregion
 
     #region Target

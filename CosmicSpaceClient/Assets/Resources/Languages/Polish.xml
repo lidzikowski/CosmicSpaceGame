@@ -29,5 +29,12 @@
   <CHAT_HELP_LIST>Lista komend.</CHAT_HELP_LIST>
   <CHAT_HELP_ONLINE>Aktywni użytkownicy kanału.</CHAT_HELP_ONLINE>
   <CHAT_HELP_PRIVATE>Prywatna wiadomość do innego użytkownika (/pw &lt;użytkownik&gt; &lt;wiadomość&gt;).</CHAT_HELP_PRIVATE>
+  <PORTAL_NOT_FOUND>.</PORTAL_NOT_FOUND>
+  <PORTAL_FOUND>Skok międzygalaktyczny na mapę {0}</PORTAL_FOUND>
+  <PORTAL_NOT_FOUND>Portal nie został znaleziony.</PORTAL_NOT_FOUND>
+  <PORTAL_FOUND>Intergalactic jump .</PORTAL_FOUND>
+  <TARGET_NOT_FOUND>Żaden cel nie został wybrany do przeprowadzenia ataku.</TARGET_NOT_FOUND>
+  
+  
   
 </Language>

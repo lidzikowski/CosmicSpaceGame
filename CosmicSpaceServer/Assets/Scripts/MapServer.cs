@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class MapServer : MonoBehaviour
 {
-    protected static readonly float SYNC_DISTANCE = 200;
+    protected static readonly float SYNC_DISTANCE = 150;
     protected static readonly int MAP_SIZE = 1000;
 
 
@@ -30,8 +30,6 @@ public class MapServer : MonoBehaviour
             CheckEnemyOnMap();
         }
     }
-
-    public List<Portal> Portals { get; set; }
 
 
     

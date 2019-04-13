@@ -40,7 +40,7 @@ public class EnemyServer : Opponent
 
     public override long MaxShields => ParentEnemy.Shields;
 
-    public override int Speed => ParentEnemy.Speed;
+    public override float Speed => ParentEnemy.Speed;
 
     public override long Damage => ParentEnemy.Damage;
 

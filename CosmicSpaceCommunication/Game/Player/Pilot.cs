@@ -30,7 +30,7 @@ namespace CosmicSpaceCommunication.Game.Player
 
         public long MaxHitpoints { get; set; }
         public long MaxShields { get; set; }
-        public int Speed { get; set; }
+        public float Speed { get; set; }
 
 
 

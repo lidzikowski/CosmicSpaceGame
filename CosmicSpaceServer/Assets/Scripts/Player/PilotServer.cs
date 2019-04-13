@@ -128,7 +128,7 @@ public class PilotServer : Opponent
     #endregion
 
     #region Speed
-    public override int Speed
+    public override float Speed
     {
         get => Pilot.Speed;
     }

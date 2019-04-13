@@ -31,7 +31,9 @@ public class Player : MonoBehaviour
 
     [Header("Blasters")]
     public List<GameObject> BlastersGameObject = new List<GameObject>();
-    
+
+    [Header("Portals")]
+    public Transform PortalTransform;
 
 
     private void Start()
@@ -42,7 +44,7 @@ public class Player : MonoBehaviour
         LoadBlasters();
 
         #if DEBUG
-        DebugMode = true;
+        //DebugMode = true;
         #endif
     }
     
@@ -58,7 +60,7 @@ public class Player : MonoBehaviour
     }
     
     #region Mouse / Keyboard
-    Vector2 TargetPosition;
+    public static Vector2 TargetPosition;
     float timer = 0;
     private void PlayerNewPosition()
     {
@@ -73,13 +75,16 @@ public class Player : MonoBehaviour
 
     private void MouseControl()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
-            return;
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
 
-        if (Input.GetMouseButtonDown(0))
-            MouseController();
-        else if (Input.GetMouseButton(0))
-            MouseController(false);
+            if (Input.GetMouseButtonDown(0))
+                MouseController();
+            else if (Input.GetMouseButton(0))
+                MouseController(false);
+        }
     }
 
     private void MouseController(bool press = true)
@@ -118,7 +123,29 @@ public class Player : MonoBehaviour
             if (!LocalShipController.TargetIsNull)
                 LocalShipController.Attack = !LocalShipController.Attack;
             else
-                Debug.Log("Brak celu do ataku");
+                GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.TARGET_NOT_FOUND });
+        }
+        else if(Input.GetKeyDown(KeyCode.J))
+        {
+            Portal portal = null;
+            foreach (Transform p in PortalTransform.transform)
+            {
+                if(Vector2.Distance(LocalShipController.Position, p.position) < 15)
+                {
+                    portal = p.GetComponent<ClientPortal>().Portal;
+                    break;
+                }
+            }
+
+            if(portal != null)
+            {
+                GuiScript.CreateLogMessage(new List<string>() { string.Format(GameSettings.UserLanguage.PORTAL_FOUND, portal.TargetMapId) });
+
+
+
+            }
+            else
+                GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.PORTAL_NOT_FOUND });
         }
     }
     #endregion
@@ -225,6 +252,7 @@ public class Player : MonoBehaviour
 
     public void CreateBackground(Map map)
     {
+        #region Background
         foreach (Transform t in BackgroundTransform)
             Destroy(t.gameObject);
 
@@ -244,6 +272,19 @@ public class Player : MonoBehaviour
             if (background != null)
                 Instantiate(background, BackgroundTransform);
         }
+        #endregion
+
+        #region Portals
+        foreach (Transform t in PortalTransform)
+            Destroy(t.gameObject);
+
+        foreach (Portal portal in map.Portals)
+        {
+            GameObject p = Instantiate(Resources.Load<GameObject>($"{portal.PrefabTypeName}/{portal.PrefabName}"), PortalTransform);
+
+            p.AddComponent<ClientPortal>().Portal = portal;
+        }
+        #endregion
 
         if (DebugMode)
             GuiScript.CreateLogMessage(new List<string>() { $"CreateBackground map:'{map.Name} [ID:{map.Id}]' pvp:'{map.IsPvp}' level:'{map.RequiredLevel}'" });
