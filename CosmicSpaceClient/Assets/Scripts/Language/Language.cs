@@ -118,6 +118,12 @@ public class Language
     [XmlElement("TARGET_NOT_FOUND")]
     public string TARGET_NOT_FOUND { get; set; }
 
-    
+    [XmlElement("SAFE_ZONE_ACTIVE")]
+    public string SAFE_ZONE_ACTIVE { get; set; }
+
+    [XmlElement("SAFE_ZONE_INACTIVE")]
+    public string SAFE_ZONE_INACTIVE { get; set; }
+
+
     #endregion
 }

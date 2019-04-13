@@ -3,6 +3,7 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -82,8 +83,11 @@ public abstract class Opponent
     }
     protected void Leave(Opponent leaveOpponent)
     {
-        if (Target == leaveOpponent)
+        if (TargetId == leaveOpponent?.Id || Id == leaveOpponent?.TargetId)
+        {
             Target = null;
+            leaveOpponent.Target = null;
+        }
 
         if (!IsPlayer)
             return;
@@ -139,8 +143,48 @@ public abstract class Opponent
     #endregion
 
     #region IsDead / IsCover
-    public virtual float IsCoverTimer { get; set; }
-    public virtual bool IsCover { get; set; }
+    protected float isCoverTimer { get; set; }
+    public virtual float IsCoverTimer
+    {
+        get => isCoverTimer;
+        set
+        {
+            if (isCoverTimer == value)
+                return;
+
+            isCoverTimer = value;
+            IsCover = value > 0;
+        }
+    }
+
+    protected bool isCover { get; set; }
+    public virtual bool IsCover
+    {
+        get => isCover;
+        set
+        {
+            if (isCover == value)
+                return;
+
+            isCover = value;
+
+            OnCover();
+        }
+    }
+    protected virtual void OnCover()
+    {
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.SafeZone,
+            Data = new SafeZone()
+            {
+                PilotId = Id,
+                IsPlayer = IsPlayer,
+                Status = IsCover
+            }
+        }, true);
+    }
+
     protected virtual bool isDead { get; set; }
     public bool IsDead
     {
@@ -189,7 +233,6 @@ public abstract class Opponent
         LastTakeDamage = 0;
 
         IsCoverTimer = 10;
-        IsCover = true;
 
         SendToPilotsInArea(new CommandData()
         {
@@ -413,7 +456,7 @@ public abstract class Opponent
     #endregion
 
     #region TakeDamage
-    protected float LastTakeDamage = 0;
+    public float LastTakeDamage = 0;
     public virtual void OnTakeDamage(Opponent opponent, long? receivedDamage, int ammunition, bool type)
     {
         if (IsDead)
@@ -553,14 +596,12 @@ public abstract class Opponent
         if(IsCover)
         {
             IsCoverTimer -= UPDATE_TIME;
-            if (IsCoverTimer <= 0)
-                IsCover = false;
         }
     }
     #endregion
 
     #region Repair
-    protected bool CanRepair => LastTakeDamage <= 0;
+    public bool CanRepair => LastTakeDamage <= 0;
     public void Repair()
     {
         if (CanRepearHitpoints)

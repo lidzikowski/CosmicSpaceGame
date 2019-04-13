@@ -33,7 +33,7 @@ public class UserInterfaceWindow : GameWindow
     public Text ScrapText;
 
     [Header("Mini Map")]
-    public Text MapPosition;
+    public Text MapPositionText;
     public GameObject MapGameObject;
     public Button CloseMapWindowButton;
     public GameObject MapBackgroundGameObject;
@@ -59,6 +59,9 @@ public class UserInterfaceWindow : GameWindow
     [Header("Menu Background")]
     public Sprite ActiveSprite;
     public Sprite DisactiveSprite;
+
+    [Header("Safe Zone")]
+    public Text SafeZoneText;
 
 
 
@@ -98,7 +101,7 @@ public class UserInterfaceWindow : GameWindow
         {
             position += $" > {(int)Player.LocalShipController.TargetPosition.x};{-(int)Player.LocalShipController.TargetPosition.y}";
         }
-        SetText(MapPosition, $"{Client.Pilot.Map.Name} [{position}]");
+        SetText(MapPositionText, $"{Client.Pilot.Map.Name} [{position}]");
     }
 
     public override void ChangeLanguage()

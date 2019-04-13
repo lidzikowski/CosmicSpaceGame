@@ -11,7 +11,7 @@ public class ClientPortal : MonoBehaviour
         {
             portal = value;
 
-            transform.position = new Vector3(value.PositionX, -value.PositionY, transform.position.z);
+            transform.position = new Vector3(value.PositionX, value.PositionY, transform.position.z);
         }
     }
 }

@@ -7,8 +7,6 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
-using System.Net;
-using System.Net.Sockets;
 
 public class Client : MonoBehaviour
 {
@@ -320,6 +318,28 @@ public class Client : MonoBehaviour
         else if (commandData.Command == Commands.NewReward)
         {
             GetComponent<Player>().TakeReward((ServerReward)commandData.Data);
+        }
+        #endregion
+
+
+        #region ZMIANA MAPY
+        else if (commandData.Command == Commands.ChangeMap)
+        {
+            if (commandData.Data is Pilot pilot)
+                GetComponent<Player>().ChangeMap(pilot);
+            else
+            {
+                Player.LocalShipController.TargetGameObject = null;
+                GetComponent<Player>().ClearGameArea(false);
+            }
+        }
+        #endregion
+
+
+        #region STREFA OCHRONNA
+        else if (commandData.Command == Commands.SafeZone)
+        {
+            GetComponent<Player>().SafeZone((SafeZone)commandData.Data);
         }
         #endregion
 

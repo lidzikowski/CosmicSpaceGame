@@ -1,4 +1,5 @@
-﻿using CosmicSpaceCommunication.Game.Enemy;
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ public class MapServer : MonoBehaviour
 
     public List<PilotServer> PilotsOnMap = new List<PilotServer>();
 
-    ulong enemyId = 100;
+    static ulong enemyId = 1000000;
     public List<EnemyServer> EnemiesOnMap = new List<EnemyServer>();
 
 
@@ -37,8 +38,8 @@ public class MapServer : MonoBehaviour
     {
         foreach (Opponent pilotOnMap in PilotsOnMap)
         {
+            FindSafeZone(pilotOnMap);
             FindOpponents(pilotOnMap);
-
             pilotOnMap.Update();
         }
 
@@ -46,6 +47,22 @@ public class MapServer : MonoBehaviour
         {
             enemyOnMap.Update();
         }
+    }
+
+    private void FindSafeZone(Opponent pilotOnMap)
+    {
+        if (!pilotOnMap.CanRepair)
+            return;
+
+        if (CurrentMap.Portals.FirstOrDefault(o => Distance(new Vector2(o.PositionX, o.PositionY), pilotOnMap.Position) < 50) != null)
+        {
+            if (pilotOnMap.Attack)
+                pilotOnMap.IsCoverTimer = 0;
+            else
+                pilotOnMap.IsCoverTimer = 3;
+        }
+        else
+            pilotOnMap.IsCoverTimer = 0;
     }
 
 
@@ -99,7 +116,7 @@ public class MapServer : MonoBehaviour
         if (pilot == null)
             return;
 
-        SearchOpponent(pilot, PilotsOnMap.Where(o => o != pilot));
+        SearchOpponent(pilot, PilotsOnMap.Where(o => o.Id != pilot.Id));
         SearchOpponent(pilot, EnemiesOnMap);
     }
 
@@ -108,8 +125,8 @@ public class MapServer : MonoBehaviour
         foreach (Opponent opponent in opponents)
         {
             if (Distance(pilot, opponent) <= SYNC_DISTANCE ||
-                pilot.Target == opponent ||
-                opponent.Target == pilot)
+                pilot.Target?.Id == opponent?.Id ||
+                opponent.Target?.Id == pilot?.Id)
                 pilot.AddOpponentInArea(opponent);
             else
                 pilot.RemoveOpponentInArea(opponent);
@@ -120,22 +137,33 @@ public class MapServer : MonoBehaviour
     {
         if (a == null || b == null)
             return float.MaxValue;
-        return Vector2.Distance(a.Position, b.Position);
+        return Distance(a.Position, b.Position);
+    }
+    public static float Distance(Vector2 a, Vector2 b)
+    {
+        if (a == null || b == null)
+            return float.MaxValue;
+        return Vector2.Distance(a, b);
     }
     #endregion
 
 
 
     #region Join and Leave Pilot from Map
-    public void Join(PilotServer pilot)
+    public bool Join(PilotServer pilot)
     {
         if (!PilotsOnMap.Contains(pilot))
         {
             PilotsOnMap.Add(pilot);
+
+            pilot.Pilot.Map = CurrentMap;
+
+            return true;
         }
+        return false;
     }
 
-    public void Leave(PilotServer pilot)
+    public bool Leave(PilotServer pilot)
     {
         if (PilotsOnMap.Contains(pilot))
         {
@@ -143,7 +171,58 @@ public class MapServer : MonoBehaviour
                 opponent.RemoveOpponentInArea(pilot, false);
 
             PilotsOnMap.Remove(pilot);
+            return true;
         }
+        return false;
+    }
+    #endregion
+
+    #region Change map
+    public bool ChangeMapByPortal(PilotServer pilot, Portal portal)
+    {
+        // Zgodnosc mapy pilota z mapa portalu
+        if (pilot.Pilot.Map.Id != CurrentMap.Id)
+            return false;
+
+        // Czy portal istnieje na obecnej mapie
+        if (portal.Map.Id != CurrentMap.Id)
+            return false;
+
+        // Sprawdzenie czy pilot jest przy portalu
+        if (Distance(pilot.Position, new Vector2(portal.PositionX, portal.PositionY)) >= 15)
+            return false;
+
+        return ChangeMap(pilot, portal);
+    }
+
+    public bool ChangeMap(PilotServer pilotServer, Portal portal)
+    {
+        if (Leave(pilotServer))
+        {
+            pilotServer.Send(new CommandData()
+            {
+                Command = Commands.ChangeMap,
+                Data = true
+            });
+
+            pilotServer.NewPostion = pilotServer.Position = new Vector2(portal.TargetPositionX, portal.TargetPositionY);
+
+            pilotServer.IsCoverTimer = 5;
+            pilotServer.OpponentsInArea.Clear();
+
+            if (Server.MapsServer[portal.TargetMap.Id].Join(pilotServer))
+            {
+                pilotServer.Send(new CommandData()
+                {
+                    Command = Commands.ChangeMap,
+                    Data = pilotServer.Pilot
+                });
+
+                return true;
+            }
+        }
+
+        return false;
     }
     #endregion
 }

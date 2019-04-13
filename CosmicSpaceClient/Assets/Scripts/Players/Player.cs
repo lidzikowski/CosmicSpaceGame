@@ -1,4 +1,6 @@
-﻿using CosmicSpaceCommunication.Game.Enemy;
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
@@ -137,12 +139,19 @@ public class Player : MonoBehaviour
                 }
             }
 
-            if(portal != null)
+            if(portal != null && Client.Pilot.Map.Id == portal.Map.Id)
             {
-                GuiScript.CreateLogMessage(new List<string>() { string.Format(GameSettings.UserLanguage.PORTAL_FOUND, portal.TargetMapId) });
+                GuiScript.CreateLogMessage(new List<string>() { string.Format(GameSettings.UserLanguage.PORTAL_FOUND, portal.TargetMap.Name) });
 
-
-
+                Client.SendToSocket(new CommandData()
+                {
+                    Command = Commands.ChangeMap,
+                    Data = new PlayerChangeMap()
+                    {
+                        PlayerId = Client.Pilot.Id,
+                        Portal = portal
+                    }
+                });
             }
             else
                 GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.PORTAL_NOT_FOUND });
@@ -490,6 +499,25 @@ public class Player : MonoBehaviour
 
         MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
     }
+
+    public void ChangeMap(Pilot pilot)
+    {
+        Client.Pilot.Map = pilot.Map;
+
+        LocalShipController.Position = LocalShipController.TargetPosition = TargetPosition = new Vector2(pilot.PositionX, pilot.PositionY);
+
+        CreateBackground(pilot.Map);
+    }
+
+    public void SafeZone(SafeZone safeZone)
+    {
+        ShipLogic whoShipLogic = safeZone.IsPlayer == true ? FindPilot(safeZone.PilotId) : FindEnemy(safeZone.PilotId);
+
+        if (whoShipLogic == null)
+            return;
+
+        whoShipLogic.IsCover = safeZone.Status;
+    }
     #endregion
 
 
@@ -509,9 +537,9 @@ public class Player : MonoBehaviour
 
 
 
-    public void ClearGameArea()
+    public void ClearGameArea(bool localPlayer = true)
     {
-        for (int i = 1; i < transform.childCount; i++)
+        for (int i = localPlayer ? 2 : 3; i < transform.childCount; i++)
         {
             foreach (Transform t in transform.GetChild(i))
                 Destroy(t.gameObject);
@@ -519,5 +547,8 @@ public class Player : MonoBehaviour
 
         PlayersController.Clear();
         EnemiesController.Clear();
+
+        if(!localPlayer)
+            PlayersController.Add(Client.Pilot.Id, LocalShipController);
     }
 }

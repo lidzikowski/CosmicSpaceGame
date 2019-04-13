@@ -45,81 +45,97 @@ public class GameService : WebSocket
         
         try
         {
-            CommandData commandData = GameData.Deserialize(e.RawData);
-            switch (commandData.Command)
+            MainThread.Instance().Enqueue(() =>
             {
-                case Commands.LogIn:
-                    LogInUser logInUser = (LogInUser)commandData.Data;
-                    LoginUser(logInUser);
-                    break;
+                CommandData commandData = GameData.Deserialize(e.RawData);
+                switch (commandData.Command)
+                {
+                    case Commands.LogIn:
+                        LogInUser logInUser = (LogInUser)commandData.Data;
+                        LoginUser(logInUser);
+                        break;
 
 
-                case Commands.Register:
-                    RegisterUser registerUser = (RegisterUser)commandData.Data;
-                    RegisterUser(registerUser);
-                    break;
+                    case Commands.Register:
+                        RegisterUser registerUser = (RegisterUser)commandData.Data;
+                        RegisterUser(registerUser);
+                        break;
 
 
-                case Commands.PlayerLeave:
-                    PilotDisconnect();
-                    break;
+                    case Commands.PlayerLeave:
+                        PilotDisconnect();
+                        break;
 
 
-                case Commands.NewPosition:
-                    NewPosition newPosition = (NewPosition)commandData.Data;
+                    case Commands.NewPosition:
+                        NewPosition newPosition = (NewPosition)commandData.Data;
 
-                    if (newPosition == null)
-                        return;
+                        if (newPosition == null)
+                            return;
 
-                    if (!CheckPacket(newPosition.PlayerId))
-                        return;
+                        if (!CheckPacket(newPosition.PlayerId))
+                            return;
 
-                    if (newPosition.IsPlayer)
-                        PilotChangePosition(newPosition);
-                    break;
-
-
-                case Commands.SelectTarget:
-                    NewTarget newTarget = (NewTarget)commandData.Data;
-
-                    if (newTarget == null)
-                        return;
-
-                    if (!CheckPacket(newTarget.PlayerId))
-                        return;
-
-                    PilotSelectTarget(newTarget);
-                    break;
+                        if (newPosition.IsPlayer)
+                            PilotChangePosition(newPosition);
+                        break;
 
 
-                case Commands.AttackTarget:
-                    AttackTarget attackTarget = (AttackTarget)commandData.Data;
+                    case Commands.SelectTarget:
+                        NewTarget newTarget = (NewTarget)commandData.Data;
 
-                    if (attackTarget == null)
-                        return;
+                        if (newTarget == null)
+                            return;
 
-                    if (!CheckPacket(attackTarget.PlayerId))
-                        return;
+                        if (!CheckPacket(newTarget.PlayerId))
+                            return;
 
-                    PilotAttackTarget(attackTarget);
-                    break;
-
-
-                case Commands.RepairShip:
-                    ulong userId;
-                    if (!ulong.TryParse(commandData.Data.ToString(), out userId))
-                        return;
-
-                    if (!CheckPacket(userId))
-                        return;
-
-                    Server.Pilots[userId].IsDead = false;
-                    break;
+                        PilotSelectTarget(newTarget);
+                        break;
 
 
+                    case Commands.AttackTarget:
+                        AttackTarget attackTarget = (AttackTarget)commandData.Data;
+
+                        if (attackTarget == null)
+                            return;
+
+                        if (!CheckPacket(attackTarget.PlayerId))
+                            return;
+
+                        PilotAttackTarget(attackTarget);
+                        break;
 
 
-            }
+                    case Commands.RepairShip:
+                        ulong userId;
+                        if (!ulong.TryParse(commandData.Data.ToString(), out userId))
+                            return;
+
+                        if (!CheckPacket(userId))
+                            return;
+
+                        Server.Pilots[userId].IsDead = false;
+                        break;
+
+
+                    case Commands.ChangeMap:
+                        PlayerChangeMap playerChangeMap = (PlayerChangeMap)commandData.Data;
+
+                        if (playerChangeMap == null)
+                            return;
+
+                        if (!CheckPacket(playerChangeMap.PlayerId))
+                            return;
+
+                        Server.MapsServer[playerChangeMap.Portal.Map.Id].ChangeMapByPortal(Server.Pilots[playerChangeMap.PlayerId], playerChangeMap.Portal);
+                        break;
+
+
+
+
+                }
+            });
         }
         catch (Exception ex)
         {

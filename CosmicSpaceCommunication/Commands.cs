@@ -32,12 +32,14 @@ namespace CosmicSpaceCommunication
 
         NewReward = 350,
 
+        ChangeMap = 360,
+        SafeZone = 361,
 
 
-        ChatMessage = 360,
-        ChatConnected = 361,
-        ChatDisconnected = 362,
-        ChatUserNotFound = 363,
+        ChatMessage = 1000,
+        ChatConnected = 1001,
+        ChatDisconnected = 1002,
+        ChatUserNotFound = 1003,
 
 
     }

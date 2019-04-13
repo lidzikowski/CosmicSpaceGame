@@ -34,6 +34,8 @@
   <PORTAL_NOT_FOUND>Portal nie został znaleziony.</PORTAL_NOT_FOUND>
   <PORTAL_FOUND>Intergalactic jump .</PORTAL_FOUND>
   <TARGET_NOT_FOUND>Żaden cel nie został wybrany do przeprowadzenia ataku.</TARGET_NOT_FOUND>
+  <SAFE_ZONE_ACTIVE>Ochrona jest Aktywna, jesteś bezpieczny.</SAFE_ZONE_ACTIVE>
+  <SAFE_ZONE_INACTIVE>Ochrona jest Nieaktywna, NIE jesteś bezpieczny.</SAFE_ZONE_INACTIVE>
   
   
   

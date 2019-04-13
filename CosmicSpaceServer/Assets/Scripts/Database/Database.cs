@@ -232,7 +232,12 @@ public class Database
             List<Portal> portals = new List<Portal>();
             foreach (DataRow row in dt.Rows)
             {
-                portals.Add(Portal.GetPortal(row));
+                Portal portal = Portal.GetPortal(row);
+
+                portal.Map = Server.Maps[portal.MapId];
+                portal.TargetMap = Server.Maps[portal.TargetMapId];
+
+                portals.Add(portal);
             }
             return portals;
         }

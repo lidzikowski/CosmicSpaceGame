@@ -94,6 +94,9 @@ public class ShipLogic : MonoBehaviour
 
             if (!LocalPlayer)
                 return;
+
+            Client.Pilot.PositionX = value.x;
+            Client.Pilot.PositionY = value.y;
             
             GuiScript.RefreshAllActiveWindow();
         }
@@ -306,8 +309,38 @@ public class ShipLogic : MonoBehaviour
     }
     #endregion
 
+    #region IsCover
+    private bool isCover;
+    public bool IsCover
+    {
+        get => isCover;
+        set
+        {
+            if (isCover == value)
+                return;
 
+            isCover = value;
 
+            if (!LocalPlayer)
+                return;
+
+            UserInterfaceWindow script = (GuiScript.Windows[WindowTypes.UserInterface]?.Script as UserInterfaceWindow);
+            if (value)
+                script.SafeZoneText.text = GameSettings.UserLanguage.SAFE_ZONE_ACTIVE;
+            else
+                StartCoroutine(HideSafeZone(script));
+        }
+    }
+    private System.Collections.IEnumerator HideSafeZone(UserInterfaceWindow script)
+    {
+        script.SafeZoneText.text = GameSettings.UserLanguage.SAFE_ZONE_INACTIVE;
+        yield return new WaitForSeconds(4);
+        if (!IsCover)
+            script.SafeZoneText.text = string.Empty;
+    }
+    #endregion
+
+    #region LocalPlayer
     private bool localPlayer = false;
     public bool LocalPlayer
     {
@@ -330,6 +363,7 @@ public class ShipLogic : MonoBehaviour
             }
         }
     }
+    #endregion
 
     #region IsDead / KillerBy / Nickname / Ship / Speed
     private bool isDead = false;
