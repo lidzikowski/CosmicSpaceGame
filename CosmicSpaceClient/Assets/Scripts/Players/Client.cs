@@ -11,8 +11,8 @@ using CosmicSpaceCommunication.Game.Resources;
 public class Client : MonoBehaviour
 {
     public static WebSocket Socket;
-    //public const string SERVER_IP = "ws://77.55.212.240:24231";
-    public const string SERVER_IP = "ws://127.0.0.1:24231";
+    public const string SERVER_IP = "ws://77.55.212.240:24231";
+    //public const string SERVER_IP = "ws://127.0.0.1:24231";
 
     private static Pilot pilot;
     public static Pilot Pilot

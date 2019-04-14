@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 13 Kwi 2019, 22:07
+-- Czas generowania: 14 Kwi 2019, 20:14
 -- Wersja serwera: 10.1.37-MariaDB
 -- Wersja PHP: 7.3.0
 
@@ -104,12 +104,14 @@ pp.*,
 ptp.positionx as target_positionx,
 ptp.positiony as target_positiony,
 ((gs_ms.value - gs_pb.value) / gs_pc.value) as portaldistance,
-(gs_pb.value / 2) as portalborder
+(gs_pb.value / 2) as portalborder,
+mrq.requiredlevel
 FROM portals p
 JOIN prefabs ps ON ps.prefabid=p.prefabid
 JOIN prefabs_types pt ON pt.prefabtypeid=ps.prefabtypeid
 JOIN portalpositions pp ON pp.portalpositionid=p.portalpositionid
 JOIN portalpositions ptp ON ptp.portalpositionid=p.target_portalpositionid
+JOIN maps mrq ON mrq.mapid=p.target_mapid
 JOIN gamesettings gs_pc ON gs_pc.key='portalcount'
 JOIN gamesettings gs_ms ON gs_ms.key='mapsize'
 JOIN gamesettings gs_pb ON gs_pb.key='portalborder'
@@ -237,7 +239,7 @@ CREATE TABLE `enemies` (
   `prefabid` int(11) NOT NULL,
   `hitpoints` bigint(20) NOT NULL,
   `shields` bigint(20) NOT NULL,
-  `speed` smallint(5) NOT NULL DEFAULT '50',
+  `speed` smallint(5) NOT NULL DEFAULT '20',
   `damage` bigint(20) NOT NULL,
   `shotdistance` int(11) NOT NULL DEFAULT '30',
   `isaggressive` tinyint(1) NOT NULL DEFAULT '0',
@@ -249,9 +251,15 @@ CREATE TABLE `enemies` (
 --
 
 INSERT INTO `enemies` (`enemyid`, `enemyname`, `prefabid`, `hitpoints`, `shields`, `speed`, `damage`, `shotdistance`, `isaggressive`, `rewardid`) VALUES
-(1, 'npc0', 4, 1000, 1000, 10, 100, 30, 0, 1),
-(2, 'npc1', 2, 1000, 1000, 12, 150, 30, 1, 1),
-(3, 'npc2', 3, 1000, 1000, 11, 70, 30, 1, 1);
+(1, 'Kingfisher', 49, 400, 400, 6, 15, 25, 0, 1),
+(2, 'Comet', 50, 800, 800, 8, 30, 27, 0, 1),
+(3, 'Unicorn', 51, 1000, 1000, 10, 70, 28, 1, 1),
+(4, 'Roosevelt', 52, 1600, 1600, 9, 110, 26, 0, 18),
+(5, 'Herminia', 53, 2200, 2200, 7, 170, 30, 0, 1),
+(6, 'Lancaster', 54, 3000, 3000, 12, 250, 30, 1, 17),
+(7, 'Meteor', 55, 3800, 3800, 11, 400, 30, 0, 1),
+(8, 'Starhammer', 56, 4600, 4600, 10, 550, 30, 1, 1),
+(9, 'Elba', 57, 6000, 6000, 13, 800, 30, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -271,10 +279,12 @@ CREATE TABLE `enemymap` (
 --
 
 INSERT INTO `enemymap` (`id`, `enemyid`, `mapid`, `count`) VALUES
-(1, 1, 100, 150),
-(2, 2, 100, 40),
-(3, 3, 100, 60),
-(4, 1, 101, 50);
+(1, 1, 100, 25),
+(2, 2, 100, 12),
+(3, 3, 100, 3),
+(4, 1, 101, 7),
+(5, 2, 101, 13),
+(6, 3, 101, 20);
 
 -- --------------------------------------------------------
 
@@ -315,8 +325,23 @@ CREATE TABLE `maps` (
 --
 
 INSERT INTO `maps` (`mapid`, `mapname`, `ispvp`, `requiredlevel`) VALUES
-(100, 'map0', 0, 1),
-(101, 'map1', 1, 1);
+(100, '1-1', 0, 1),
+(101, '1-2', 0, 2),
+(102, '1-3', 0, 3),
+(103, '1-4', 0, 4),
+(104, '1-5', 0, 5),
+(105, '2-1', 1, 10),
+(106, '2-2', 1, 14),
+(107, '3-1', 1, 18),
+(108, '3-2', 1, 26),
+(109, '3-3', 1, 33),
+(110, '4-1', 1, 22),
+(111, '4-2', 1, 30),
+(112, '4-3', 1, 36),
+(113, '5-1', 0, 39),
+(114, '5-2', 1, 42),
+(115, '5-3', 1, 45),
+(116, '5-4', 1, 50);
 
 -- --------------------------------------------------------
 
@@ -375,11 +400,11 @@ CREATE TABLE `pilots` (
 --
 
 INSERT INTO `pilots` (`userid`, `nickname`, `mapid`, `positionx`, `positiony`, `shipid`, `experience`, `level`, `scrap`, `metal`, `hitpoints`, `shields`, `isdead`, `killerby`) VALUES
-(100, 'test1', 100, 342.708, -223.186, 100, 0, 1, 0, 0, 5000, 0, 0, NULL),
+(100, 'test1', 100, 319.613, -275.955, 100, 2, 1, 0, 0, 874, 706, 0, NULL),
 (101, 'test2', 100, 384.48, 22.72, 101, 645, 1, 43, 0, 40000, 1000, 0, NULL),
-(102, 'test3', 101, 72, -107, 102, 56268, 1, 79, 0, 2470, 930, 0, NULL),
-(103, 'test4', 100, 359.42, -260.85, 103, 28355, 1, 57, 0, 134910, 0, 0, NULL),
-(104, 'test5', 100, 900.116, -925.793, 104, 484, 1, 32, 0, 5000, 1000, 0, NULL),
+(102, 'test3', 101, 50, -60, 102, 56286, 1, 79, 0, 598, 77, 0, NULL),
+(103, 'test4', 101, 68, -81, 103, 28355, 1, 57, 0, 3700, 1000, 0, NULL),
+(104, 'test5', 100, 932, -937, 104, 484, 1, 32, 0, 5000, 1000, 0, NULL),
 (105, 'test6', 100, 284.76, -360.721, 105, 0, 1, 0, 0, 41166, 0, 0, NULL);
 
 -- --------------------------------------------------------
@@ -534,19 +559,64 @@ CREATE TABLE `portals` (
   `mapid` int(11) UNSIGNED NOT NULL,
   `portalpositionid` int(11) DEFAULT NULL,
   `target_mapid` int(11) UNSIGNED NOT NULL,
-  `target_portalpositionid` int(11) NOT NULL,
-  `requiredlevel` int(11) NOT NULL DEFAULT '1'
+  `target_portalpositionid` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `portals`
 --
 
-INSERT INTO `portals` (`portalid`, `prefabid`, `mapid`, `portalpositionid`, `target_mapid`, `target_portalpositionid`, `requiredlevel`) VALUES
-(1, 31, 100, 35, 101, 1, 1),
-(2, 31, 101, 1, 100, 35, 1),
-(3, 37, 100, 26, 101, 26, 1),
-(5, 43, 100, 20, 101, 20, 1);
+INSERT INTO `portals` (`portalid`, `prefabid`, `mapid`, `portalpositionid`, `target_mapid`, `target_portalpositionid`) VALUES
+(1, 31, 100, 35, 101, 1),
+(2, 31, 101, 1, 100, 35),
+(3, 37, 101, 85, 102, 110),
+(5, 43, 102, 110, 101, 85),
+(6, 31, 101, 35, 103, 1),
+(7, 31, 103, 1, 101, 35),
+(10, 31, 101, 40, 104, 116),
+(11, 31, 104, 116, 101, 40),
+(60, 31, 102, 116, 105, 110),
+(61, 31, 105, 110, 102, 116),
+(62, 31, 102, 35, 106, 1),
+(63, 31, 106, 1, 102, 35),
+(64, 31, 105, 38, 106, 119),
+(65, 31, 106, 119, 105, 38),
+(66, 31, 106, 35, 107, 116),
+(67, 31, 107, 116, 106, 35),
+(68, 31, 103, 75, 107, 1),
+(69, 31, 107, 1, 103, 75),
+(70, 31, 103, 39, 108, 1),
+(71, 31, 108, 1, 103, 39),
+(72, 31, 107, 110, 108, 116),
+(73, 31, 108, 116, 107, 110),
+(74, 31, 107, 35, 109, 5),
+(75, 31, 109, 5, 107, 35),
+(76, 31, 108, 35, 109, 21),
+(77, 31, 109, 21, 108, 35),
+(78, 31, 108, 110, 110, 116),
+(79, 31, 110, 116, 108, 110),
+(80, 31, 104, 35, 110, 1),
+(81, 31, 110, 1, 104, 35),
+(82, 31, 104, 40, 111, 116),
+(83, 31, 111, 116, 104, 40),
+(84, 31, 110, 110, 111, 85),
+(85, 31, 111, 85, 110, 110),
+(86, 31, 111, 35, 112, 21),
+(87, 31, 112, 21, 111, 35),
+(88, 31, 110, 40, 112, 5),
+(89, 31, 112, 5, 110, 40),
+(90, 31, 112, 116, 113, 1),
+(91, 31, 113, 1, 112, 116),
+(92, 31, 109, 110, 113, 116),
+(93, 31, 113, 116, 109, 110),
+(94, 31, 113, 85, 114, 115),
+(95, 31, 114, 115, 113, 85),
+(96, 31, 113, 40, 115, 121),
+(97, 31, 115, 121, 113, 40),
+(98, 31, 114, 40, 116, 4),
+(99, 31, 116, 4, 114, 40),
+(100, 31, 115, 85, 116, 16),
+(101, 31, 116, 16, 115, 85);
 
 -- --------------------------------------------------------
 
@@ -613,7 +683,77 @@ INSERT INTO `prefabs` (`prefabid`, `prefabname`, `prefabtypeid`, `description`) 
 (45, 'Small_Green', 2, ''),
 (46, 'Small_Purple', 2, ''),
 (47, 'Small_Red', 2, ''),
-(48, 'Small_Teal', 2, '');
+(48, 'Small_Teal', 2, ''),
+(49, 'Kingfisher', 1, ''),
+(50, 'Comet', 1, ''),
+(51, 'Unicorn', 1, ''),
+(52, 'Roosevelt', 1, ''),
+(53, 'Herminia', 1, ''),
+(54, 'Lancaster', 1, ''),
+(55, 'Meteor', 1, ''),
+(56, 'Starhammer', 1, ''),
+(57, 'Elba', 1, ''),
+(58, 'Serpent', 1, ''),
+(59, 'Fortitude', 1, ''),
+(60, 'Firebrand', 1, ''),
+(61, 'Neptune', 1, ''),
+(62, 'Empress', 1, ''),
+(63, 'Relentless', 1, ''),
+(64, 'Aquitaine', 1, ''),
+(65, 'Aurora', 1, ''),
+(66, 'Paradise', 1, ''),
+(67, 'Spectrum', 1, ''),
+(68, 'Crocodile', 1, ''),
+(69, 'Elena', 1, ''),
+(70, 'Stalwart', 1, ''),
+(71, 'Valor', 1, ''),
+(72, 'Tomahawk', 1, ''),
+(73, 'Arthas', 1, ''),
+(74, 'Fate', 1, ''),
+(75, 'Lightning', 1, ''),
+(76, 'Sagittarius', 1, ''),
+(77, 'Harbinger', 1, ''),
+(78, 'Thanatos', 1, ''),
+(79, 'Pontiac', 1, ''),
+(80, 'Thunderstorm', 1, ''),
+(81, 'Gibraltar', 1, ''),
+(82, 'Armageddon', 1, ''),
+(83, 'Destroyer', 1, ''),
+(84, 'Thebes', 1, ''),
+(85, 'Phoenix', 1, ''),
+(86, 'Leviathan', 1, ''),
+(87, 'Excursionist', 1, ''),
+(88, 'Nostradamus', 1, ''),
+(89, 'Scorpio', 1, ''),
+(90, 'Vanquisher', 1, ''),
+(91, 'Syracuse', 1, ''),
+(92, 'Geisha', 1, ''),
+(93, 'Chronos', 1, ''),
+(94, 'Cataphract', 1, ''),
+(95, 'Millenium', 1, ''),
+(96, 'Gauntlet', 1, ''),
+(97, 'Saber', 1, ''),
+(98, 'Vision', 1, ''),
+(99, 'Galatea', 1, ''),
+(100, 'Carthage', 1, ''),
+(101, 'Jellyfish', 1, ''),
+(102, 'Vindicator', 1, ''),
+(103, 'Damascus', 1, ''),
+(104, 'Lavanda', 1, ''),
+(105, 'Karnack', 1, ''),
+(106, 'Cyclop', 1, ''),
+(107, 'Zion', 1, ''),
+(108, 'Eternal', 1, ''),
+(109, 'Blade', 1, ''),
+(110, 'Goliath', 1, ''),
+(111, 'Ingenuity', 1, ''),
+(112, 'Hunter', 1, ''),
+(113, 'Voyager', 1, ''),
+(114, 'Wellington', 1, ''),
+(115, 'Minotuar', 1, ''),
+(116, 'Immortal', 1, ''),
+(117, 'Liberator', 1, ''),
+(118, 'Oblivion', 1, '');
 
 -- --------------------------------------------------------
 
@@ -736,7 +876,7 @@ CREATE TABLE `ships` (
 INSERT INTO `ships` (`shipid`, `shipname`, `prefabid`, `requiredlevel`, `scrapprice`, `metalprice`, `lasers`, `generators`, `extras`, `speed`, `cargo`, `hitpoints`, `rewardid`) VALUES
 (100, 'Avius', 1, 1, 0, NULL, 1, 1, 1, 65, 40, 1000, 1),
 (101, 'Challenger', 2, 2, 1500, NULL, 2, 1, 1, 55, 65, 1600, 2),
-(102, 'Executor', 3, 3, 5000, NULL, 2, 2, 1, 250, 80, 2500, 3),
+(102, 'Executor', 3, 3, 5000, NULL, 2, 2, 1, 400, 80, 2500, 3),
 (103, 'Nihilus', 4, 4, 12500, NULL, 3, 2, 1, 70, 100, 3700, 4),
 (104, 'Proximo', 5, 5, 21000, NULL, 3, 3, 1, 65, 150, 5000, 5),
 (105, 'Verminus', 6, 6, NULL, 2100, 4, 5, 1, 50, 200, 4500, 6),
@@ -1920,7 +2060,64 @@ INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `userage
 (1102, 102, '2019-04-13 22:03:05', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (1103, 102, '2019-04-13 22:03:57', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (1104, 102, '2019-04-13 22:05:40', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
-(1105, 102, '2019-04-13 22:06:39', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+(1105, 102, '2019-04-13 22:06:39', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1106, 102, '2019-04-14 10:36:39', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1107, 104, '2019-04-14 10:37:41', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1108, 102, '2019-04-14 10:38:16', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1109, 102, '2019-04-14 10:56:32', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1110, 103, '2019-04-14 10:57:31', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1111, 102, '2019-04-14 11:01:16', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1112, 103, '2019-04-14 11:01:17', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1113, 102, '2019-04-14 11:19:48', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1114, 102, '2019-04-14 11:22:45', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1115, 102, '2019-04-14 11:24:08', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1116, 102, '2019-04-14 11:26:18', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1117, 102, '2019-04-14 11:27:07', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1118, 102, '2019-04-14 11:36:07', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1119, 102, '2019-04-14 11:38:27', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1120, 102, '2019-04-14 11:39:30', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1121, 102, '2019-04-14 11:48:37', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1122, 102, '2019-04-14 11:59:22', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1123, 102, '2019-04-14 12:04:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1124, 102, '2019-04-14 12:47:59', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1125, 102, '2019-04-14 12:49:11', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1126, 102, '2019-04-14 12:51:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1127, 102, '2019-04-14 12:57:14', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1128, 102, '2019-04-14 12:58:46', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1129, 102, '2019-04-14 13:02:50', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1130, 102, '2019-04-14 13:05:41', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1131, 102, '2019-04-14 13:10:58', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1132, 102, '2019-04-14 13:12:19', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1133, 102, '2019-04-14 13:13:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1134, 102, '2019-04-14 13:15:22', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1135, 102, '2019-04-14 15:27:20', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1136, 103, '2019-04-14 15:27:22', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1137, 102, '2019-04-14 15:31:33', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1138, 103, '2019-04-14 15:31:37', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1139, 100, '2019-04-14 15:42:04', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1140, 100, '2019-04-14 15:55:06', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1141, 100, '2019-04-14 15:56:24', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1142, 100, '2019-04-14 15:58:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1143, 102, '2019-04-14 16:04:53', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1144, 102, '2019-04-14 16:08:11', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1145, 102, '2019-04-14 16:08:45', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `useragent`, `host`) VALUES
+(1146, 102, '2019-04-14 16:09:52', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1147, 102, '2019-04-14 16:16:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1148, 102, '2019-04-14 16:16:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1149, 102, '2019-04-14 16:17:31', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1150, 102, '2019-04-14 16:23:08', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1151, 102, '2019-04-14 17:20:13', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1152, 102, '2019-04-14 17:45:04', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1153, 102, '2019-04-14 17:47:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1154, 102, '2019-04-14 17:52:19', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1155, 102, '2019-04-14 18:27:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1156, 102, '2019-04-14 18:28:53', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1157, 102, '2019-04-14 18:29:54', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1158, 102, '2019-04-14 18:31:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1159, 102, '2019-04-14 18:33:02', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1160, 102, '2019-04-14 18:34:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1161, 102, '2019-04-14 18:37:48', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -2059,13 +2256,13 @@ ALTER TABLE `ammunitions`
 -- AUTO_INCREMENT dla tabeli `enemies`
 --
 ALTER TABLE `enemies`
-  MODIFY `enemyid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `enemyid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT dla tabeli `enemymap`
 --
 ALTER TABLE `enemymap`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT dla tabeli `gamesettings`
@@ -2077,7 +2274,7 @@ ALTER TABLE `gamesettings`
 -- AUTO_INCREMENT dla tabeli `maps`
 --
 ALTER TABLE `maps`
-  MODIFY `mapid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `mapid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
 
 --
 -- AUTO_INCREMENT dla tabeli `portalpositions`
@@ -2089,13 +2286,13 @@ ALTER TABLE `portalpositions`
 -- AUTO_INCREMENT dla tabeli `portals`
 --
 ALTER TABLE `portals`
-  MODIFY `portalid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `portalid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT dla tabeli `prefabs`
 --
 ALTER TABLE `prefabs`
-  MODIFY `prefabid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `prefabid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT dla tabeli `prefabs_types`
@@ -2131,7 +2328,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT dla tabeli `userslog`
 --
 ALTER TABLE `userslog`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1106;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1162;
 
 --
 -- Ograniczenia dla zrzutów tabel
