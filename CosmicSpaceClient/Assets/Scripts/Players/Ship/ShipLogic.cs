@@ -4,7 +4,6 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Interfaces;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
-using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 

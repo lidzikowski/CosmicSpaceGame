@@ -44,10 +44,13 @@ public abstract class Opponent
 
         if (joinOpponent.IsPlayer) // PILOT
         {
+            PlayerJoin playerJoin = PlayerJoin.GetNewJoin((joinOpponent as PilotServer).Pilot);
+            playerJoin.TargetPositionX = NewPostion.x;
+            playerJoin.TargetPositionY = NewPostion.y;
             pilot.Send(new CommandData()
             {
                 Command = Commands.PlayerJoin,
-                Data = PlayerJoin.GetNewJoin((joinOpponent as PilotServer).Pilot)
+                Data = playerJoin
             });
         }
         else // ENEMY

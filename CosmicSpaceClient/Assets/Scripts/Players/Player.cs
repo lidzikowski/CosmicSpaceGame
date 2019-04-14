@@ -193,6 +193,9 @@ public class Player : MonoBehaviour
             player,
             Color.blue);
 
+        Debug.Log(player.Nickname);
+        Debug.Log(new Vector2(player.TargetPositionX, player.TargetPositionY));
+
         PlayersController.Add(player.PlayerId, shipController);
     }
 
@@ -328,13 +331,10 @@ public class Player : MonoBehaviour
         if (shipLogic == null)
             return;
 
-        Vector2 position = new Vector2(newPosition.PositionX, newPosition.PositionY);
-        Vector2 targetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
-
         if (!shipLogic.LocalPlayer)
         {
-            shipLogic.Position = position;
-            shipLogic.TargetPosition = targetPosition;
+            shipLogic.Position = new Vector2(newPosition.PositionX, newPosition.PositionY);
+            shipLogic.TargetPosition = new Vector2(newPosition.TargetPositionX, newPosition.TargetPositionY);
         }
         shipLogic.Speed = newPosition.Speed;
     }

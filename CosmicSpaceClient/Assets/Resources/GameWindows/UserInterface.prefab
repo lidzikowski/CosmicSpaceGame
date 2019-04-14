@@ -144,7 +144,7 @@ MonoBehaviour:
   UserText: {fileID: 6424555045162928633}
   MetalText: {fileID: 8790702727428796152}
   ScrapText: {fileID: 5388069769340088986}
-  MapPositionText: {fileID: 0}
+  MapPositionText: {fileID: 5868997286628008513}
   MapGameObject: {fileID: 1008474516367231479}
   CloseMapWindowButton: {fileID: 7839816834805461578}
   MapBackgroundGameObject: {fileID: 314817378941958057}
