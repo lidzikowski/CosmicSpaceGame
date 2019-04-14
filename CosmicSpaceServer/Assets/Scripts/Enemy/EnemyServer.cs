@@ -42,7 +42,7 @@ public class EnemyServer : Opponent
 
     public override float Speed => ParentEnemy.Speed;
 
-    public override long Damage => ParentEnemy.Damage;
+    public override long Damage => RandomDamage(ParentEnemy.Damage);
 
     protected override int ShotDistance => ParentEnemy.ShotDistance;
 

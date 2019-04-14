@@ -456,6 +456,11 @@ public abstract class Opponent
 
     #region Damage
     public abstract long Damage { get; }
+
+    protected long RandomDamage(long damage)
+    {
+        return (long)UnityEngine.Random.Range(damage * 0.85f, damage * 1.15f);
+    }
     #endregion
 
     #region TakeDamage

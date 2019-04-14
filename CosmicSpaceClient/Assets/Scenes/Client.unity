@@ -294,8 +294,6 @@ MonoBehaviour:
   BackgroundTransform: {fileID: 935914589}
   StarsGameObject: {fileID: 4882740306099789966, guid: feee75a8e2fa9bd42bb17e0353abe17a,
     type: 3}
-  MapsGameObject:
-  - {fileID: 4803577662759731977, guid: 8e59e97080c26bf419c017c3472dfe4c, type: 3}
   ExplosionsGameObject: []
   BlastersGameObject: []
   PortalTransform: {fileID: 468039155}

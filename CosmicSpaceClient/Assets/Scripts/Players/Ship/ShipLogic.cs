@@ -13,7 +13,7 @@ public class ShipLogic : MonoBehaviour
     public string ObjectName;
 
     public List<Transform> Lasers => ChildInChild("Lasers");
-    public List<Transform> Gears => ChildInChild("Gears");
+    public List<Transform> Gears => ChildInChild("Engines");
 
     [Header("Ship transform rotate/spawn")]
     public Transform RotationTransform;
@@ -42,7 +42,12 @@ public class ShipLogic : MonoBehaviour
     public GameObject TargetInterfaceGameObject;
     public TextMesh HitpointsText;
     public TextMesh ShieldsText;
-    
+
+    [Header("Damage Prefab")]
+    public GameObject DamageGameObject;
+
+
+
     public void ShotToTarget(long? damage, GameObject bullet)
     {
         if (TargetIsNull)
@@ -59,7 +64,8 @@ public class ShipLogic : MonoBehaviour
             go.AddComponent<BulletLogic>().TargetGameObject = TargetGameObject;
         }
 
-        Debug.Log(dmg);
+        GameObject damageGo = Instantiate(DamageGameObject, TargetGameObject.transform.position + (Vector3.up * 13), Quaternion.identity);
+        damageGo.GetComponent<TextMesh>().text = dmg.ToString();
     }
 
     
@@ -451,8 +457,8 @@ public class ShipLogic : MonoBehaviour
     {
         InitPosition(enemy);
         InitHitpointsShields(enemy);
-        InitName(enemy.ParentEnemy.Name, enemy.Id, enemy.ParentEnemy, nameColor);
-
+        InitName($"-=( {enemy.ParentEnemy.Name} )=-", enemy.Id, enemy.ParentEnemy, enemy.ParentEnemy.IsAggressive ? nameColor : Color.gray);
+        
         PointerMeshRenderer.gameObject.layer = 12;
         PointerMeshRenderer.material = Resources.Load<Material>("MapPointers/Red");
     }

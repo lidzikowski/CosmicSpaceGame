@@ -26,7 +26,6 @@ public class Player : MonoBehaviour
     [Header("Map and background")]
     public Transform BackgroundTransform;
     public GameObject StarsGameObject;
-    public List<GameObject> MapsGameObject = new List<GameObject>();
 
     [Header("Explosions")]
     public List<GameObject> ExplosionsGameObject = new List<GameObject>();
@@ -280,9 +279,7 @@ public class Player : MonoBehaviour
         // Create background - settings
         if (true)
         {
-            GameObject background = MapsGameObject.FirstOrDefault(o => o?.GetComponent<Background>().MapId == map.Id);
-            if (background != null)
-                Instantiate(background, BackgroundTransform);
+            Instantiate(Resources.Load<GameObject>($"Maps/{map.Name}"), BackgroundTransform);
         }
         #endregion
 

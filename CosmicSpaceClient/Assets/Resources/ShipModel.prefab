@@ -363,6 +363,8 @@ MonoBehaviour:
   TargetInterfaceGameObject: {fileID: 6791095339598380120}
   HitpointsText: {fileID: 9119305024726202276}
   ShieldsText: {fileID: 3823497726461917982}
+  DamageGameObject: {fileID: 5463017865768130145, guid: 3e1fbfdea1d70cd4dbc5bd2262b1e9b8,
+    type: 3}
 --- !u!1 &6499379950828206854
 GameObject:
   m_ObjectHideFlags: 0
