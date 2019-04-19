@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class SettingsWindow : GameWindow
 {
-
     public override void Start()
     {
         base.Start();
@@ -17,6 +16,6 @@ public class SettingsWindow : GameWindow
 
     public override void ChangeLanguage()
     {
-
+        base.ChangeLanguage();
     }
 }

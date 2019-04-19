@@ -17,6 +17,6 @@ public class MissionWindow : GameWindow
 
     public override void ChangeLanguage()
     {
-
+        base.ChangeLanguage();
     }
 }

@@ -63,6 +63,7 @@ public class GuiScript : MonoBehaviour
         {
             GameObject go = Instantiate(Resources.Load<GameObject>("GameWindows/" + windowType), canvas);
             window.Window = go;
+            window.Script.WindowType = windowType;
         }
         else
             window.Window = null;

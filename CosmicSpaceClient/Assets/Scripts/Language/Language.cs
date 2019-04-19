@@ -127,6 +127,18 @@ public class Language
     [XmlElement("TARGET_IS_COVER")]
     public string TARGET_IS_COVER { get; set; }
 
+    [XmlElement("QUIT")]
+    public string QUIT { get; set; }
+
+    [XmlElement("SETTINGS")]
+    public string SETTINGS { get; set; }
+
+    [XmlElement("MISSIONS")]
+    public string MISSIONS { get; set; }
+
+    [XmlElement("HANGAR")]
+    public string HANGAR { get; set; }
+
 
     #endregion
 }

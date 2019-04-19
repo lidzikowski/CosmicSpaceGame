@@ -17,6 +17,6 @@ public class HangarWindow : GameWindow
 
     public override void ChangeLanguage()
     {
-
+        base.ChangeLanguage();
     }
 }
