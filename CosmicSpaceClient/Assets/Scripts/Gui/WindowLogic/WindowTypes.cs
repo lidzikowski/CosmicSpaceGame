@@ -2,5 +2,8 @@
 {
     MainMenu,
     UserInterface,
-    RepairShip
+    RepairShip,
+    HangarWindow,
+    MissionWindow,
+    SettingsWindow,
 }

@@ -167,8 +167,9 @@ public class ShipLogic : MonoBehaviour
     #region Target
     private GameObject targetGameObject;
     public bool TargetIsNull => targetGameObject == null;
-    private bool? TargetIsPlayer => !TargetIsNull ? targetGameObject.tag == "Player" : (bool?)null;
-    private ulong? TargetId => !TargetIsNull ? ulong.Parse(targetGameObject.name) : (ulong?)null;
+    private bool? TargetIsPlayer => !TargetIsNull ? TargetGameObject.tag == "Player" : (bool?)null;
+    public bool TargetIsCover => !TargetIsNull ? TargetGameObject.GetComponent<ShipLogic>().IsCover : false;
+    private ulong? TargetId => !TargetIsNull ? ulong.Parse(TargetGameObject.name) : (ulong?)null;
     public GameObject TargetGameObject
     {
         get => targetGameObject;
@@ -219,11 +220,8 @@ public class ShipLogic : MonoBehaviour
             if (attack == value)
                 return;
 
-            attack = value;
+            attack = TargetIsCover ? false : value;
             
-            if (TargetIsNull)
-                attack = false;
-
             if (IsDead)
                 return;
 

@@ -251,12 +251,23 @@ public class GameService : WebSocket
         {
             PilotServer attacker = Server.Pilots[attackTarget.PlayerId];
 
-            attacker.Ammunition = attackTarget.SelectedAmmunition;
-            attacker.Rocket = attackTarget.SelectedRocket;
+            MapServer attackerMap = Server.MapsServer[attacker.Pilot.Map.Id];
 
-            if (attacker.Target == null)
+            Opponent opponent = null;
+            if (attackTarget.TargetIsPlayer == true) // Pilot
+            {
+                opponent = attackerMap.PilotsOnMap.FirstOrDefault(o => o.Id == attackTarget.TargetId);
+            }
+            else if (attackTarget.TargetIsPlayer == false) // Enemy
+            {
+                opponent = attackerMap.EnemiesOnMap.FirstOrDefault(o => o.Id == attackTarget.TargetId);
+            }
+
+            if (attackTarget.Attack && opponent.IsCover)
                 return;
 
+            attacker.Ammunition = attackTarget.SelectedAmmunition;
+            attacker.Rocket = attackTarget.SelectedRocket;
             attacker.Attack = attackTarget.Attack;
         }
     }

@@ -34,6 +34,7 @@
   <TARGET_NOT_FOUND>No target has been selected to perform the attack.</TARGET_NOT_FOUND>
   <SAFE_ZONE_ACTIVE>Protection is Active, you are safe.</SAFE_ZONE_ACTIVE>
   <SAFE_ZONE_INACTIVE>Protection is Inactive, you are NOT safe.</SAFE_ZONE_INACTIVE>
+  <TARGET_IS_COVER>The selected target is safe from the attack.</TARGET_IS_COVER>
   
   
   

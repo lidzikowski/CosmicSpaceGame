@@ -51,6 +51,8 @@ public class UserInterfaceWindow : GameWindow
     public Button CloseChatWindowButton;
 
     [Header("Menu Buttons")]
+    public Button HangerButton;
+    public Button MissionButton;
     public Button MapButton;
     public Button ChatButton;
     public Button SettingsButton;
@@ -71,6 +73,10 @@ public class UserInterfaceWindow : GameWindow
 
         ButtonListener(SendMessageButton, SendMessageButton_Clicked);
 
+        ButtonListener(HangerButton, HangerButton_Clicked);
+
+        ButtonListener(MissionButton, MissionButton_Clicked);
+
         ButtonListener(CloseMapWindowButton, CloseMapWindowButton_Clicked);
         ButtonListener(MapButton, CloseMapWindowButton_Clicked);
 
@@ -78,6 +84,7 @@ public class UserInterfaceWindow : GameWindow
         ButtonListener(ChatButton, CloseChatWindowButton_Clicked);
 
         ButtonListener(SettingsButton, SettingsButton_Clicked);
+
         ButtonListener(CloseButton, CloseButton_Clicked);
 
         EventTrigger.Entry entry = new EventTrigger.Entry()
@@ -102,6 +109,8 @@ public class UserInterfaceWindow : GameWindow
             position += $" > {(int)Player.LocalShipController.TargetPosition.x};{-(int)Player.LocalShipController.TargetPosition.y}";
         }
         SetText(MapPositionText, $"{Client.Pilot.Map.Name} [{position}]");
+
+        RefreshButtonStatus();
     }
 
     public override void ChangeLanguage()
@@ -471,23 +480,53 @@ public class UserInterfaceWindow : GameWindow
         windowGameObject?.SetActive(status);
 
         if (windowButton != null)
-            SetAvtiveButton(windowButton, status);
+            SetActiveButton(windowButton, status);
     }
 
-    private void SetAvtiveButton(Button windowButton, bool status)
+    private void SetActiveButton(Button windowButton, bool status)
     {
         windowButton.gameObject.GetComponent<Image>().sprite = status ? ActiveSprite : DisactiveSprite;
     }
 
+
+
+    private void HangerButton_Clicked()
+    {
+        SetActiveWindow(WindowTypes.HangarWindow);
+    }
+
+    private void MissionButton_Clicked()
+    {
+        SetActiveWindow(WindowTypes.MissionWindow);
+    }
+
     private void SettingsButton_Clicked()
     {
-
+        SetActiveWindow(WindowTypes.SettingsWindow);
     }
 
     private void CloseButton_Clicked()
     {
         Application.Quit();
     }
+
+    private void SetActiveWindow(WindowTypes windowType)
+    {
+        if (GuiScript.Windows[windowType].Active)
+            GuiScript.CloseWindow(windowType);
+        else
+            GuiScript.OpenWindow(windowType);
+
+        RefreshButtonStatus();
+    }
+
+    private void RefreshButtonStatus()
+    {
+        SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
+        SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
+        SetActiveButton(HangerButton, GuiScript.Windows[WindowTypes.HangarWindow].Active);
+    }
+
 
     public void ClickMap(PointerEventData data)
     {

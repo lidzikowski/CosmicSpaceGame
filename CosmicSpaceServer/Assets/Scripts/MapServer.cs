@@ -59,10 +59,8 @@ public class MapServer : MonoBehaviour
             if (pilotOnMap.Attack)
                 pilotOnMap.IsCoverTimer = 0;
             else
-                pilotOnMap.IsCoverTimer = 3;
+                pilotOnMap.IsCoverTimer = 2;
         }
-        else
-            pilotOnMap.IsCoverTimer = 0;
     }
 
 

@@ -122,7 +122,12 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
         {
             if (!LocalShipController.TargetIsNull)
-                LocalShipController.Attack = !LocalShipController.Attack;
+            {
+                if (!LocalShipController.TargetIsCover)
+                    LocalShipController.Attack = !LocalShipController.Attack;
+                else
+                    GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.TARGET_IS_COVER });
+            }
             else
                 GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.TARGET_NOT_FOUND });
         }
@@ -191,9 +196,6 @@ public class Player : MonoBehaviour
             false,
             player,
             Color.blue);
-
-        Debug.Log(player.Nickname);
-        Debug.Log(new Vector2(player.TargetPositionX, player.TargetPositionY));
 
         PlayersController.Add(player.PlayerId, shipController);
     }
@@ -357,14 +359,12 @@ public class Player : MonoBehaviour
 
     public ShipLogic SelectTarget(NewTarget newTarget)
     {
-        if (newTarget.TargetIsPlayer == null)
-            return null;
+        ShipLogic targetShipLogic = null;
+        if (newTarget.TargetIsPlayer != null)
+        {
+            targetShipLogic = newTarget.TargetIsPlayer == true ? FindPilot(newTarget.TargetId) : FindEnemy(newTarget.TargetId);
+        }
 
-        ShipLogic targetShipLogic = newTarget.TargetIsPlayer == true ? FindPilot(newTarget.TargetId) : FindEnemy(newTarget.TargetId);
-
-        if (targetShipLogic == null)
-            return null;
-        
         ShipLogic attackerShipLogic = newTarget.AttackerIsPlayer == true ? FindPilot(newTarget.PlayerId) : FindEnemy(newTarget.PlayerId);
 
         if (attackerShipLogic == null)
@@ -373,18 +373,14 @@ public class Player : MonoBehaviour
         if (DebugMode)
             GuiScript.CreateLogMessage(new List<string>() { $"SelectTarget '{GuiScript.IsPlayer(targetShipLogic, newTarget.AttackerIsPlayer)}' by '{attackerShipLogic.name} {GuiScript.IsPlayer(attackerShipLogic, newTarget.TargetIsPlayer == true)}'" });
 
-        attackerShipLogic.TargetGameObject = targetShipLogic.gameObject;
+        attackerShipLogic.TargetGameObject = targetShipLogic?.gameObject;
 
         return attackerShipLogic;
     }
 
     public void AttackTarget(AttackTarget attackTarget)
     {
-        ShipLogic shipLogic = null;
-        if (attackTarget.Attack)
-            shipLogic = SelectTarget(attackTarget);
-        else
-            shipLogic = attackTarget.TargetIsPlayer == true ? FindPilot(attackTarget.PlayerId) : FindEnemy(attackTarget.PlayerId);
+        ShipLogic shipLogic = SelectTarget(attackTarget);
 
         if (shipLogic == null)
             return;
@@ -392,7 +388,10 @@ public class Player : MonoBehaviour
         if (DebugMode)
             GuiScript.CreateLogMessage(new List<string>() { $"AttackTarget '{GuiScript.IsPlayer(shipLogic, attackTarget.TargetIsPlayer == true)}' [{attackTarget.Attack}]" });
 
-        shipLogic.Attack = attackTarget.Attack;
+        if (attackTarget.TargetIsPlayer == null)
+            shipLogic.Attack = false;
+        else
+            shipLogic.Attack = attackTarget.Attack;
     }
 
     public void SomeoneTakeDamage(TakeDamage takeDamage)
@@ -514,6 +513,15 @@ public class Player : MonoBehaviour
             return;
 
         whoShipLogic.IsCover = safeZone.Status;
+
+        foreach (ShipLogic ship in PlayersController.Values.Where(o => !o.TargetIsNull && o.TargetGameObject == whoShipLogic.gameObject))
+        {
+            ship.Attack = false;
+        }
+        foreach (ShipLogic ship in EnemiesController.Values.Where(o => !o.TargetIsNull && o.TargetGameObject == whoShipLogic.gameObject))
+        {
+            ship.Attack = false;
+        }
     }
     #endregion
 

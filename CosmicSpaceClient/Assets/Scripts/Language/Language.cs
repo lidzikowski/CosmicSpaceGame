@@ -124,6 +124,9 @@ public class Language
     [XmlElement("SAFE_ZONE_INACTIVE")]
     public string SAFE_ZONE_INACTIVE { get; set; }
 
+    [XmlElement("TARGET_IS_COVER")]
+    public string TARGET_IS_COVER { get; set; }
+
 
     #endregion
 }

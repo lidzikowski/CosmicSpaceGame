@@ -68,6 +68,7 @@ public class EnemyServer : Opponent
                     {
                         Target = opponent;
                         Attack = true;
+                        return;
                     }
                 }
 

@@ -45,8 +45,8 @@ public abstract class Opponent
         if (joinOpponent.IsPlayer) // PILOT
         {
             PlayerJoin playerJoin = PlayerJoin.GetNewJoin((joinOpponent as PilotServer).Pilot);
-            playerJoin.TargetPositionX = NewPostion.x;
-            playerJoin.TargetPositionY = NewPostion.y;
+            playerJoin.TargetPositionX = joinOpponent.NewPostion.x;
+            playerJoin.TargetPositionY = joinOpponent.NewPostion.y;
             pilot.Send(new CommandData()
             {
                 Command = Commands.PlayerJoin,
@@ -389,6 +389,7 @@ public abstract class Opponent
     }
     protected bool TargetIsNull => Target == null;
     protected bool TargetIsDead => !TargetIsNull ? Target.IsDead : false;
+    protected bool TargetIsCover => !TargetIsDead ? Target.IsCover : false;
     protected ulong? TargetId => !TargetIsNull ? Target.Id : (ulong?)null; 
     protected bool? TargetIsPlayer => !TargetIsNull ? Target.IsPlayer : (bool?)null; 
     protected void OnSelectTarget()
@@ -566,7 +567,7 @@ public abstract class Opponent
 
             if (Attack)
             {
-                if (TargetIsDead)
+                if (TargetIsCover)
                 {
                     Target = null;
                 }
