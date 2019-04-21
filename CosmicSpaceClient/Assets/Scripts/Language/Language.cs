@@ -154,6 +154,27 @@ public class Language
     [XmlElement("LANGUAGE")]
     public string LANGUAGE { get; set; }
 
+    [XmlElement("LASER")]
+    public string LASER { get; set; }
+
+    [XmlElement("LASERS")]
+    public string LASERS { get; set; }
+
+    [XmlElement("GENERATOR")]
+    public string GENERATOR { get; set; }
+
+    [XmlElement("GENERATORS")]
+    public string GENERATORS { get; set; }
+
+    [XmlElement("EXTRA")]
+    public string EXTRA { get; set; }
+
+    [XmlElement("EXTRAS")]
+    public string EXTRAS { get; set; }
+
+    [XmlElement("WAREHOUSE")]
+    public string WAREHOUSE { get; set; }
+
 
     #endregion
 }

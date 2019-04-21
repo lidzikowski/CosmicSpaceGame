@@ -19,21 +19,43 @@ public class PilotServer : Opponent
         CalculateStatistics();
     }
 
-    public void ItemsAdd(List<ItemPilot> items)
+    public void ItemsChange(ItemPilot newItem, ItemPilot localItem)
     {
+        if (newItem.Item.ItemType != localItem.Item.ItemType)
+            return;
 
-    }
+        bool status = false;
+        if (newItem.IsEquipped)
+        {
+            switch (localItem.Item.ItemType)
+            {
+                case ItemTypes.Laser:
+                    if (GetItemsLasers.Count() < Pilot.Ship.Lasers)
+                        status = true;
+                    break;
+                case ItemTypes.Generator:
+                    if (GetItemsGenerators.Count() < Pilot.Ship.Generators)
+                        status = true;
+                    break;
+                case ItemTypes.Extra:
+                    if (GetItemsExtras.Count() < Pilot.Ship.Extras)
+                        status = true;
+                    break;
+            }
+            Debug.Log(GetItemsGenerators.Count() + " < " + Pilot.Ship.Generators);
+            Debug.Log(status);
+        }
+        else
+            status = true;
 
-    public void ItemsRemove(List<ItemPilot> items)
-    {
+        if(status)
+        {
+            //localItem.IsSold = newItem.IsSold; //server
+            //localItem.UpgradeLevel = newItem.UpgradeLevel; //server
 
-    }
-
-    private void OnItemsChange()
-    {
-
-
-        CalculateStatistics();
+            localItem.IsEquipped = newItem.IsEquipped;
+            CalculateStatistics();
+        }
     }
 
 
@@ -208,8 +230,8 @@ public class PilotServer : Opponent
         #endregion
 
         #region Generators
-        MaxShields = 0;
-        Speed = Pilot.Ship.Speed;
+        maxShields = 0;
+        speed = Pilot.Ship.Speed;
         ShieldDivision = ShieldRepair = 0;
         int generatorCount = 0;
         foreach (ItemPilot itemPilot in GetItemsGenerators)
@@ -218,13 +240,17 @@ public class PilotServer : Opponent
                 itemPilot.IsEquipped = false;
             else
             {
-                MaxShields += itemPilot.Item.GeneratorShield ?? 0;
-                Speed += itemPilot.Item.GeneratorSpeed ?? 0;
+                maxShields += itemPilot.Item.GeneratorShield ?? 0;
+                speed += itemPilot.Item.GeneratorSpeed ?? 0;
                 ShieldDivision += itemPilot.Item.GeneratorShieldDivision ?? 0;
                 ShieldRepair += itemPilot.Item.GeneratorShieldRepair ?? 0;
                 generatorCount++;
             }
         }
+
+        Shields = 0;
+        OnChangePosition();
+
         Division(ref ShieldDivision, ref generatorCount);
         Division(ref ShieldRepair, ref generatorCount);
         #endregion

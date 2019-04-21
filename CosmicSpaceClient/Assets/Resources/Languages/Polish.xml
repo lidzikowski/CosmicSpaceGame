@@ -46,6 +46,13 @@
   <YES>Tak</YES>
   <NO>Nie</NO>
   <LANGUAGE>Język</LANGUAGE>
+  <LASER>Laser</LASER>
+  <LASERS>Lasery</LASERS>
+  <GENERATOR>Generator</GENERATOR>
+  <GENERATORS>Generatory</GENERATORS>
+  <EXTRA>Dodatek</EXTRA>
+  <EXTRAS>Dodatki</EXTRAS>
+  <WAREHOUSE>Magazyn</WAREHOUSE>
 
 
 </Language>

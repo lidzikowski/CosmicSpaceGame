@@ -44,8 +44,16 @@
   <YES>Yes</YES>
   <NO>No</NO>
   <LANGUAGE>Language</LANGUAGE>
+  <LASER>Laser</LASER>
+  <LASERS>Lasers</LASERS>
+  <GENERATOR>Generator</GENERATOR>
+  <GENERATORS>Generators</GENERATORS>
+  <EXTRA>Extra</EXTRA>
+  <EXTRAS>Extras</EXTRAS>
+  <WAREHOUSE>Warehouse</WAREHOUSE>
   
   
   
+
 
 </Language>

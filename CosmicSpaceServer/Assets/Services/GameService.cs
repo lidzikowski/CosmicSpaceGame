@@ -7,9 +7,12 @@ using CosmicSpaceCommunication.Account;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Resources;
 
 public class GameService : WebSocket
 {
+    public object PilotItem { get; private set; }
+
     protected override void OnClose(CloseEventArgs e)
     {
         PilotDisconnect();
@@ -159,6 +162,25 @@ public class GameService : WebSocket
                                 Ship = Server.Pilots[data].Pilot.Ship
                             }
                         });
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.ChangeEquipment)
+                {
+                    if (commandData.Data is ItemPilot data)
+                    {
+                        if (!CheckPacket(data.PilotId))
+                            return;
+
+                        PilotServer pilot = Server.Pilots[data.PilotId];
+                        ItemPilot item = pilot.Pilot.Items.FirstOrDefault(o => o.RelationId == data.RelationId);
+
+                        if (item == null || item.IsSold)
+                            return;
+
+                        pilot.ItemsChange(data, item);
                     }
                 }
 

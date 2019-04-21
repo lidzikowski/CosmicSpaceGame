@@ -125,13 +125,28 @@ public class HangarWindow : GameWindow
 
     private Transform CreateSlotPanel(Transform content, HangarPanels hangarPanel)
     {
-        string title = hangarPanel.ToString();
+        string title = string.Empty;
+        switch(hangarPanel)
+        {
+            case HangarPanels.Lasers:
+                title = GameSettings.UserLanguage.LASERS;
+                break;
+            case HangarPanels.Generators:
+                title = GameSettings.UserLanguage.GENERATORS;
+                break;
+            case HangarPanels.Extras:
+                title = GameSettings.UserLanguage.EXTRAS;
+                break;
+            case HangarPanels.Warehouse:
+                title = GameSettings.UserLanguage.WAREHOUSE;
+                break;
+        }
 
         GameObject go = Instantiate(TitlePanelPrefab, content);
-        go.GetComponent<Text>().text = title;
+        go.GetComponent<Text>().text = $"  {title}";
 
         Transform panel = Instantiate(SlotPanelPrefab, content).transform;
-        panel.name = title;
+        panel.name = hangarPanel.ToString();
         Panels.Add(hangarPanel, panel);
 
         return panel;
