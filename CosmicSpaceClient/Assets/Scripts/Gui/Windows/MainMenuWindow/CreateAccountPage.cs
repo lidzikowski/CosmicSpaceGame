@@ -35,9 +35,6 @@ public class CreateAccountPage : GameWindow
 
     void RegisterButton_Clicked()
     {
-        //if (UsernameInputField == null || PasswordInputField == null || EmailInputField == null || RulesToggle == null)
-        //    return;
-
         string username = UsernameInputField?.text;
         string password = PasswordInputField?.text;
         string email = EmailInputField?.text;
@@ -90,7 +87,7 @@ public class CreateAccountPage : GameWindow
 
     void SignInButton_Clicked()
     {
-        if (GuiScript.Windows[WindowTypes.UserInterface].Script is MainMenuWindow mainMenuWindow)
+        if (GuiScript.Windows[WindowTypes.MainMenu].Script is MainMenuWindow mainMenuWindow)
         {
             mainMenuWindow.ShowPage(MainMenuWindow.Pages.SignInPage);
         }

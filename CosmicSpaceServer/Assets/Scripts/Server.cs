@@ -16,6 +16,7 @@ public class Server : MonoBehaviour
     public static Dictionary<int, Ammunition> Ammunitions;
     public static Dictionary<int, Rocket> Rockets;
     public static Dictionary<int, Enemy> Enemies;
+    public static Dictionary<long, Item> Items;
 
     //private int mapId = 1000; // Instancje map
     public static Dictionary<int, MapServer> MapsServer;
@@ -51,6 +52,8 @@ public class Server : MonoBehaviour
         Rockets = await Database.GetRockets();
 
         Enemies = await Database.GetEnemies();
+
+        Items = await Database.GetItems();
 
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);

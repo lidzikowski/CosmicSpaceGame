@@ -3,7 +3,6 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,7 +14,8 @@ public abstract class Opponent
 
 
 
-    protected virtual int ShotDistance => 50;
+    protected virtual int ShotDistance { get; set; }
+    protected virtual float ShotDispersion { get; set; }
 
 
 
@@ -299,7 +299,7 @@ public abstract class Opponent
 
     #region Hitpoints
     protected virtual long hitpoints { get; set; }
-    public virtual long Hitpoints
+    public long Hitpoints
     {
         get => hitpoints;
         set
@@ -312,7 +312,20 @@ public abstract class Opponent
             OnChangeHitpoints();
         }
     }
-    public abstract long MaxHitpoints { get; }
+    protected virtual long maxHitpoints { get; set; }
+    public long MaxHitpoints
+    {
+        get => maxHitpoints;
+        set
+        {
+            if (maxHitpoints == value)
+                return;
+
+            maxHitpoints = value;
+
+            OnChangeHitpoints();
+        }
+    }
 
     public virtual bool CanRepearHitpoints => Hitpoints != MaxHitpoints;
     protected void OnChangeHitpoints()
@@ -346,7 +359,20 @@ public abstract class Opponent
             OnChangeShields();
         }
     }
-    public abstract long MaxShields { get; }
+    protected virtual long maxShields { get; set; }
+    public long MaxShields
+    {
+        get => maxShields;
+        set
+        {
+            if (maxShields == value)
+                return;
+
+            maxShields = value;
+
+            OnChangeShields();
+        }
+    }
 
     public virtual bool CanRepearShields => Shields != MaxShields;
     protected void OnChangeShields()
@@ -366,7 +392,20 @@ public abstract class Opponent
     #endregion
 
     #region Speed
-    public abstract float Speed { get; }
+    protected virtual float speed { get; set; }
+    public float Speed
+    {
+        get => speed;
+        set
+        {
+            if (speed == value)
+                return;
+
+            speed = value;
+
+            OnChangePosition();
+        }
+    }
     #endregion
 
     #region Target
@@ -455,12 +494,13 @@ public abstract class Opponent
     }
     #endregion
 
-    #region Damage
-    public abstract long Damage { get; }
+    #region Damage / RandomDamage
+    public abstract long DamagePvp { get; }
+    public abstract long DamagePve { get; }
 
     protected long RandomDamage(long damage)
     {
-        return (long)UnityEngine.Random.Range(damage * 0.85f, damage * 1.15f);
+        return (long)Random.Range(damage * (1 - ShotDispersion), damage * (1 + ShotDispersion));
     }
     #endregion
 
@@ -506,7 +546,7 @@ public abstract class Opponent
 
         if (Shields > 0)
         {
-            long dmgShd = (long)(damage * 0.7);
+            long dmgShd = (long)(damage * ShieldDivision);
             if (Shields - dmgShd >= 0)
             {
                 dmgHp = damage - dmgShd;
@@ -576,7 +616,7 @@ public abstract class Opponent
                     if (Ammunition != null)
                     {
                         LastTakeDamage = REPAIR_EVERY_UPDATE;
-                        Target.OnTakeDamage(this, Damage, (int)Ammunition, true);
+                        Target.OnTakeDamage(this, RandomDamage(Target.IsPlayer ? DamagePvp : DamagePve), (int)Ammunition, true);
                     }
                 }
             }
@@ -610,6 +650,8 @@ public abstract class Opponent
     #endregion
 
     #region Repair
+    protected float ShieldDivision = 0.7f; 
+    protected int ShieldRepair = 20;
     public bool CanRepair => LastTakeDamage <= 0;
     public void Repair()
     {
@@ -624,11 +666,18 @@ public abstract class Opponent
 
         if (CanRepearShields)
         {
-            var shield = MaxShields / 20;
-            if (Shields + shield <= MaxShields)
-                Shields += shield;
-            else
+            if(Shields > MaxShields)
+            {
                 Shields = MaxShields;
+            }
+            else
+            {
+                var shield = MaxShields / ShieldRepair;
+                if (Shields + shield <= MaxShields)
+                    Shields += shield;
+                else
+                    Shields = MaxShields;
+            }
         }
     }
     #endregion

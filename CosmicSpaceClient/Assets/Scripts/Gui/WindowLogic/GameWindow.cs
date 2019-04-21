@@ -74,6 +74,14 @@ public abstract class GameWindow : MonoBehaviour
             case WindowTypes.SettingsWindow:
                 TitleWindow.text = GameSettings.UserLanguage.SETTINGS;
                 break;
+            case WindowTypes.QuitWindow:
+                TitleWindow.text = GameSettings.UserLanguage.EXIT;
+                break;
+        }
+
+        if(TitleWindow != null)
+        {
+            TitleWindow.fontSize = 24;
         }
     }
 

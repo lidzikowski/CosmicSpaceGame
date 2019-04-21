@@ -45,11 +45,14 @@ public class Database
         loguser,
 
         saveplayerdata,
+        saveplayeritems,
+        saveplayeritem,
 
         getplayerid,
         getplayerdata,
         getpilotresources,
-
+        getitems,
+        getpilotitems
     }
 
     #region Baza danych i obsluga danych
@@ -263,6 +266,44 @@ public class Database
         return null;
     }
 
+    public static async Task<Dictionary<long, Item>> GetItems()
+    {
+        DataTable dt = await ExecuteCommand(Commands.getitems, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<long, Item> items = new Dictionary<long, Item>();
+            foreach (DataRow row in dt.Rows)
+            {
+                items.Add(ConvertRow.Row<int>(row["itemid"]), Item.GetItem(row));
+            }
+            return items;
+        }
+        return null;
+    }
+
+    public static async Task<List<ItemPilot>> GetPilotItems(ulong pilotId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getpilotitems, new Dictionary<string, object>()
+        {
+            { "inuserid", pilotId }
+        });
+
+        if (dt != null)
+        {
+            List<ItemPilot> items = new List<ItemPilot>();
+            foreach (DataRow row in dt.Rows)
+            {
+                ItemPilot itemPilot = ItemPilot.GetItemPilot(row);
+                itemPilot.Item = Server.Items[itemPilot.ItemId];
+                items.Add(itemPilot);
+            }
+
+            return items;
+        }
+        return null;
+    }
+
 
     #endregion
 
@@ -380,7 +421,7 @@ public class Database
     #region Zapis stanu gracza
     public static async void SavePlayerData(Pilot pilot)
     {
-        DataTable dt = await ExecuteCommand(Commands.saveplayerdata, new Dictionary<string, object>()
+        await ExecuteCommand(Commands.saveplayerdata, new Dictionary<string, object>()
         {
             { "inuserid", pilot.Id },
             { "inmapid", pilot.Map.Id },
@@ -404,6 +445,34 @@ public class Database
             { "inrocket1", pilot.Rockets[1] },
             { "inrocket2", pilot.Rockets[2] },
         });
+
+        foreach (ItemPilot item in pilot.Items)
+        {
+            await ExecuteCommand(Commands.saveplayeritems, new Dictionary<string, object>()
+            {
+                { "inrelationid", item.RelationId },
+                { "inupgradelevel", item.UpgradeLevel },
+                { "inisequipped", item.IsEquipped },
+                { "inissold", item.IsSold },
+            });
+        }
+    }
+
+    public static async Task<ItemPilot> SavePlayerItem(ItemPilot item)
+    {
+        DataTable dt = await ExecuteCommand(Commands.saveplayeritem, new Dictionary<string, object>()
+        {
+            { "inuserid", item.PilotId },
+            { "initemid", item.ItemId },
+            { "inupgradelevel", item.UpgradeLevel },
+        });
+
+        if (dt != null && dt.Rows.Count > 0)
+        {
+            item.RelationId = ulong.Parse(dt.Rows[0][0].ToString());
+            return item;
+        }
+        return null;
     }
     #endregion
 

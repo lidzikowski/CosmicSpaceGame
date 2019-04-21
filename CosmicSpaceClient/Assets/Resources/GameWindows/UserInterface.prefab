@@ -159,17 +159,11 @@ MonoBehaviour:
   ChatGameObject: {fileID: 4160208853565565853}
   CloseChatWindowButton: {fileID: 7038014704206284744}
   HangerButton: {fileID: 6575321064644179497}
-  HangarWindowPrefab: {fileID: 3071720180923691795, guid: 07926350efb7df24e90bba9246a01a4b,
-    type: 3}
   MissionButton: {fileID: 8288323412043401511}
-  MissionWindowPrefab: {fileID: 662369029069589227, guid: 689ae3649b7a4154c80c25f706730948,
-    type: 3}
   MapButton: {fileID: 6794046000274578131}
   ChatButton: {fileID: 7323250753711639470}
   SettingsButton: {fileID: 9064075920847819562}
-  SettingsWindowPrefab: {fileID: 6290846445078108225, guid: 7e98ac33cd1186046b52e73af8a85979,
-    type: 3}
-  CloseButton: {fileID: 7038353481339516078}
+  QuitButton: {fileID: 7038353481339516078}
   ActiveSprite: {fileID: 21300000, guid: 2d281a1c919047a4e9a4170fa35a68ce, type: 3}
   DisactiveSprite: {fileID: 21300000, guid: 3b76b0b896fff254f8f2eea1be6227a6, type: 3}
   SafeZoneText: {fileID: 8531024462390151769}
@@ -740,12 +734,12 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 5
+  m_ScrollSensitivity: 20
   m_Viewport: {fileID: 8978859550114946741}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 6106733153967194327}
   m_HorizontalScrollbarVisibility: 0
-  m_VerticalScrollbarVisibility: 0
+  m_VerticalScrollbarVisibility: 1
   m_HorizontalScrollbarSpacing: 0
   m_VerticalScrollbarSpacing: 0
   m_OnValueChanged:
@@ -2505,7 +2499,7 @@ GameObject:
   - component: {fileID: 1442970053898248926}
   - component: {fileID: 7038353481339516078}
   m_Layer: 5
-  m_Name: CloseButtn
+  m_Name: QuitButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

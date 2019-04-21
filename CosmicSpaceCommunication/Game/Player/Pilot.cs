@@ -25,6 +25,7 @@ namespace CosmicSpaceCommunication.Game.Player
 
         public List<ulong> Ammunitions { get; set; }
         public List<ulong> Rockets { get; set; }
+        public List<ItemPilot> Items { get; set; }
 
 
 

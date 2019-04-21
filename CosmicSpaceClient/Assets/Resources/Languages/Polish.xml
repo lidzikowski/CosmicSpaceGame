@@ -41,6 +41,11 @@
   <SETTINGS>Ustawienia</SETTINGS>
   <MISSIONS>Zadania</MISSIONS>
   <HANGAR>Hangar</HANGAR>
+  <EXIT>Wyjście</EXIT>
+  <EXIT_QUESTION>Czy chcesz opuścić grę?</EXIT_QUESTION>
+  <YES>Tak</YES>
+  <NO>Nie</NO>
+  <LANGUAGE>Język</LANGUAGE>
 
 
 </Language>

@@ -39,6 +39,11 @@
   <SETTINGS>Settings</SETTINGS>
   <MISSIONS>Missions</MISSIONS>
   <HANGAR>Hangar</HANGAR>
+  <EXIT>Exit</EXIT>
+  <EXIT_QUESTION>Do you want to leave the game?</EXIT_QUESTION>
+  <YES>Yes</YES>
+  <NO>No</NO>
+  <LANGUAGE>Language</LANGUAGE>
   
   
   

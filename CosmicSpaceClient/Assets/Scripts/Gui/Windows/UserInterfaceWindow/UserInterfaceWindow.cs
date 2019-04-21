@@ -56,7 +56,7 @@ public class UserInterfaceWindow : GameWindow
     public Button MapButton;
     public Button ChatButton;
     public Button SettingsButton;
-    public Button CloseButton;
+    public Button QuitButton;
 
     [Header("Menu Background")]
     public Sprite ActiveSprite;
@@ -85,7 +85,7 @@ public class UserInterfaceWindow : GameWindow
 
         ButtonListener(SettingsButton, SettingsButton_Clicked);
 
-        ButtonListener(CloseButton, CloseButton_Clicked);
+        ButtonListener(QuitButton, QuitButton_Clicked);
 
         EventTrigger.Entry entry = new EventTrigger.Entry()
         {
@@ -485,6 +485,9 @@ public class UserInterfaceWindow : GameWindow
 
     private void SetActiveButton(Button windowButton, bool status)
     {
+        if (windowButton == null)
+            return;
+
         windowButton.gameObject.GetComponent<Image>().sprite = status ? ActiveSprite : DisactiveSprite;
     }
 
@@ -492,7 +495,11 @@ public class UserInterfaceWindow : GameWindow
 
     private void HangerButton_Clicked()
     {
-        SetActiveWindow(WindowTypes.HangarWindow);
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.GetEquipment,
+            Data = Client.Pilot.Id
+        });
     }
 
     private void MissionButton_Clicked()
@@ -505,13 +512,21 @@ public class UserInterfaceWindow : GameWindow
         SetActiveWindow(WindowTypes.SettingsWindow);
     }
 
-    private void CloseButton_Clicked()
+    private void QuitButton_Clicked()
     {
-        Application.Quit();
+        SetActiveWindow(WindowTypes.QuitWindow);
     }
 
-    private void SetActiveWindow(WindowTypes windowType)
+
+
+    public void SetActiveWindow(WindowTypes windowType)
     {
+        foreach (KeyValuePair<WindowTypes, WindowInstance> window in GuiScript.Windows.Where(o => o.Key != windowType && o.Key != WindowTypes.UserInterface))
+        {
+            if (window.Value.Active)
+                GuiScript.CloseWindow(window.Key);
+        }
+
         if (GuiScript.Windows[windowType].Active)
             GuiScript.CloseWindow(windowType);
         else
@@ -525,6 +540,7 @@ public class UserInterfaceWindow : GameWindow
         SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
         SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
         SetActiveButton(HangerButton, GuiScript.Windows[WindowTypes.HangarWindow].Active);
+        SetActiveButton(QuitButton, GuiScript.Windows[WindowTypes.QuitWindow].Active);
     }
 
 

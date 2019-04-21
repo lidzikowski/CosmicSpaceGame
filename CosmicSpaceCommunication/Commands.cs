@@ -35,11 +35,15 @@ namespace CosmicSpaceCommunication
         ChangeMap = 360,
         SafeZone = 361,
 
+        GetEquipment = 380,
+        ChangeEquipment = 381,
+
 
         ChatMessage = 1000,
         ChatConnected = 1001,
         ChatDisconnected = 1002,
         ChatUserNotFound = 1003,
+
 
 
     }

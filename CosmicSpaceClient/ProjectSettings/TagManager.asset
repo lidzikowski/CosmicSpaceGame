@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - TitleWindow
   - CloseWindow
+  - Item
+  - SlotPanel
   layers:
   - Default
   - TransparentFX

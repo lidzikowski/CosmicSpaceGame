@@ -6,4 +6,5 @@
     HangarWindow,
     MissionWindow,
     SettingsWindow,
+    QuitWindow,
 }

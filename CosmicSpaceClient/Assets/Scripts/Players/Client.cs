@@ -7,6 +7,7 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 
 public class Client : MonoBehaviour
 {
@@ -122,21 +123,33 @@ public class Client : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (!SocketConnected)
-            return;
-
-        SendToSocket(new CommandData()
+        if (UserInterfaceWindow.ChatSocket?.IsAlive ?? false)
         {
-            Command = Commands.PlayerLeave
-        });
-
-        try
-        {
-            Socket.Close();
+            try
+            {
+                UserInterfaceWindow.ChatSocket.Close();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
         }
-        catch (Exception ex)
+
+        if (SocketConnected)
         {
-            Debug.Log(ex.Message);
+            SendToSocket(new CommandData()
+            {
+                Command = Commands.PlayerLeave
+            });
+
+            try
+            {
+                Socket.Close();
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
         }
     }
 
@@ -167,13 +180,19 @@ public class Client : MonoBehaviour
         #region LOGOWANIE / REJESTRACJA
         if (commandData.Command == Commands.LogIn)
         {
-            bool status = (bool)commandData.Data;
-            //Debug.Log($"LOG_IN_STATUS: {status}");
+            if (commandData.Data is bool data)
+            {
+                bool status = data;
+                //Debug.Log($"LOG_IN_STATUS: {status}");
+            }
         }
         else if (commandData.Command == Commands.Register)
         {
-            bool status = (bool)commandData.Data;
-            //Debug.Log($"REGISTER_STATUS: {status}");
+            if (commandData.Data is bool data)
+            {
+                bool status = data;
+                //Debug.Log($"REGISTER_STATUS: {status}");
+            }
         }
         else if (commandData.Command == Commands.AccountOccupied)
         {
@@ -188,78 +207,67 @@ public class Client : MonoBehaviour
         #region INICJALIZACJA ZALOGOWANEGO GRACZA
         else if (commandData.Command == Commands.UserData)
         {
-            Pilot = (Pilot)commandData.Data;
+            if (commandData.Data is Pilot data)
+            {
+                Pilot = data;
+            }
         }
         #endregion
 
         #region DOLACZENIE / ODLACZENIE GRACZA OD SERWERA
         else if (commandData.Command == Commands.PlayerJoin)
         {
-            GetComponent<Player>().InitPlayer((PlayerJoin)commandData.Data);
+            if (commandData.Data is PlayerJoin data)
+            {
+                GetComponent<Player>().InitPlayer(data);
+            }
         }
         else if (commandData.Command == Commands.PlayerLeave)
         {
-            GetComponent<Player>().LeavePlayer((ulong)commandData.Data);
+            if (commandData.Data is ulong data)
+            {
+                GetComponent<Player>().LeavePlayer(data);
+            }
         }
         #endregion
 
         #region ZDARZENIE NA ZMIANE POZYCJI
         else if (commandData.Command == Commands.NewPosition)
         {
-            NewPosition newPosition = (NewPosition)commandData.Data;
-
-            if (newPosition == null)
-                return;
-
-            GetComponent<Player>().ChangePosition(newPosition);
+            if (commandData.Data is NewPosition data)
+            {
+                GetComponent<Player>().ChangePosition(data);
+            }
         }
         #endregion
 
-        #region ZDARZENIE NA ZMIANE HITPOINTS
-        else if (commandData.Command == Commands.ChangeHitpoints)
+        #region ZDARZENIE NA ZMIANE HITPOINTS / SHIELDS
+        else if (commandData.Command == Commands.ChangeHitpoints || commandData.Command == Commands.ChangeShields)
         {
-            NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
-
-            if (newValue == null)
-                return;
-
-            GetComponent<Player>().HitpointsOrShields(newValue, true);
-        }
-        #endregion
-
-        #region ZDARZENIE NA ZMIANE SHIELDS
-        else if (commandData.Command == Commands.ChangeShields)
-        {
-            NewHitpointsOrShields newValue = (NewHitpointsOrShields)commandData.Data;
-
-            if (newValue == null)
-                return;
-
-            GetComponent<Player>().HitpointsOrShields(newValue, false);
+            if (commandData.Data is NewHitpointsOrShields data)
+            {
+                GetComponent<Player>().HitpointsOrShields(data, commandData.Command == Commands.ChangeHitpoints);
+            }
         }
         #endregion
 
         #region ZDARZENIE NA ZMIANE TARGET
         else if (commandData.Command == Commands.SelectTarget)
         {
-            NewTarget newTarget = (NewTarget)commandData.Data;
-
-            if (newTarget == null)
-                return;
-
-            GetComponent<Player>().SelectTarget(newTarget);
+            if (commandData.Data is NewTarget data)
+            {
+                GetComponent<Player>().SelectTarget(data);
+            }
         }
         #endregion
 
         #region ZDARZENIE NA ATAK TARGETU
         else if (commandData.Command == Commands.AttackTarget)
         {
-            AttackTarget attackTarget = (AttackTarget)commandData.Data;
-
-            if (attackTarget == null)
-                return;
-
-            GetComponent<Player>().AttackTarget(attackTarget);
+            if (commandData.Data is AttackTarget data)
+            {
+                GetComponent<Player>().AttackTarget(data);
+            }
         }
         #endregion
 
@@ -267,12 +275,10 @@ public class Client : MonoBehaviour
         #region ZDARZENIE NA OTRZYMYWANIE OBRAZEN
         else if (commandData.Command == Commands.GetDamage)
         {
-            TakeDamage takeDamage = (TakeDamage)commandData.Data;
-
-            if (takeDamage == null)
-                return;
-
-            GetComponent<Player>().SomeoneTakeDamage(takeDamage);
+            if (commandData.Data is TakeDamage data)
+            {
+                GetComponent<Player>().SomeoneTakeDamage(data);
+            }
         }
         #endregion
 
@@ -280,12 +286,10 @@ public class Client : MonoBehaviour
         #region ZDARZENIE NA SMIERC
         else if (commandData.Command == Commands.Dead)
         {
-            SomeoneDead someoneDead = (SomeoneDead)commandData.Data;
-
-            if (someoneDead == null)
-                return;
-
-            GetComponent<Player>().SomeoneDead(someoneDead);
+            if (commandData.Data is SomeoneDead data)
+            {
+                GetComponent<Player>().SomeoneDead(data);
+            }
         }
         #endregion
 
@@ -293,11 +297,10 @@ public class Client : MonoBehaviour
         #region ZDARZENIE NA ODRODZENIE
         else if (commandData.Command == Commands.RepairShip)
         {
-            ulong userId;
-            if (!ulong.TryParse(commandData.Data.ToString(), out userId))
-                return;
-
-            GetComponent<Player>().SomeoneAlive(userId);
+            if (commandData.Data is ulong data)
+            {
+                GetComponent<Player>().SomeoneAlive(data);
+            }
         }
         #endregion
 
@@ -305,11 +308,17 @@ public class Client : MonoBehaviour
         #region DOLACZENIE / ODLACZENIE ENEMY OD SERWERA
         else if (commandData.Command == Commands.EnemyJoin)
         {
-            GetComponent<Player>().InitEnemy((EnemyJoin)commandData.Data);
+            if (commandData.Data is EnemyJoin data)
+            {
+                GetComponent<Player>().InitEnemy(data);
+            }
         }
         else if (commandData.Command == Commands.EnemyLeave)
         {
-            GetComponent<Player>().LeaveEnemy((ulong)commandData.Data);
+            if (commandData.Data is ulong data)
+            {
+                GetComponent<Player>().LeaveEnemy(data);
+            }
         }
         #endregion
 
@@ -317,7 +326,10 @@ public class Client : MonoBehaviour
         #region OTRZYMANIE NAGRODY
         else if (commandData.Command == Commands.NewReward)
         {
-            GetComponent<Player>().TakeReward((ServerReward)commandData.Data);
+            if (commandData.Data is ServerReward data)
+            {
+                GetComponent<Player>().TakeReward(data);
+            }
         }
         #endregion
 
@@ -326,7 +338,9 @@ public class Client : MonoBehaviour
         else if (commandData.Command == Commands.ChangeMap)
         {
             if (commandData.Data is Pilot pilot)
+            {
                 GetComponent<Player>().ChangeMap(pilot);
+            }
             else
             {
                 Player.LocalShipController.TargetGameObject = null;
@@ -339,9 +353,26 @@ public class Client : MonoBehaviour
         #region STREFA OCHRONNA
         else if (commandData.Command == Commands.SafeZone)
         {
-            GetComponent<Player>().SafeZone((SafeZone)commandData.Data);
+            if (commandData.Data is SafeZone data)
+            {
+                GetComponent<Player>().SafeZone(data);
+            }
         }
         #endregion
+
+
+        #region EKWIPUNEK
+        else if (commandData.Command == Commands.GetEquipment)
+        {
+            if (commandData.Data is Pilot data)
+            {
+                Pilot.Ship = data.Ship;
+                Pilot.Items = data.Items;
+                (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.HangarWindow);
+            }
+        }
+        #endregion
+
 
 
 

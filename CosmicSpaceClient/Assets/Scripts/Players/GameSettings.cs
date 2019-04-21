@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public delegate void ChangeLanguage();
@@ -16,14 +17,44 @@ public class GameSettings : MonoBehaviour
         }
     }
 
+    private static Languages chooseLanguage;
+    public static Languages ChooseLanguage
+    {
+        get => chooseLanguage;
+        set
+        {
+            chooseLanguage = value;
+            UserLanguage = Language.Load(value);
+
+            PlayerPrefs.SetInt("CosmicSpaceLanguage", (int)value);
+        }
+    }
+
     IEnumerator Start()
     {
-        if (Application.systemLanguage == SystemLanguage.Polish)
-            UserLanguage = Language.Load(Languages.Polish);
-        else
-            UserLanguage = Language.Load(Languages.English);
+        SetLanguage();
 
         yield return new WaitUntil(() => GuiScript.Ready);
         GuiScript.OpenWindow(WindowTypes.MainMenu);
+    }
+
+    private bool SetLanguage()
+    {
+        if(PlayerPrefs.HasKey("CosmicSpaceLanguage"))
+        {
+            int languageId = PlayerPrefs.GetInt("CosmicSpaceLanguage");
+            if (Enum.IsDefined(typeof(Languages), languageId))
+            {
+                ChooseLanguage = (Languages)languageId;
+                return true;
+            }
+        }
+
+        if (Application.systemLanguage == SystemLanguage.Polish)
+            ChooseLanguage = Languages.Polish;
+        else
+            ChooseLanguage = Languages.English;
+
+        return true;
     }
 }

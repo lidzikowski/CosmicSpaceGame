@@ -26,9 +26,6 @@ public class SignInPage : GameWindow
 
     void LogInButton_Clicked()
     {
-        //if (UsernameInputField == null || PasswordInputField == null || RememberToggle == null)
-        //    return;
-
         string username = UsernameInputField?.text;
         string password = PasswordInputField?.text;
 
@@ -94,16 +91,16 @@ public class SignInPage : GameWindow
 
     private void OnEnable()
     {
-        UsernameInputField.text = PlayerPrefs.GetString("CosmicSpaceUsername");
-        PasswordInputField.text = PlayerPrefs.GetString("CosmicSpacePassword");
-        RememberToggle.isOn = PlayerPrefs.GetInt("CosmicSpaceRemember") == 1;
+        if (PlayerPrefs.HasKey("CosmicSpaceUsername"))
+            UsernameInputField.text = PlayerPrefs.GetString("CosmicSpaceUsername");
+        if (PlayerPrefs.HasKey("CosmicSpacePassword"))
+            PasswordInputField.text = PlayerPrefs.GetString("CosmicSpacePassword");
+        if (PlayerPrefs.HasKey("CosmicSpaceRemember"))
+            RememberToggle.isOn = PlayerPrefs.GetInt("CosmicSpaceRemember") == 1;
     }
 
     private void OnDisable()
     {
-        if (UsernameInputField == null || PasswordInputField == null || RememberToggle == null)
-            return;
-
         UsernameInputField.text = string.Empty;
         PasswordInputField.text = string.Empty;
         RememberToggle.isOn = false;

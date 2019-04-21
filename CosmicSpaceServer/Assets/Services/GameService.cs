@@ -6,6 +6,7 @@ using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Account;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Player;
 
 public class GameService : WebSocket
 {
@@ -48,93 +49,122 @@ public class GameService : WebSocket
             MainThread.Instance().Enqueue(() =>
             {
                 CommandData commandData = GameData.Deserialize(e.RawData);
-                switch (commandData.Command)
+
+                if(commandData.Command == Commands.LogIn)
                 {
-                    case Commands.LogIn:
-                        LogInUser logInUser = (LogInUser)commandData.Data;
-                        LoginUser(logInUser);
-                        break;
-
-
-                    case Commands.Register:
-                        RegisterUser registerUser = (RegisterUser)commandData.Data;
-                        RegisterUser(registerUser);
-                        break;
-
-
-                    case Commands.PlayerLeave:
-                        PilotDisconnect();
-                        break;
-
-
-                    case Commands.NewPosition:
-                        NewPosition newPosition = (NewPosition)commandData.Data;
-
-                        if (newPosition == null)
-                            return;
-
-                        if (!CheckPacket(newPosition.PlayerId))
-                            return;
-
-                        if (newPosition.IsPlayer)
-                            PilotChangePosition(newPosition);
-                        break;
-
-
-                    case Commands.SelectTarget:
-                        NewTarget newTarget = (NewTarget)commandData.Data;
-
-                        if (newTarget == null)
-                            return;
-
-                        if (!CheckPacket(newTarget.PlayerId))
-                            return;
-
-                        PilotSelectTarget(newTarget);
-                        break;
-
-
-                    case Commands.AttackTarget:
-                        AttackTarget attackTarget = (AttackTarget)commandData.Data;
-
-                        if (attackTarget == null)
-                            return;
-
-                        if (!CheckPacket(attackTarget.PlayerId))
-                            return;
-
-                        PilotAttackTarget(attackTarget);
-                        break;
-
-
-                    case Commands.RepairShip:
-                        ulong userId;
-                        if (!ulong.TryParse(commandData.Data.ToString(), out userId))
-                            return;
-
-                        if (!CheckPacket(userId))
-                            return;
-
-                        Server.Pilots[userId].IsDead = false;
-                        break;
-
-
-                    case Commands.ChangeMap:
-                        PlayerChangeMap playerChangeMap = (PlayerChangeMap)commandData.Data;
-
-                        if (playerChangeMap == null)
-                            return;
-
-                        if (!CheckPacket(playerChangeMap.PlayerId))
-                            return;
-
-                        Server.MapsServer[playerChangeMap.Portal.Map.Id].ChangeMapByPortal(Server.Pilots[playerChangeMap.PlayerId], playerChangeMap.Portal);
-                        break;
-
-
-
-
+                    if (commandData.Data is LogInUser data)
+                    {
+                        LoginUser(data);
+                    }
                 }
+
+
+
+                else if (commandData.Command == Commands.Register)
+                {
+                    if (commandData.Data is RegisterUser data)
+                    {
+                        RegisterUser(data);
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.PlayerLeave)
+                {
+                    PilotDisconnect();
+                }
+
+
+
+                else if (commandData.Command == Commands.NewPosition)
+                {
+                    if (commandData.Data is NewPosition data)
+                    {
+                        if (!CheckPacket(data.PlayerId))
+                            return;
+
+                        if (data.IsPlayer)
+                            PilotChangePosition(data);
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.SelectTarget)
+                {
+                    if (commandData.Data is NewTarget data)
+                    {
+                        if (!CheckPacket(data.PlayerId))
+                            return;
+
+                        PilotSelectTarget(data);
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.AttackTarget)
+                {
+                    if (commandData.Data is AttackTarget data)
+                    {
+                        if (!CheckPacket(data.PlayerId))
+                            return;
+
+                        PilotAttackTarget(data);
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.RepairShip)
+                {
+                    if (commandData.Data is ulong data)
+                    {
+                        if (!CheckPacket(data))
+                            return;
+
+                        Server.Pilots[data].IsDead = false;
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.ChangeMap)
+                {
+                    if (commandData.Data is PlayerChangeMap data)
+                    {
+                        if (!CheckPacket(data.PlayerId))
+                            return;
+
+                        Server.MapsServer[data.Portal.Map.Id].ChangeMapByPortal(Server.Pilots[data.PlayerId], data.Portal);
+                    }
+                }
+
+
+
+                else if (commandData.Command == Commands.GetEquipment)
+                {
+                    if (commandData.Data is ulong data)
+                    {
+                        if (!CheckPacket(data))
+                            return;
+
+                        Server.Pilots[data].Send(new CommandData()
+                        {
+                            Command = Commands.GetEquipment,
+                            Data = new Pilot()
+                            {
+                                Items = Server.Pilots[data].Pilot.Items,
+                                Ship = Server.Pilots[data].Pilot.Ship
+                            }
+                        });
+                    }
+                }
+
+
+
+
             });
         }
         catch (Exception ex)

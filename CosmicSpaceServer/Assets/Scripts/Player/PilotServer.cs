@@ -2,7 +2,9 @@
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using WebSocketSharp.Server;
@@ -14,6 +16,23 @@ public class PilotServer : Opponent
         Pilot = pilot;
 
         NewPostion = Position;
+        CalculateStatistics();
+    }
+
+    public void ItemsAdd(List<ItemPilot> items)
+    {
+
+    }
+
+    public void ItemsRemove(List<ItemPilot> items)
+    {
+
+    }
+
+    private void OnItemsChange()
+    {
+
+
         CalculateStatistics();
     }
 
@@ -97,15 +116,22 @@ public class PilotServer : Opponent
         get => Pilot.Hitpoints;
         set
         {
-            if (Pilot.Hitpoints.Equals(value))
+            if (Pilot.Hitpoints == value)
                 return;
 
             Pilot.Hitpoints = value;
         }
     }
-    public override long MaxHitpoints
+    protected override long maxHitpoints
     {
         get => Pilot.MaxHitpoints;
+        set
+        {
+            if (Pilot.MaxHitpoints == value)
+                return;
+
+            Pilot.MaxHitpoints = value;
+        }
     }
     #endregion
 
@@ -115,47 +141,137 @@ public class PilotServer : Opponent
         get => Pilot.Shields;
         set
         {
-            if (Pilot.Shields.Equals(value))
+            if (Pilot.Shields == value)
                 return;
 
             Pilot.Shields = value;
         }
     }
-    public override long MaxShields
+    protected override long maxShields
     {
         get => Pilot.MaxShields;
+        set
+        {
+            if (Pilot.MaxShields == value)
+                return;
+
+            Pilot.MaxShields = value;
+        }
     }
     #endregion
 
     #region Speed
-    public override float Speed
+    protected override float speed
     {
         get => Pilot.Speed;
+        set
+        {
+            if (Pilot.Speed == value)
+                return;
+
+            Pilot.Speed = value;
+        }
     }
     #endregion
 
-    #region Calculate MaxHitpoints / MaxShields / Speed
+    #region Calculate EQUIPMENT
+
+    private IEnumerable<ItemPilot> GetItemsLasers => GetItems(ItemTypes.Laser);
+    private IEnumerable<ItemPilot> GetItemsGenerators => GetItems(ItemTypes.Generator);
+    private IEnumerable<ItemPilot> GetItemsExtras => GetItems(ItemTypes.Extra);
+    private IEnumerable<ItemPilot> GetItems(ItemTypes itemTypes) => Pilot.Items.Where(o => o.Item.ItemType == itemTypes && o.IsEquipped);
+
     protected void CalculateStatistics()
     {
-        Pilot.MaxHitpoints = Pilot.Ship.Hitpoints;
-        Pilot.MaxShields = 1000;
-        Pilot.Speed = Pilot.Ship.Speed;
+        MaxHitpoints = Pilot.Ship.Hitpoints;
+
+        #region Lasers
+        damagePvp = damagePve = shotDistance = 0;
+        shotDispersion = 0;
+
+        int laserCount = 0;
+        foreach (ItemPilot itemPilot in GetItemsLasers)
+        {
+            if(laserCount >= Pilot.Ship.Lasers)
+                itemPilot.IsEquipped = false;
+            else
+            {
+                damagePvp += itemPilot.Item.LaserDamagePvp ?? 0;
+                damagePve += itemPilot.Item.LaserDamagePve ?? 0;
+                shotDistance += itemPilot.Item.LaserShotRange ?? 0;
+                shotDispersion += itemPilot.Item.LaserShotDispersion ?? 0;
+                laserCount++;
+            }
+        }
+        Division(ref shotDistance, ref laserCount);
+        Division(ref shotDispersion, ref laserCount);
+        #endregion
+
+        #region Generators
+        MaxShields = 0;
+        Speed = Pilot.Ship.Speed;
+        ShieldDivision = ShieldRepair = 0;
+        int generatorCount = 0;
+        foreach (ItemPilot itemPilot in GetItemsGenerators)
+        {
+            if (generatorCount >= Pilot.Ship.Generators)
+                itemPilot.IsEquipped = false;
+            else
+            {
+                MaxShields += itemPilot.Item.GeneratorShield ?? 0;
+                Speed += itemPilot.Item.GeneratorSpeed ?? 0;
+                ShieldDivision += itemPilot.Item.GeneratorShieldDivision ?? 0;
+                ShieldRepair += itemPilot.Item.GeneratorShieldRepair ?? 0;
+                generatorCount++;
+            }
+        }
+        Division(ref ShieldDivision, ref generatorCount);
+        Division(ref ShieldRepair, ref generatorCount);
+        #endregion
+
+        #region Extras
+        int extrasCount = 0;
+        foreach (ItemPilot itemPilot in GetItemsExtras)
+        {
+            if (generatorCount >= Pilot.Ship.Extras)
+                itemPilot.IsEquipped = false;
+            else
+            {
+                extrasCount++;
+            }
+        }
+        Division(ref ShieldDivision, ref generatorCount);
+        Division(ref ShieldRepair, ref generatorCount);
+        #endregion
+
+
+    }
+
+    private void Division(ref float number, ref int divider)
+    {
+        if (divider > 1)
+            number /= divider;
+    }
+    private void Division(ref int number, ref int divider)
+    {
+        if (divider > 1)
+            number /= divider;
     }
     #endregion
 
 
 
     #region Damage / ShotDistance
-    public override long Damage
-    {
-        get => 300;
-    }
-    protected override int ShotDistance
-    {
-        get => 50;
-    }
+    protected long damagePvp;
+    public override long DamagePvp => damagePvp;
+    protected long damagePve;
+    public override long DamagePve => damagePve;
+    protected int shotDistance;
+    protected override int ShotDistance => shotDistance;
+    protected float shotDispersion;
+    protected override float ShotDispersion => shotDispersion;
     #endregion
-    
+
 
 
     #region Reward / TakeReward
@@ -221,6 +337,7 @@ public class PilotServer : Opponent
 
         pilot.Map = Server.Maps[ConvertRow.Row<int>(row["mapid"])];
         pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
+        pilot.Items = await Database.GetPilotItems(pilot.Id);
 
         PilotResources resources = await Database.GetPilotResources(pilot.Id);
 

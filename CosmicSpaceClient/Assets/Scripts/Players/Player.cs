@@ -266,8 +266,7 @@ public class Player : MonoBehaviour
     public void CreateBackground(Map map)
     {
         #region Background
-        foreach (Transform t in BackgroundTransform)
-            Destroy(t.gameObject);
+        DestroyChilds(BackgroundTransform);
 
         // Create stars - settings
         if (true)
@@ -286,8 +285,7 @@ public class Player : MonoBehaviour
         #endregion
 
         #region Portals
-        foreach (Transform t in PortalTransform)
-            Destroy(t.gameObject);
+        DestroyChilds(PortalTransform);
 
         foreach (Portal portal in map.Portals)
         {
@@ -555,5 +553,11 @@ public class Player : MonoBehaviour
 
         if(!localPlayer)
             PlayersController.Add(Client.Pilot.Id, LocalShipController);
+    }
+
+    public static void DestroyChilds(Transform t)
+    {
+        foreach (Transform child in t)
+            Destroy(child.gameObject);
     }
 }

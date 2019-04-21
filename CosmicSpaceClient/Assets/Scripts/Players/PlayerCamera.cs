@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -40,6 +41,9 @@ public class PlayerCamera : MonoBehaviour
 
     private void ScrollController()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         float axis = Input.GetAxis("Mouse ScrollWheel");
         if (axis != 0f)
         {

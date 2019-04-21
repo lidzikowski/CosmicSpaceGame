@@ -36,15 +36,17 @@ public class EnemyServer : Opponent
 
     public override RewardReasons RewardReason => RewardReasons.KillEnemy;
 
-    public override long MaxHitpoints => ParentEnemy.Hitpoints;
+    protected override long maxHitpoints => ParentEnemy.Hitpoints;
 
-    public override long MaxShields => ParentEnemy.Shields;
+    protected override long maxShields => ParentEnemy.Shields;
 
-    public override float Speed => ParentEnemy.Speed;
+    protected override float speed => ParentEnemy.Speed;
 
-    public override long Damage => RandomDamage(ParentEnemy.Damage);
+    public override long DamagePvp => RandomDamage(ParentEnemy.Damage);
+    public override long DamagePve => RandomDamage(ParentEnemy.Damage);
 
     protected override int ShotDistance => ParentEnemy.ShotDistance;
+    protected override float ShotDispersion => 0.2f;
 
     public override string Name => ParentEnemy.Name;
     

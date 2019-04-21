@@ -139,6 +139,21 @@ public class Language
     [XmlElement("HANGAR")]
     public string HANGAR { get; set; }
 
+    [XmlElement("EXIT")]
+    public string EXIT { get; set; }
+
+    [XmlElement("EXIT_QUESTION")]
+    public string EXIT_QUESTION { get; set; }
+
+    [XmlElement("YES")]
+    public string YES { get; set; }
+
+    [XmlElement("NO")]
+    public string NO { get; set; }
+
+    [XmlElement("LANGUAGE")]
+    public string LANGUAGE { get; set; }
+
 
     #endregion
 }
