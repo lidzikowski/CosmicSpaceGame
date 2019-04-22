@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler
+public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public ItemPilot ItemPilot;
 
@@ -36,6 +36,9 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
         }
     }
 
+    public GameObject ToolTipPrefab;
+    public static ToolTip ToolTipInstance;
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         parent = transform.parent;
@@ -44,6 +47,7 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
 
     public void OnDrag(PointerEventData eventData)
     {
+        OnPointerExit(eventData);
         transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
     }
 
@@ -86,5 +90,20 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
         transform.SetParent(parent);
         transform.localPosition = Vector3.zero;
         ItemContainerTarget = null;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (ToolTipInstance == null)
+        {
+            ToolTipInstance = Instantiate(ToolTipPrefab, GuiScript.Windows[WindowTypes.HangarWindow].Window.transform).GetComponent<ToolTip>();
+        }
+        ToolTipInstance.ItemInfo = this;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (ToolTipInstance != null)
+            ToolTipInstance.ItemInfo = null;
     }
 }

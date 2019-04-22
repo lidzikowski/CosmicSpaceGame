@@ -23,9 +23,13 @@ public class PilotServer : Opponent
     {
         foreach (ItemPilot item in items)
         {
-            ItemPilot localItem = Pilot.Items.FirstOrDefault(o => o.RelationId == item.RelationId && o.Item.ItemType == item.Item.ItemType);
+            ItemPilot localItem = item.RelationId > 0 ? Pilot.Items.FirstOrDefault(o => o.RelationId == item.RelationId && o.Item.ItemType == item.Item.ItemType) : null;
 
-            if(localItem != null)
+            if (localItem == null)
+            {
+                Pilot.Items.Add(item);
+            }
+            else
             {
                 if (item.IsEquipped)
                 {
@@ -247,7 +251,6 @@ public class PilotServer : Opponent
                 generatorCount++;
             }
         }
-        Shields = 0;
         OnChangePosition();
 
         Division(ref ShieldDivision, ref generatorCount);
@@ -305,7 +308,7 @@ public class PilotServer : Opponent
         get => Pilot.Ship.Reward;
     }
     public override RewardReasons RewardReason => RewardReasons.KillPlayer;
-    public override void TakeReward(ServerReward reward)
+    public override async void TakeReward(ServerReward reward)
     {
         if (!reward.Experience.Equals(null))
             Pilot.Experience += (ulong)reward.Experience;
@@ -315,6 +318,31 @@ public class PilotServer : Opponent
 
         if (!reward.Scrap.Equals(null))
             Pilot.Scrap += (double)reward.Scrap;
+
+        if (reward.Items != null && reward.Items.Count > 0)
+        {
+            List<ItemPilot> items = new List<ItemPilot>();
+            foreach (ItemReward item in reward.Items)
+            {
+                if (item.Chance == 1000 || item.Chance >= Random.Range(0, 1000))
+                {
+                    items.Add(await Database.SavePlayerItem(new ItemPilot()
+                    {
+                        PilotId = Id,
+                        ItemId = item.ItemId,
+                        Item = Server.Items[item.ItemId],
+                        UpgradeLevel = item.UpgradeLevel,
+                        IsEquipped = false,
+                        IsSold = false,
+                    }));
+                }
+            }
+
+            if (items.Count > 0)
+                ItemsChange(items);
+
+            reward.PilotItems = items;
+        }
 
         Send(new CommandData()
         {

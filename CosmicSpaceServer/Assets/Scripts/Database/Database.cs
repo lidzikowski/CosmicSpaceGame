@@ -37,6 +37,7 @@ public class Database
         getenemies,
         getenemymap,
         getportals,
+        getrewarditems,
 
         occupiedaccount,
         ocuppiednickname,
@@ -144,7 +145,9 @@ public class Database
             Dictionary<int, Ship> ships = new Dictionary<int, Ship>();
             foreach (DataRow row in dt.Rows)
             {
-                ships.Add(ConvertRow.Row<int>(row["shipid"]), Ship.GetShip(row));
+                Ship ship = Ship.GetShip(row);
+                ship.Reward.Items = await GetRewardItems(ship.Reward.Id);
+                ships.Add(ship.Id, ship);
             }
             return ships;
         }
@@ -216,7 +219,9 @@ public class Database
             Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
             foreach (DataRow row in dt.Rows)
             {
-                enemies.Add(ConvertRow.Row<int>(row["enemyid"]), Enemy.GetEnemy(row));
+                Enemy enemy = Enemy.GetEnemy(row);
+                enemy.Reward.Items = await GetRewardItems(enemy.Reward.Id);
+                enemies.Add(enemy.Id, enemy);
             }
             return enemies;
         }
@@ -304,6 +309,26 @@ public class Database
         return null;
     }
 
+    public static async Task<List<ItemReward>> GetRewardItems(ulong rewardId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getrewarditems, new Dictionary<string, object>()
+        {
+            { "inrewardid", rewardId }
+        });
+
+        if (dt != null)
+        {
+            List<ItemReward> itemRewards = new List<ItemReward>();
+            foreach (DataRow row in dt.Rows)
+            {
+                ItemReward itemReward = ItemReward.GetItemReward(row);
+                itemReward.Item = Server.Items[itemReward.ItemId];
+                itemRewards.Add(itemReward);
+            }
+            return itemRewards;
+        }
+        return null;
+    }
 
     #endregion
 
@@ -356,7 +381,15 @@ public class Database
         });
 
         if (dt != null)
+        {
+            await SavePlayerItem(new ItemPilot()
+            {
+                PilotId = (ulong)await GetPilot(registerUser),
+                ItemId = 1,
+                UpgradeLevel = 1
+            });
             return true;
+        }
         return false;
     }
 

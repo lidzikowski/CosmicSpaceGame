@@ -53,6 +53,16 @@
   <EXTRA>Dodatek</EXTRA>
   <EXTRAS>Dodatki</EXTRAS>
   <WAREHOUSE>Magazyn</WAREHOUSE>
+  <DAMAGE>Obrażenia</DAMAGE>
+  <DAMAGE_PVP>Obrażenia PvP</DAMAGE_PVP>
+  <DAMAGE_PVE>Obrażenia PvE</DAMAGE_PVE>
+  <SHOT_RANGE>Zasięg strzału</SHOT_RANGE>
+  <SHOT_DISPERSION>Rozproszenie strzału</SHOT_DISPERSION>
+  <SPEED>Prędkość</SPEED>
+  <SHIELD>Osłona</SHIELD>
+  <SHIELD_DIVISION>Moc osłony</SHIELD_DIVISION>
+  <SHIELD_REPAIR>Naprawa osłony</SHIELD_REPAIR>
+  <RECEIVE_ITEM>Otrzymano przedmiot {0}</RECEIVE_ITEM>
 
 
 </Language>

@@ -63,6 +63,9 @@ public abstract class GameWindow : MonoBehaviour
 
     public virtual void ChangeLanguage()
     {
+        if (TitleWindow == null)
+            return;
+
         switch(WindowType)
         {
             case WindowTypes.HangarWindow:
@@ -79,10 +82,7 @@ public abstract class GameWindow : MonoBehaviour
                 break;
         }
 
-        if(TitleWindow != null)
-        {
-            TitleWindow.fontSize = 24;
-        }
+        TitleWindow.fontSize = 24;
     }
 
     public virtual void CloseButton_Clicked()

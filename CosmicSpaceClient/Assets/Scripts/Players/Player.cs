@@ -488,6 +488,13 @@ public class Player : MonoBehaviour
             Client.Pilot.Scrap += (double)reward.Scrap;
             messages.Add($"Scrap {reward.Scrap}");
         }
+        if(reward.Items?.Count > 0)
+        {
+            foreach (ItemPilot item in reward.PilotItems)
+            {
+                messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_ITEM, item.Item.Name));
+            }
+        }
 
         GuiScript.CreateLogMessage(messages, 6);
 

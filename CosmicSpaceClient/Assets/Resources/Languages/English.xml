@@ -51,9 +51,27 @@
   <EXTRA>Extra</EXTRA>
   <EXTRAS>Extras</EXTRAS>
   <WAREHOUSE>Warehouse</WAREHOUSE>
-  
-  
-  
+  <DAMAGE>Damage</DAMAGE>
+  <DAMAGE_PVP>Damage PvP</DAMAGE_PVP>
+  <DAMAGE_PVE>Damage PvE</DAMAGE_PVE>
+  <SHOT_RANGE>Shot range</SHOT_RANGE>
+  <SHOT_DISPERSION>Shot dispersion</SHOT_DISPERSION>
+  <SPEED>Speed</SPEED>
+  <SHIELD>Shield</SHIELD>
+  <SHIELD_DIVISION>Shield division</SHIELD_DIVISION>
+  <SHIELD_REPAIR>Shield repair</SHIELD_REPAIR>
+  <RECEIVE_ITEM>Receive the item {0}</RECEIVE_ITEM>
+
+
+
+
+
+
+
+
+
+
+
 
 
 </Language>

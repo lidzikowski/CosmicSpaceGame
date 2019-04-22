@@ -1,5 +1,4 @@
-﻿using CosmicSpaceCommunication;
-using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication.Game.Resources;
 using System;
 using System.Collections;
 using System.Collections.Generic;

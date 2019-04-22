@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Resources
@@ -12,6 +13,10 @@ namespace CosmicSpaceCommunication.Game.Resources
         public double? Metal { get; set; }
         public double? Scrap { get; set; }
 
+        public List<ItemReward> Items { get; set; }
+
+
+
         public static Reward GetReward(DataRow row)
         {
             return new Reward()
@@ -20,6 +25,8 @@ namespace CosmicSpaceCommunication.Game.Resources
                 Experience = ConvertRow.Row<ulong?>(row["experience"]),
                 Metal = ConvertRow.Row<double?>(row["metal"]),
                 Scrap = ConvertRow.Row<double?>(row["scrap"]),
+
+                Items = new List<ItemReward>()
             };
         }
     }

@@ -568,7 +568,7 @@ public abstract class Opponent
     }
     protected void CheckIfDead(Opponent opponent)
     {
-        if (Hitpoints.Equals(0))
+        if (Hitpoints == 0)
         {
             DeadOpponent = opponent;
             IsDead = true;

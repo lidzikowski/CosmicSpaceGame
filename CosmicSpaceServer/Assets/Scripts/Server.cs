@@ -43,6 +43,8 @@ public class Server : MonoBehaviour
 
     private async void GameResourcesFromDatabase()
     {
+        Items = await Database.GetItems();
+
         Ships = await Database.GetShips();
 
         Maps = await Database.GetMaps();
@@ -52,8 +54,6 @@ public class Server : MonoBehaviour
         Rockets = await Database.GetRockets();
 
         Enemies = await Database.GetEnemies();
-
-        Items = await Database.GetItems();
 
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);

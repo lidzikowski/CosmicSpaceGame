@@ -175,6 +175,36 @@ public class Language
     [XmlElement("WAREHOUSE")]
     public string WAREHOUSE { get; set; }
 
+    [XmlElement("DAMAGE")]
+    public string DAMAGE { get; set; }
+
+    [XmlElement("DAMAGE_PVP")]
+    public string DAMAGE_PVP { get; set; }
+
+    [XmlElement("DAMAGE_PVE")]
+    public string DAMAGE_PVE { get; set; }
+
+    [XmlElement("SHOT_RANGE")]
+    public string SHOT_RANGE { get; set; }
+
+    [XmlElement("SHOT_DISPERSION")]
+    public string SHOT_DISPERSION { get; set; }
+
+    [XmlElement("SPEED")]
+    public string SPEED { get; set; }
+
+    [XmlElement("SHIELD")]
+    public string SHIELD { get; set; }
+
+    [XmlElement("SHIELD_DIVISION")]
+    public string SHIELD_DIVISION { get; set; }
+
+    [XmlElement("SHIELD_REPAIR")]
+    public string SHIELD_REPAIR { get; set; }
+
+    [XmlElement("RECEIVE_ITEM")]
+    public string RECEIVE_ITEM { get; set; }
+
 
     #endregion
 }
