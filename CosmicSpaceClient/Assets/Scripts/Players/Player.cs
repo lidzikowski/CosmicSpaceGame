@@ -121,6 +121,12 @@ public class Player : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
         {
+            if(Client.Pilot.Items.Where(o=>o.IsEquipped).Count() == 0)
+            {
+                GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.NO_EQUIP });
+                return;
+            }
+
             if (!LocalShipController.TargetIsNull)
             {
                 if (!LocalShipController.TargetIsCover)

@@ -205,6 +205,9 @@ public class Language
     [XmlElement("RECEIVE_ITEM")]
     public string RECEIVE_ITEM { get; set; }
 
+    [XmlElement("NO_EQUIP")]
+    public string NO_EQUIP { get; set; }
+
 
     #endregion
 }
