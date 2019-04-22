@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace CosmicSpaceCommunication.Game.Resources
 {
     [Serializable]

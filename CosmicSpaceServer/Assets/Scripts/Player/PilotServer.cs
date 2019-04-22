@@ -19,43 +19,43 @@ public class PilotServer : Opponent
         CalculateStatistics();
     }
 
-    public void ItemsChange(ItemPilot newItem, ItemPilot localItem)
+    public void ItemsChange(List<ItemPilot> items)
     {
-        if (newItem.Item.ItemType != localItem.Item.ItemType)
-            return;
-
-        bool status = false;
-        if (newItem.IsEquipped)
+        foreach (ItemPilot item in items)
         {
-            switch (localItem.Item.ItemType)
+            ItemPilot localItem = Pilot.Items.FirstOrDefault(o => o.RelationId == item.RelationId && o.Item.ItemType == item.Item.ItemType);
+
+            if(localItem != null)
             {
-                case ItemTypes.Laser:
-                    if (GetItemsLasers.Count() < Pilot.Ship.Lasers)
-                        status = true;
-                    break;
-                case ItemTypes.Generator:
-                    if (GetItemsGenerators.Count() < Pilot.Ship.Generators)
-                        status = true;
-                    break;
-                case ItemTypes.Extra:
-                    if (GetItemsExtras.Count() < Pilot.Ship.Extras)
-                        status = true;
-                    break;
+                if (item.IsEquipped)
+                {
+                    switch (localItem.Item.ItemType)
+                    {
+                        case ItemTypes.Laser:
+                            if (GetItemsLasers.Count < Pilot.Ship.Lasers)
+                                localItem.IsEquipped = true;
+                            break;
+                        case ItemTypes.Generator:
+                            if (GetItemsGenerators.Count < Pilot.Ship.Generators)
+                                localItem.IsEquipped = true;
+                            break;
+                        case ItemTypes.Extra:
+                            if (GetItemsExtras.Count < Pilot.Ship.Extras)
+                                localItem.IsEquipped = true;
+                            break;
+                    }
+                }
+                else
+                {
+                    localItem.IsEquipped = false;
+                }
             }
-            Debug.Log(GetItemsGenerators.Count() + " < " + Pilot.Ship.Generators);
-            Debug.Log(status);
         }
-        else
-            status = true;
 
-        if(status)
-        {
-            //localItem.IsSold = newItem.IsSold; //server
-            //localItem.UpgradeLevel = newItem.UpgradeLevel; //server
+        //localItem.IsSold = newItem.IsSold; //server
+        //localItem.UpgradeLevel = newItem.UpgradeLevel; //server
 
-            localItem.IsEquipped = newItem.IsEquipped;
-            CalculateStatistics();
-        }
+        CalculateStatistics();
     }
 
 
@@ -198,10 +198,10 @@ public class PilotServer : Opponent
 
     #region Calculate EQUIPMENT
 
-    private IEnumerable<ItemPilot> GetItemsLasers => GetItems(ItemTypes.Laser);
-    private IEnumerable<ItemPilot> GetItemsGenerators => GetItems(ItemTypes.Generator);
-    private IEnumerable<ItemPilot> GetItemsExtras => GetItems(ItemTypes.Extra);
-    private IEnumerable<ItemPilot> GetItems(ItemTypes itemTypes) => Pilot.Items.Where(o => o.Item.ItemType == itemTypes && o.IsEquipped);
+    private List<ItemPilot> GetItemsLasers => GetItems(ItemTypes.Laser);
+    private List<ItemPilot> GetItemsGenerators => GetItems(ItemTypes.Generator);
+    private List<ItemPilot> GetItemsExtras => GetItems(ItemTypes.Extra);
+    private List<ItemPilot> GetItems(ItemTypes itemTypes) => Pilot.Items.Where(o => o.Item.ItemType == itemTypes && o.IsEquipped).ToList();
 
     protected void CalculateStatistics()
     {
@@ -247,7 +247,6 @@ public class PilotServer : Opponent
                 generatorCount++;
             }
         }
-
         Shields = 0;
         OnChangePosition();
 

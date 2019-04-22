@@ -37,6 +37,7 @@ public class ItemContainer : MonoBehaviour
                 itemHandler.ItemPilot = itemPilot;
                 itemHandler.ItemContainer = transform;
                 itemHandler.transform.localPosition = Vector3.zero;
+                itemHandler.ItemPilot.IsEquipped = HangarType != HangarWindow.HangarPanels.Warehouse;
                 return true;
             }
         }
@@ -46,7 +47,7 @@ public class ItemContainer : MonoBehaviour
 
     public bool RemoveItem(ItemPilot item)
     {
-        ItemPilot itemInContainer = Items.FirstOrDefault(o => o.Item.ItemId == item.Item.ItemId);
+        ItemPilot itemInContainer = Items.FirstOrDefault(o => o.RelationId == item.RelationId);
         if (itemInContainer != null)
         {
             Items.Remove(itemInContainer);

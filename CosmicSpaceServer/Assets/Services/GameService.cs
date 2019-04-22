@@ -169,18 +169,13 @@ public class GameService : WebSocket
 
                 else if (commandData.Command == Commands.ChangeEquipment)
                 {
-                    if (commandData.Data is ItemPilot data)
+                    if (commandData.Data is PilotEquipment data)
                     {
                         if (!CheckPacket(data.PilotId))
                             return;
 
-                        PilotServer pilot = Server.Pilots[data.PilotId];
-                        ItemPilot item = pilot.Pilot.Items.FirstOrDefault(o => o.RelationId == data.RelationId);
-
-                        if (item == null || item.IsSold)
-                            return;
-
-                        pilot.ItemsChange(data, item);
+                        if (data.Items.Count > 0)
+                            Server.Pilots[data.PilotId].ItemsChange(data.Items);
                     }
                 }
 

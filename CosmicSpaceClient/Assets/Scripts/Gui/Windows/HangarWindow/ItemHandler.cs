@@ -1,5 +1,6 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -60,18 +61,17 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
             {
                 if (ItemContainer.GetComponent<ItemContainer>().RemoveItem(ItemPilot))
                 {
-                    ItemPilot.IsEquipped = ItemContainerTarget.GetComponent<ItemContainer>().HangarType != HangarWindow.HangarPanels.Warehouse;
-
                     Client.SendToSocket(new CommandData()
                     {
                         Command = Commands.ChangeEquipment,
-                        Data = ItemPilot
-                    });
-
-                    Client.SendToSocket(new CommandData()
-                    {
-                        Command = Commands.GetEquipment,
-                        Data = Client.Pilot.Id
+                        Data = new PilotEquipment()
+                        {
+                            PilotId = Client.Pilot.Id,
+                            Items = new List<ItemPilot>()
+                            {
+                                ItemPilot
+                            }
+                        }
                     });
                     Destroy(gameObject);
                 }
