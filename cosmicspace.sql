@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
--- https://www.phpmyadmin.net/
+-- version 4.4.15.10
+-- https://www.phpmyadmin.net
 --
--- Host: 127.0.0.1
--- Czas generowania: 22 Kwi 2019, 16:05
--- Wersja serwera: 10.1.37-MariaDB
--- Wersja PHP: 7.3.0
+-- Host: localhost
+-- Czas generowania: 22 Kwi 2019, 14:50
+-- Wersja serwera: 5.5.60-MariaDB
+-- Wersja PHP: 7.2.16
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -26,7 +24,8 @@ DELIMITER $$
 --
 -- Procedury
 --
-CREATE DEFINER=`root`@`localhost` PROCEDURE `createportals` (IN `inlimit` INT(5))  BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `createportals`(IN `inlimit` INT(5))
+BEGIN
    	DECLARE v1 INT DEFAULT inlimit;
     WHILE v1 >= 0 DO
     BEGIN
@@ -57,54 +56,64 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `createportals` (IN `inlimit` INT(5)
 	END WHILE;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getammunitions` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getammunitions`()
+    NO SQL
 SELECT *
 FROM ammunitions$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getenemies` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getenemies`()
+    NO SQL
 SELECT *
 FROM enemies e
 JOIN rewards r ON r.rewardid=e.rewardid
 JOIN prefabs ps ON ps.prefabid=e.prefabid
 JOIN prefabs_types pt ON pt.prefabtypeid=ps.prefabtypeid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getenemymap` (IN `inmapid` INT UNSIGNED)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getenemymap`(IN `inmapid` INT UNSIGNED)
+    NO SQL
 SELECT *
 FROM enemymap
 WHERE mapid=inmapid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getitems` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getitems`()
+    NO SQL
 SELECT *
 FROM items i$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getmaps` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getmaps`()
+    NO SQL
 SELECT *
 FROM maps$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getpilotitems` (IN `inuserid` BIGINT UNSIGNED)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getpilotitems`(IN `inuserid` BIGINT UNSIGNED)
+    NO SQL
 SELECT *
 FROM pilotsitems pi
 WHERE pi.userid=inuserid AND pi.issold=0$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getpilotresources` (IN `inuserid` BIGINT UNSIGNED)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getpilotresources`(IN `inuserid` BIGINT UNSIGNED)
+    NO SQL
 SELECt *
 FROM pilotresources
 WHERE userid=inuserid
 LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getplayerdata` (IN `inuserid` BIGINT)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getplayerdata`(IN `inuserid` BIGINT)
+    NO SQL
 SELECT *
 FROM pilots p
 WHERE p.userid=inuserid
 LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getplayerid` (IN `inusername` VARCHAR(128))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getplayerid`(IN `inusername` VARCHAR(128))
+    NO SQL
 SELECT u.userid
 FROM users u
 WHERE u.usernamehash=inusername
 LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getportals` (IN `inmapid` INT(11))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getportals`(IN `inmapid` INT(11))
+    NO SQL
 SELECT 
 p.*, 
 ps.*,
@@ -126,45 +135,53 @@ JOIN gamesettings gs_ms ON gs_ms.key='mapsize'
 JOIN gamesettings gs_pb ON gs_pb.key='portalborder'
 WHERE p.mapid=inmapid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getrewarditems` (IN `inrewardid` INT UNSIGNED)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getrewarditems`(IN `inrewardid` INT UNSIGNED)
+    NO SQL
 SELECT *
 FROM itemreward ir
 LEFT JOIN rewards r ON r.rewardid=ir.rewardid
 WHERE ir.rewardid=inrewardid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getrockets` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getrockets`()
+    NO SQL
 SELECT *
 FROM rockets$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `getships` ()  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getships`()
+    NO SQL
 SELECT *
 FROM ships s
 JOIN rewards r ON r.rewardid=s.rewardid
 JOIN prefabs ps ON ps.prefabid=s.prefabid
 JOIN prefabs_types pt ON pt.prefabtypeid=ps.prefabtypeid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `loginuser` (IN `inusername` VARCHAR(128), IN `inpassword` VARCHAR(128))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `loginuser`(IN `inusername` VARCHAR(128), IN `inpassword` VARCHAR(128))
+    NO SQL
 SELECT userid
 FROM users u
 WHERE u.usernamehash=inusername AND u.passwordhash=inpassword
 LIMIT 1$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `loguser` (IN `inaction` VARCHAR(100), IN `inresult` TINYINT(1), IN `inuseragent` VARCHAR(500), IN `inhost` VARCHAR(50), IN `inuserid` BIGINT(20))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `loguser`(IN `inaction` VARCHAR(100), IN `inresult` TINYINT(1), IN `inuseragent` VARCHAR(500), IN `inhost` VARCHAR(50), IN `inuserid` BIGINT(20))
+    NO SQL
 INSERT INTO userslog (userid, datetime, action, result, useragent, host)
 VALUES (inuserid, CURRENT_TIMESTAMP, inaction, inresult, inuseragent, inhost)$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `occupiedaccount` (IN `inusername` VARCHAR(128), IN `inemail` VARCHAR(128))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `occupiedaccount`(IN `inusername` VARCHAR(128), IN `inemail` VARCHAR(128))
+    NO SQL
     DETERMINISTIC
 SELECT COUNT(*) 
 FROM users u
 WHERE u.usernamehash=inusername OR u.email=inemail$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `ocuppiednickname` (IN `innickname` VARCHAR(20))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ocuppiednickname`(IN `innickname` VARCHAR(20))
+    NO SQL
 SELECT COUNT(*)
 FROM pilots
 WHERE nickname=innickname$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `registeruser` (IN `inusername` VARCHAR(128), IN `inpassword` VARCHAR(128), IN `inemail` VARCHAR(100), IN `innewsletter` TINYINT(1), IN `inrules` TINYINT(1), IN `innickname` VARCHAR(20))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `registeruser`(IN `inusername` VARCHAR(128), IN `inpassword` VARCHAR(128), IN `inemail` VARCHAR(100), IN `innewsletter` TINYINT(1), IN `inrules` TINYINT(1), IN `innickname` VARCHAR(20))
+    NO SQL
 BEGIN
 
 INSERT INTO users (usernamehash, passwordhash, email, emailnewsletter, acceptrules, registerdate)
@@ -180,7 +197,8 @@ VALUES (@insertid);
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayerdata` (IN `inuserid` BIGINT UNSIGNED, IN `inpositionx` FLOAT, IN `inpositiony` FLOAT, IN `inshipid` INT UNSIGNED, IN `inexperience` BIGINT UNSIGNED, IN `inlevel` INT, IN `inscrap` DOUBLE, IN `inmetal` DOUBLE, IN `inhitpoints` BIGINT UNSIGNED, IN `inshields` BIGINT UNSIGNED, IN `inmapid` BIGINT UNSIGNED, IN `inammunition0` BIGINT UNSIGNED, IN `inammunition1` BIGINT UNSIGNED, IN `inammunition2` BIGINT UNSIGNED, IN `inammunition3` BIGINT UNSIGNED, IN `inrocket0` BIGINT UNSIGNED, IN `inrocket1` BIGINT UNSIGNED, IN `inrocket2` BIGINT UNSIGNED, IN `inisdead` TINYINT(1), IN `inkillerby` VARCHAR(20))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayerdata`(IN `inuserid` BIGINT UNSIGNED, IN `inpositionx` FLOAT, IN `inpositiony` FLOAT, IN `inshipid` INT UNSIGNED, IN `inexperience` BIGINT UNSIGNED, IN `inlevel` INT, IN `inscrap` DOUBLE, IN `inmetal` DOUBLE, IN `inhitpoints` BIGINT UNSIGNED, IN `inshields` BIGINT UNSIGNED, IN `inmapid` BIGINT UNSIGNED, IN `inammunition0` BIGINT UNSIGNED, IN `inammunition1` BIGINT UNSIGNED, IN `inammunition2` BIGINT UNSIGNED, IN `inammunition3` BIGINT UNSIGNED, IN `inrocket0` BIGINT UNSIGNED, IN `inrocket1` BIGINT UNSIGNED, IN `inrocket2` BIGINT UNSIGNED, IN `inisdead` TINYINT(1), IN `inkillerby` VARCHAR(20))
+    NO SQL
 BEGIN
 
 UPDATE pilots
@@ -214,7 +232,8 @@ LIMIT 1;
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayeritem` (IN `inuserid` BIGINT UNSIGNED, IN `initemid` BIGINT, IN `inupgradelevel` INT)  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayeritem`(IN `inuserid` BIGINT UNSIGNED, IN `initemid` BIGINT, IN `inupgradelevel` INT)
+    NO SQL
 BEGIN
 
 INSERT INTO pilotsitems (userid, itemid, upgradelevel)
@@ -224,7 +243,8 @@ SELECT LAST_INSERT_ID();
 
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayeritems` (IN `inrelationid` BIGINT UNSIGNED, IN `inupgradelevel` INT, IN `inisequipped` TINYINT(1), IN `inissold` TINYINT(1))  NO SQL
+CREATE DEFINER=`root`@`localhost` PROCEDURE `saveplayeritems`(IN `inrelationid` BIGINT UNSIGNED, IN `inupgradelevel` INT, IN `inisequipped` TINYINT(1), IN `inissold` TINYINT(1))
+    NO SQL
 UPDATE pilotsitems
 SET
 upgradelevel=inupgradelevel,
@@ -240,15 +260,15 @@ DELIMITER ;
 -- Struktura tabeli dla tabeli `ammunitions`
 --
 
-CREATE TABLE `ammunitions` (
-  `ammunitionid` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `ammunitions` (
+  `ammunitionid` int(10) unsigned NOT NULL,
   `ammunitionname` varchar(50) COLLATE utf8_polish_ci NOT NULL,
   `multiplierplayer` float NOT NULL DEFAULT '1',
   `multiplierenemy` float NOT NULL DEFAULT '1',
   `scrapprice` double DEFAULT NULL,
   `metalprice` double DEFAULT NULL,
-  `skillid` tinyint(3) UNSIGNED DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+  `skillid` tinyint(3) unsigned DEFAULT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `ammunitions`
@@ -266,8 +286,8 @@ INSERT INTO `ammunitions` (`ammunitionid`, `ammunitionname`, `multiplierplayer`,
 -- Struktura tabeli dla tabeli `enemies`
 --
 
-CREATE TABLE `enemies` (
-  `enemyid` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `enemies` (
+  `enemyid` int(10) unsigned NOT NULL,
   `enemyname` varchar(50) COLLATE utf8_polish_ci NOT NULL,
   `prefabid` int(11) NOT NULL,
   `hitpoints` bigint(20) NOT NULL,
@@ -276,8 +296,8 @@ CREATE TABLE `enemies` (
   `damage` bigint(20) NOT NULL,
   `shotdistance` int(11) NOT NULL DEFAULT '30',
   `isaggressive` tinyint(1) NOT NULL DEFAULT '0',
-  `rewardid` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+  `rewardid` int(10) unsigned NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `enemies`
@@ -300,12 +320,12 @@ INSERT INTO `enemies` (`enemyid`, `enemyname`, `prefabid`, `hitpoints`, `shields
 -- Struktura tabeli dla tabeli `enemymap`
 --
 
-CREATE TABLE `enemymap` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `enemyid` int(10) UNSIGNED NOT NULL,
-  `mapid` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `enemymap` (
+  `id` int(10) unsigned NOT NULL,
+  `enemyid` int(10) unsigned NOT NULL,
+  `mapid` int(10) unsigned NOT NULL,
   `count` smallint(6) NOT NULL DEFAULT '50'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `enemymap`
@@ -325,11 +345,11 @@ INSERT INTO `enemymap` (`id`, `enemyid`, `mapid`, `count`) VALUES
 -- Struktura tabeli dla tabeli `gamesettings`
 --
 
-CREATE TABLE `gamesettings` (
+CREATE TABLE IF NOT EXISTS `gamesettings` (
   `id` int(11) NOT NULL,
   `key` varchar(100) COLLATE utf8_polish_ci NOT NULL,
   `value` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `gamesettings`
@@ -346,13 +366,13 @@ INSERT INTO `gamesettings` (`id`, `key`, `value`) VALUES
 -- Struktura tabeli dla tabeli `itemreward`
 --
 
-CREATE TABLE `itemreward` (
+CREATE TABLE IF NOT EXISTS `itemreward` (
   `itemrewardid` bigint(20) NOT NULL,
-  `rewardid` int(11) UNSIGNED NOT NULL,
+  `rewardid` int(11) unsigned NOT NULL,
   `itemid` bigint(20) NOT NULL,
   `upgradelevel` int(11) NOT NULL DEFAULT '1',
   `chance` int(11) NOT NULL DEFAULT '1000'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `itemreward`
@@ -372,7 +392,7 @@ INSERT INTO `itemreward` (`itemrewardid`, `rewardid`, `itemid`, `upgradelevel`, 
 -- Struktura tabeli dla tabeli `items`
 --
 
-CREATE TABLE `items` (
+CREATE TABLE IF NOT EXISTS `items` (
   `itemid` bigint(20) NOT NULL,
   `name` varchar(100) COLLATE utf8_polish_ci NOT NULL,
   `prefabname` varchar(100) COLLATE utf8_polish_ci NOT NULL,
@@ -387,7 +407,7 @@ CREATE TABLE `items` (
   `generator_shield_repair` int(11) DEFAULT '20',
   `scrapprice` double DEFAULT NULL,
   `metalprice` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `items`
@@ -407,10 +427,10 @@ INSERT INTO `items` (`itemid`, `name`, `prefabname`, `itemtypeid`, `laser_damage
 -- Struktura tabeli dla tabeli `itemtypes`
 --
 
-CREATE TABLE `itemtypes` (
+CREATE TABLE IF NOT EXISTS `itemtypes` (
   `itemtypeid` int(11) NOT NULL,
   `itemtypename` varchar(50) COLLATE utf8_polish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `itemtypes`
@@ -427,12 +447,12 @@ INSERT INTO `itemtypes` (`itemtypeid`, `itemtypename`) VALUES
 -- Struktura tabeli dla tabeli `maps`
 --
 
-CREATE TABLE `maps` (
-  `mapid` int(11) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `maps` (
+  `mapid` int(11) unsigned NOT NULL,
   `mapname` varchar(20) COLLATE utf8_polish_ci NOT NULL,
   `ispvp` tinyint(4) NOT NULL DEFAULT '0',
   `requiredlevel` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `maps`
@@ -463,15 +483,15 @@ INSERT INTO `maps` (`mapid`, `mapname`, `ispvp`, `requiredlevel`) VALUES
 -- Struktura tabeli dla tabeli `pilotresources`
 --
 
-CREATE TABLE `pilotresources` (
-  `userid` bigint(20) UNSIGNED NOT NULL,
-  `ammunition0` bigint(20) UNSIGNED NOT NULL DEFAULT '500',
-  `ammunition1` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `ammunition2` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `ammunition3` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `rocket0` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `rocket1` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `rocket2` bigint(20) UNSIGNED NOT NULL DEFAULT '0'
+CREATE TABLE IF NOT EXISTS `pilotresources` (
+  `userid` bigint(20) unsigned NOT NULL,
+  `ammunition0` bigint(20) unsigned NOT NULL DEFAULT '500',
+  `ammunition1` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `ammunition2` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `ammunition3` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `rocket0` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `rocket1` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `rocket2` bigint(20) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
@@ -485,7 +505,11 @@ INSERT INTO `pilotresources` (`userid`, `ammunition0`, `ammunition1`, `ammunitio
 (103, 500, 0, 0, 0, 0, 0, 0),
 (104, 500, 0, 0, 0, 0, 0, 0),
 (105, 500, 0, 0, 0, 0, 0, 0),
-(106, 500, 0, 0, 0, 0, 0, 0);
+(106, 500, 0, 0, 0, 0, 0, 0),
+(107, 500, 0, 0, 0, 0, 0, 0),
+(108, 500, 0, 0, 0, 0, 0, 0),
+(109, 500, 0, 0, 0, 0, 0, 0),
+(110, 500, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -493,14 +517,14 @@ INSERT INTO `pilotresources` (`userid`, `ammunition0`, `ammunition1`, `ammunitio
 -- Struktura tabeli dla tabeli `pilots`
 --
 
-CREATE TABLE `pilots` (
-  `userid` bigint(20) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `pilots` (
+  `userid` bigint(20) unsigned NOT NULL,
   `nickname` varchar(20) COLLATE utf8_polish_ci DEFAULT NULL,
-  `mapid` int(11) UNSIGNED NOT NULL DEFAULT '100',
+  `mapid` int(11) unsigned NOT NULL DEFAULT '100',
   `positionx` float NOT NULL DEFAULT '100',
   `positiony` float NOT NULL DEFAULT '-100',
-  `shipid` int(11) UNSIGNED NOT NULL DEFAULT '100',
-  `experience` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
+  `shipid` int(11) unsigned NOT NULL DEFAULT '100',
+  `experience` bigint(20) unsigned NOT NULL DEFAULT '0',
   `level` int(11) NOT NULL DEFAULT '1',
   `scrap` double NOT NULL DEFAULT '0',
   `metal` double NOT NULL DEFAULT '0',
@@ -516,12 +540,16 @@ CREATE TABLE `pilots` (
 
 INSERT INTO `pilots` (`userid`, `nickname`, `mapid`, `positionx`, `positiony`, `shipid`, `experience`, `level`, `scrap`, `metal`, `hitpoints`, `shields`, `isdead`, `killerby`) VALUES
 (100, 'test1', 100, 319.613, -275.955, 100, 2, 1, 0, 0, 874, 706, 0, NULL),
-(101, 'test2', 100, 919, -928, 101, 650, 1, 43, 0, 1600, 1000, 0, NULL),
-(102, 'test3', 101, 230, -576, 105, 95524, 1, 827, 187, 4500, 0, 0, NULL),
-(103, 'test4', 101, 68, -81, 103, 28355, 1, 57, 0, 3700, 1000, 0, NULL),
-(104, 'test5', 100, 932, -937, 104, 484, 1, 32, 0, 5000, 1000, 0, NULL),
+(101, 'test2', 100, 895, -889, 101, 1019, 1, 51, 2, 1600, 0, 0, NULL),
+(102, 'test3', 100, 877, -892, 105, 96202, 1, 839, 190, 4298, 293, 0, NULL),
+(103, 'test4', 101, 81.0209, -74.1459, 103, 28355, 1, 57, 0, 3700, 0, 0, NULL),
+(104, 'test5', 100, 963, -868, 104, 484, 1, 32, 0, 5000, 0, 0, NULL),
 (105, 'test6', 100, 284.76, -360.721, 105, 0, 1, 0, 0, 41166, 0, 0, NULL),
-(106, 'test7', 100, 286, -179, 100, 1191, 1, 28, 7, 922, 42, 0, NULL);
+(106, 'test7', 100, 154.802, -85.7609, 100, 2174, 1, 44, 11, 952, 0, 0, NULL),
+(107, 'Rosol', 100, 100, -100, 100, 0, 1, 0, 0, 1000, 0, 0, NULL),
+(108, 'sasa', 100, 100, -100, 100, 0, 1, 0, 0, 1000, 0, 0, NULL),
+(109, 'Blant', 100, 100, -100, 100, 0, 1, 0, 0, 1000, 0, 0, NULL),
+(110, 'test8', 100, 151.994, -102.105, 100, 369, 1, 8, 2, 971, 0, 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -529,14 +557,14 @@ INSERT INTO `pilots` (`userid`, `nickname`, `mapid`, `positionx`, `positiony`, `
 -- Struktura tabeli dla tabeli `pilotsitems`
 --
 
-CREATE TABLE `pilotsitems` (
-  `relationid` bigint(20) UNSIGNED NOT NULL,
-  `userid` bigint(20) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `pilotsitems` (
+  `relationid` bigint(20) unsigned NOT NULL,
+  `userid` bigint(20) unsigned NOT NULL,
   `itemid` bigint(20) NOT NULL,
   `upgradelevel` int(11) NOT NULL DEFAULT '1',
   `isequipped` tinyint(4) NOT NULL DEFAULT '0',
   `issold` tinyint(4) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `pilotsitems`
@@ -560,7 +588,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (15, 102, 3, 1, 1, 0),
 (16, 102, 2, 1, 0, 0),
 (17, 102, 1, 1, 0, 0),
-(18, 102, 3, 1, 1, 0),
+(18, 102, 3, 1, 0, 0),
 (19, 102, 2, 1, 0, 0),
 (20, 106, 1, 1, 1, 0),
 (21, 106, 2, 1, 1, 0),
@@ -593,7 +621,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (48, 102, 2, 1, 0, 0),
 (49, 102, 1, 1, 0, 0),
 (50, 102, 2, 1, 0, 0),
-(51, 102, 2, 1, 0, 0),
+(51, 102, 2, 1, 1, 0),
 (52, 102, 3, 1, 0, 0),
 (53, 102, 1, 1, 0, 0),
 (54, 102, 3, 1, 0, 0),
@@ -612,7 +640,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (67, 102, 3, 1, 0, 0),
 (68, 102, 1, 1, 0, 0),
 (69, 102, 2, 1, 0, 0),
-(70, 102, 2, 1, 0, 0),
+(70, 102, 2, 1, 1, 0),
 (71, 102, 2, 1, 0, 0),
 (72, 102, 1, 1, 0, 0),
 (73, 102, 2, 1, 0, 0),
@@ -634,14 +662,27 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (89, 102, 1, 1, 0, 0),
 (90, 102, 2, 1, 0, 0),
 (91, 102, 3, 1, 0, 0),
-(92, 102, 3, 1, 1, 0),
+(92, 102, 3, 1, 0, 0),
 (93, 102, 1, 1, 0, 0),
 (94, 102, 1, 1, 0, 0),
 (95, 102, 2, 1, 0, 0),
 (96, 102, 1, 1, 0, 0),
 (97, 102, 3, 1, 0, 0),
 (98, 102, 1, 1, 0, 0),
-(99, 102, 4, 1, 1, 0);
+(99, 102, 4, 1, 1, 0),
+(100, 110, 1, 1, 1, 0),
+(101, 100, 1, 1, 0, 0),
+(102, 101, 1, 1, 1, 0),
+(103, 102, 1, 1, 0, 0),
+(104, 103, 1, 1, 0, 0),
+(105, 104, 1, 1, 0, 0),
+(106, 105, 1, 1, 0, 0),
+(107, 106, 1, 1, 0, 0),
+(108, 107, 1, 1, 0, 0),
+(109, 108, 1, 1, 0, 0),
+(110, 109, 1, 1, 0, 0),
+(111, 101, 3, 1, 1, 0),
+(112, 102, 2, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -649,12 +690,12 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 -- Struktura tabeli dla tabeli `portalpositions`
 --
 
-CREATE TABLE `portalpositions` (
+CREATE TABLE IF NOT EXISTS `portalpositions` (
   `portalpositionid` int(11) NOT NULL,
   `name` varchar(50) COLLATE utf8_polish_ci NOT NULL,
   `positionx` float NOT NULL,
   `positiony` float NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=122 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `portalpositions`
@@ -789,14 +830,14 @@ INSERT INTO `portalpositions` (`portalpositionid`, `name`, `positionx`, `positio
 -- Struktura tabeli dla tabeli `portals`
 --
 
-CREATE TABLE `portals` (
+CREATE TABLE IF NOT EXISTS `portals` (
   `portalid` int(11) NOT NULL,
   `prefabid` int(11) NOT NULL,
-  `mapid` int(11) UNSIGNED NOT NULL,
+  `mapid` int(11) unsigned NOT NULL,
   `portalpositionid` int(11) DEFAULT NULL,
-  `target_mapid` int(11) UNSIGNED NOT NULL,
+  `target_mapid` int(11) unsigned NOT NULL,
   `target_portalpositionid` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `portals`
@@ -860,12 +901,12 @@ INSERT INTO `portals` (`portalid`, `prefabid`, `mapid`, `portalpositionid`, `tar
 -- Struktura tabeli dla tabeli `prefabs`
 --
 
-CREATE TABLE `prefabs` (
+CREATE TABLE IF NOT EXISTS `prefabs` (
   `prefabid` int(11) NOT NULL,
   `prefabname` varchar(100) COLLATE utf8_polish_ci NOT NULL,
   `prefabtypeid` int(11) NOT NULL DEFAULT '1',
   `description` varchar(300) COLLATE utf8_polish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `prefabs`
@@ -997,10 +1038,10 @@ INSERT INTO `prefabs` (`prefabid`, `prefabname`, `prefabtypeid`, `description`) 
 -- Struktura tabeli dla tabeli `prefabs_types`
 --
 
-CREATE TABLE `prefabs_types` (
+CREATE TABLE IF NOT EXISTS `prefabs_types` (
   `prefabtypeid` int(11) NOT NULL,
   `prefabtypename` varchar(100) COLLATE utf8_polish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `prefabs_types`
@@ -1016,12 +1057,12 @@ INSERT INTO `prefabs_types` (`prefabtypeid`, `prefabtypename`) VALUES
 -- Struktura tabeli dla tabeli `rewards`
 --
 
-CREATE TABLE `rewards` (
-  `rewardid` int(10) UNSIGNED NOT NULL,
-  `experience` bigint(20) UNSIGNED DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `rewards` (
+  `rewardid` int(10) unsigned NOT NULL,
+  `experience` bigint(20) unsigned DEFAULT NULL,
   `metal` double DEFAULT NULL,
   `scrap` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `rewards`
@@ -1065,14 +1106,14 @@ INSERT INTO `rewards` (`rewardid`, `experience`, `metal`, `scrap`) VALUES
 -- Struktura tabeli dla tabeli `rockets`
 --
 
-CREATE TABLE `rockets` (
-  `rocketid` int(10) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `rockets` (
+  `rocketid` int(10) unsigned NOT NULL,
   `rocketname` varchar(50) COLLATE utf8_polish_ci NOT NULL,
   `scrapprice` double DEFAULT NULL,
   `metalprice` double DEFAULT NULL,
-  `skillid` tinyint(3) UNSIGNED DEFAULT NULL,
-  `damage` int(10) UNSIGNED NOT NULL DEFAULT '1000'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+  `skillid` tinyint(3) unsigned DEFAULT NULL,
+  `damage` int(10) unsigned NOT NULL DEFAULT '1000'
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `rockets`
@@ -1089,21 +1130,21 @@ INSERT INTO `rockets` (`rocketid`, `rocketname`, `scrapprice`, `metalprice`, `sk
 -- Struktura tabeli dla tabeli `ships`
 --
 
-CREATE TABLE `ships` (
-  `shipid` int(11) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `ships` (
+  `shipid` int(11) unsigned NOT NULL,
   `shipname` varchar(100) COLLATE utf8_polish_ci NOT NULL,
   `prefabid` int(11) NOT NULL,
   `requiredlevel` int(11) NOT NULL DEFAULT '1',
   `scrapprice` double DEFAULT NULL,
   `metalprice` double DEFAULT NULL,
-  `lasers` tinyint(3) UNSIGNED NOT NULL DEFAULT '1',
-  `generators` tinyint(3) UNSIGNED NOT NULL DEFAULT '1',
-  `extras` tinyint(3) UNSIGNED NOT NULL DEFAULT '1',
-  `speed` smallint(5) UNSIGNED NOT NULL DEFAULT '50',
-  `cargo` smallint(5) UNSIGNED NOT NULL DEFAULT '100',
-  `hitpoints` bigint(20) UNSIGNED NOT NULL DEFAULT '1000',
-  `rewardid` int(10) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+  `lasers` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `generators` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `extras` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `speed` smallint(5) unsigned NOT NULL DEFAULT '50',
+  `cargo` smallint(5) unsigned NOT NULL DEFAULT '100',
+  `hitpoints` bigint(20) unsigned NOT NULL DEFAULT '1000',
+  `rewardid` int(10) unsigned NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=130 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `ships`
@@ -1147,8 +1188,8 @@ INSERT INTO `ships` (`shipid`, `shipname`, `prefabid`, `requiredlevel`, `scrappr
 -- Struktura tabeli dla tabeli `users`
 --
 
-CREATE TABLE `users` (
-  `userid` bigint(20) UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `users` (
+  `userid` bigint(20) unsigned NOT NULL,
   `usernamehash` varchar(128) COLLATE utf8_polish_ci NOT NULL,
   `passwordhash` varchar(128) COLLATE utf8_polish_ci NOT NULL,
   `email` varchar(100) COLLATE utf8_polish_ci NOT NULL,
@@ -1156,7 +1197,7 @@ CREATE TABLE `users` (
   `acceptrules` tinyint(1) NOT NULL DEFAULT '0',
   `ban` tinyint(1) NOT NULL DEFAULT '0',
   `registerdate` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci ROW_FORMAT=REDUNDANT;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci ROW_FORMAT=REDUNDANT;
 
 --
 -- Zrzut danych tabeli `users`
@@ -1169,7 +1210,11 @@ INSERT INTO `users` (`userid`, `usernamehash`, `passwordhash`, `email`, `emailne
 (103, 'F9DE02FC94D0261D27A2B54210D5FC8795D2BAE4E6A229C8EAC9158999142E3301267F591640BE08C1507889760634A3872D93BCFC13459CB7D7D0D2B593E127', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test4', 0, 1, 0, '2018-12-29 21:00:23'),
 (104, '368E28420D2F469DFA61A8775A049F5D33E8D498EF4173BA945F2CE73D027C309A450651B7DF73609F8EC2F7BFEDC3DC21EDE8E89BAE5227C6A680A1942EFFB6', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test5', 1, 1, 0, '2018-12-29 21:49:24'),
 (105, 'B4FDF8DD90B9FF39276EF1C959D08DED6369FD6FF36E231924AD3A8F5A3689DB93CAF54DF37A63A07C64E2F712190379AEC9399A2189439ACC7829B1486D1B93', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test6', 1, 1, 0, '2018-12-29 21:49:37'),
-(106, '739EA2D8AE0E866A5E98370E93660351A17B7B6CE8169F50B276E95859621A746227F11C025755FBA7C9292B420FF8B3D221CEDED3F01065B844906EEA550E43', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test7', 1, 1, 0, '2019-04-22 15:20:28');
+(106, '739EA2D8AE0E866A5E98370E93660351A17B7B6CE8169F50B276E95859621A746227F11C025755FBA7C9292B420FF8B3D221CEDED3F01065B844906EEA550E43', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test7', 1, 1, 0, '2019-04-22 15:20:28'),
+(107, 'B8D7FDF374776ADD969216DA4CD7D549ED925FB113FED8369C0D7A7B3A27616A658469A7003C738B80E5AEC1AAF57BF481422AA5290C43DDE68D8CB15106E74A', '3C41F133F5647ACDE1099150E1D71B6A778DEB43608E4941451150518A60E4E3482E07041EE98BEA8FF81664E652DD952007E2A7AAF9362B77791FCE81C3DD7C', 'rosol2k9@gmail.com', 1, 1, 0, '2019-04-15 15:28:48'),
+(108, 'ABD6CCDC0104685A81654AA77EB6DBA7CCD354B94CB5044479AB437B8A55B87D203BD9F4A293C94DFB0410763CF1F254689909DA89E0269EDC0DD932F0FED773', 'ABD6CCDC0104685A81654AA77EB6DBA7CCD354B94CB5044479AB437B8A55B87D203BD9F4A293C94DFB0410763CF1F254689909DA89E0269EDC0DD932F0FED773', 'sasa@sasa.pl', 1, 1, 0, '2019-04-15 17:59:21'),
+(109, '4AE67A3775486C4AA95F48500EB1E30BA42ABADF07ACAB3F4F0FA0F3D96BB014F74AA8063C280416CF99B5B8FD4AB3F7EE331E721501F4849E8973FFE8B68E45', 'FC5493A71AFFC8247888DC63F3C60B172DE9D1C43B1B2AC6FB8260D16B5B974790AABF0B1A10D34776BA7044E541D671357191C58A34B37395A57876F760D7FD', 'lewyp4@o2.pl', 0, 1, 0, '2019-04-18 16:05:10'),
+(110, '5A66EA8468E426A22CA642BFFCDC351159F3C017A4F439F1E35A902D70D66734101E0D5FCBCD03E4D35C7C2BEB97D95661F7B81AD6F604F3F386804C928EB2EA', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test8', 0, 1, 0, '2019-04-22 16:30:06');
 
 -- --------------------------------------------------------
 
@@ -1177,15 +1222,15 @@ INSERT INTO `users` (`userid`, `usernamehash`, `passwordhash`, `email`, `emailne
 -- Struktura tabeli dla tabeli `userslog`
 --
 
-CREATE TABLE `userslog` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `userid` bigint(20) UNSIGNED DEFAULT NULL,
+CREATE TABLE IF NOT EXISTS `userslog` (
+  `id` bigint(20) unsigned NOT NULL,
+  `userid` bigint(20) unsigned DEFAULT NULL,
   `datetime` datetime NOT NULL,
   `action` varchar(100) COLLATE utf8_polish_ci NOT NULL,
   `result` tinyint(1) NOT NULL,
   `useragent` varchar(500) COLLATE utf8_polish_ci NOT NULL,
   `host` varchar(50) COLLATE utf8_polish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1539 DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
 -- Zrzut danych tabeli `userslog`
@@ -2721,20 +2766,30 @@ INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `userage
 (1525, 102, '2019-04-22 15:46:01', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (1526, 102, '2019-04-22 15:46:25', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (1527, 102, '2019-04-22 15:49:47', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
-(1528, 102, '2019-04-22 16:02:15', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+(1528, 102, '2019-04-22 16:02:15', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1529, 103, '2019-04-22 16:14:54', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1530, 103, '2019-04-22 16:15:33', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(1531, 103, '2019-04-22 16:28:10', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1532, 104, '2019-04-22 16:28:26', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1533, 104, '2019-04-22 16:28:58', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1534, 106, '2019-04-22 16:29:28', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1535, 110, '2019-04-22 16:30:06', 'Register', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1536, 110, '2019-04-22 16:30:06', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1537, 101, '2019-04-22 16:33:17', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231'),
+(1538, 102, '2019-04-22 16:34:32', 'LogIn', 1, 'websocket-sharp/1.0', '77.55.212.240:24231');
 
 --
 -- Indeksy dla zrzutów tabel
 --
 
 --
--- Indeksy dla tabeli `ammunitions`
+-- Indexes for table `ammunitions`
 --
 ALTER TABLE `ammunitions`
   ADD PRIMARY KEY (`ammunitionid`);
 
 --
--- Indeksy dla tabeli `enemies`
+-- Indexes for table `enemies`
 --
 ALTER TABLE `enemies`
   ADD PRIMARY KEY (`enemyid`),
@@ -2742,7 +2797,7 @@ ALTER TABLE `enemies`
   ADD KEY `prefabname` (`prefabid`);
 
 --
--- Indeksy dla tabeli `enemymap`
+-- Indexes for table `enemymap`
 --
 ALTER TABLE `enemymap`
   ADD PRIMARY KEY (`id`),
@@ -2750,14 +2805,14 @@ ALTER TABLE `enemymap`
   ADD KEY `mapid` (`mapid`);
 
 --
--- Indeksy dla tabeli `gamesettings`
+-- Indexes for table `gamesettings`
 --
 ALTER TABLE `gamesettings`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `key` (`key`);
 
 --
--- Indeksy dla tabeli `itemreward`
+-- Indexes for table `itemreward`
 --
 ALTER TABLE `itemreward`
   ADD PRIMARY KEY (`itemrewardid`),
@@ -2765,33 +2820,33 @@ ALTER TABLE `itemreward`
   ADD KEY `rewardid` (`rewardid`);
 
 --
--- Indeksy dla tabeli `items`
+-- Indexes for table `items`
 --
 ALTER TABLE `items`
   ADD PRIMARY KEY (`itemid`),
   ADD KEY `itemtypeid` (`itemtypeid`);
 
 --
--- Indeksy dla tabeli `itemtypes`
+-- Indexes for table `itemtypes`
 --
 ALTER TABLE `itemtypes`
   ADD PRIMARY KEY (`itemtypeid`);
 
 --
--- Indeksy dla tabeli `maps`
+-- Indexes for table `maps`
 --
 ALTER TABLE `maps`
   ADD PRIMARY KEY (`mapid`);
 
 --
--- Indeksy dla tabeli `pilotresources`
+-- Indexes for table `pilotresources`
 --
 ALTER TABLE `pilotresources`
   ADD UNIQUE KEY `userid_2` (`userid`),
   ADD KEY `userid` (`userid`);
 
 --
--- Indeksy dla tabeli `pilots`
+-- Indexes for table `pilots`
 --
 ALTER TABLE `pilots`
   ADD UNIQUE KEY `userid` (`userid`),
@@ -2800,7 +2855,7 @@ ALTER TABLE `pilots`
   ADD KEY `shipid` (`shipid`);
 
 --
--- Indeksy dla tabeli `pilotsitems`
+-- Indexes for table `pilotsitems`
 --
 ALTER TABLE `pilotsitems`
   ADD PRIMARY KEY (`relationid`),
@@ -2808,14 +2863,14 @@ ALTER TABLE `pilotsitems`
   ADD KEY `itemid` (`itemid`);
 
 --
--- Indeksy dla tabeli `portalpositions`
+-- Indexes for table `portalpositions`
 --
 ALTER TABLE `portalpositions`
   ADD UNIQUE KEY `portalpositionid` (`portalpositionid`),
   ADD UNIQUE KEY `name` (`name`);
 
 --
--- Indeksy dla tabeli `portals`
+-- Indexes for table `portals`
 --
 ALTER TABLE `portals`
   ADD PRIMARY KEY (`portalid`),
@@ -2826,7 +2881,7 @@ ALTER TABLE `portals`
   ADD KEY `target_portalpositionid` (`target_portalpositionid`);
 
 --
--- Indeksy dla tabeli `prefabs`
+-- Indexes for table `prefabs`
 --
 ALTER TABLE `prefabs`
   ADD PRIMARY KEY (`prefabid`),
@@ -2834,25 +2889,25 @@ ALTER TABLE `prefabs`
   ADD KEY `prefab_type_id` (`prefabtypeid`);
 
 --
--- Indeksy dla tabeli `prefabs_types`
+-- Indexes for table `prefabs_types`
 --
 ALTER TABLE `prefabs_types`
   ADD PRIMARY KEY (`prefabtypeid`);
 
 --
--- Indeksy dla tabeli `rewards`
+-- Indexes for table `rewards`
 --
 ALTER TABLE `rewards`
   ADD PRIMARY KEY (`rewardid`);
 
 --
--- Indeksy dla tabeli `rockets`
+-- Indexes for table `rockets`
 --
 ALTER TABLE `rockets`
   ADD PRIMARY KEY (`rocketid`);
 
 --
--- Indeksy dla tabeli `ships`
+-- Indexes for table `ships`
 --
 ALTER TABLE `ships`
   ADD PRIMARY KEY (`shipid`),
@@ -2861,7 +2916,7 @@ ALTER TABLE `ships`
   ADD KEY `prefabname` (`prefabid`);
 
 --
--- Indeksy dla tabeli `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`userid`),
@@ -2869,7 +2924,7 @@ ALTER TABLE `users`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indeksy dla tabeli `userslog`
+-- Indexes for table `userslog`
 --
 ALTER TABLE `userslog`
   ADD PRIMARY KEY (`id`),
@@ -2883,110 +2938,92 @@ ALTER TABLE `userslog`
 -- AUTO_INCREMENT dla tabeli `ammunitions`
 --
 ALTER TABLE `ammunitions`
-  MODIFY `ammunitionid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
-
+  MODIFY `ammunitionid` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=104;
 --
 -- AUTO_INCREMENT dla tabeli `enemies`
 --
 ALTER TABLE `enemies`
-  MODIFY `enemyid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
+  MODIFY `enemyid` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
 --
 -- AUTO_INCREMENT dla tabeli `enemymap`
 --
 ALTER TABLE `enemymap`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
+  MODIFY `id` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT dla tabeli `gamesettings`
 --
 ALTER TABLE `gamesettings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT dla tabeli `itemreward`
 --
 ALTER TABLE `itemreward`
-  MODIFY `itemrewardid` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
+  MODIFY `itemrewardid` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT dla tabeli `items`
 --
 ALTER TABLE `items`
-  MODIFY `itemid` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
+  MODIFY `itemid` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT dla tabeli `itemtypes`
 --
 ALTER TABLE `itemtypes`
-  MODIFY `itemtypeid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
+  MODIFY `itemtypeid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT dla tabeli `maps`
 --
 ALTER TABLE `maps`
-  MODIFY `mapid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=117;
-
+  MODIFY `mapid` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=117;
 --
 -- AUTO_INCREMENT dla tabeli `pilotsitems`
 --
 ALTER TABLE `pilotsitems`
-  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
-
+  MODIFY `relationid` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=113;
 --
 -- AUTO_INCREMENT dla tabeli `portalpositions`
 --
 ALTER TABLE `portalpositions`
-  MODIFY `portalpositionid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
-
+  MODIFY `portalpositionid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=122;
 --
 -- AUTO_INCREMENT dla tabeli `portals`
 --
 ALTER TABLE `portals`
-  MODIFY `portalid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
-
+  MODIFY `portalid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=102;
 --
 -- AUTO_INCREMENT dla tabeli `prefabs`
 --
 ALTER TABLE `prefabs`
-  MODIFY `prefabid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
-
+  MODIFY `prefabid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=119;
 --
 -- AUTO_INCREMENT dla tabeli `prefabs_types`
 --
 ALTER TABLE `prefabs_types`
-  MODIFY `prefabtypeid` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
+  MODIFY `prefabtypeid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT dla tabeli `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
-
+  MODIFY `rewardid` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=31;
 --
 -- AUTO_INCREMENT dla tabeli `rockets`
 --
 ALTER TABLE `rockets`
-  MODIFY `rocketid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
-
+  MODIFY `rocketid` int(10) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=103;
 --
 -- AUTO_INCREMENT dla tabeli `ships`
 --
 ALTER TABLE `ships`
-  MODIFY `shipid` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
-
+  MODIFY `shipid` int(11) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=130;
 --
 -- AUTO_INCREMENT dla tabeli `users`
 --
 ALTER TABLE `users`
-  MODIFY `userid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
-
+  MODIFY `userid` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=111;
 --
 -- AUTO_INCREMENT dla tabeli `userslog`
 --
 ALTER TABLE `userslog`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1529;
-
+  MODIFY `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1539;
 --
 -- Ograniczenia dla zrzutów tabel
 --
@@ -3028,7 +3065,7 @@ ALTER TABLE `pilotresources`
 -- Ograniczenia dla tabeli `pilots`
 --
 ALTER TABLE `pilots`
-  ADD CONSTRAINT `pilots_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userId`),
+  ADD CONSTRAINT `pilots_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`),
   ADD CONSTRAINT `pilots_ibfk_2` FOREIGN KEY (`mapid`) REFERENCES `maps` (`mapid`),
   ADD CONSTRAINT `pilots_ibfk_3` FOREIGN KEY (`shipid`) REFERENCES `ships` (`shipid`);
 
@@ -3067,7 +3104,6 @@ ALTER TABLE `ships`
 --
 ALTER TABLE `userslog`
   ADD CONSTRAINT `userslog_ibfk_1` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`);
-COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

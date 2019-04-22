@@ -248,7 +248,8 @@ public class PilotServer : Opponent
                 speed += itemPilot.Item.GeneratorSpeed ?? 0;
                 ShieldDivision += itemPilot.Item.GeneratorShieldDivision ?? 0;
                 ShieldRepair += itemPilot.Item.GeneratorShieldRepair ?? 0;
-                generatorCount++;
+                if (itemPilot.Item.GeneratorShield > 0)
+                    generatorCount++;
             }
         }
         OnChangePosition();

@@ -500,6 +500,17 @@ public class Player : MonoBehaviour
             {
                 messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_ITEM, item.Item.Name));
             }
+
+            if(GuiScript.Windows[WindowTypes.HangarWindow].Active)
+            {
+                GuiScript.Windows[WindowTypes.HangarWindow].Script.Close();
+
+                Client.SendToSocket(new CommandData()
+                {
+                    Command = Commands.GetEquipment,
+                    Data = Client.Pilot.Id
+                });
+            }
         }
 
         GuiScript.CreateLogMessage(messages, 6);

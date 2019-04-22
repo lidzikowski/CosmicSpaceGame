@@ -7,7 +7,6 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
-using System.Collections.Generic;
 
 public class Client : MonoBehaviour
 {
