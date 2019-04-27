@@ -15,6 +15,7 @@ public class ChatService : WebSocket
     protected override void OnError(ErrorEventArgs e)
     {
         PilotDisconnect();
+        Server.Log("Blad ChatService.", e.Message);
         base.OnError(e);
     }
 
@@ -23,7 +24,10 @@ public class ChatService : WebSocket
         PilotServer pilotServer = Server.Pilots.Values.FirstOrDefault(o => o.ChatHeaders.SocketId == ID);
 
         if (pilotServer == null)
+        {
+            Server.Log("Nie znaleziono gracza na serwerze.");
             return;
+        }
 
         Server.ChatChannels[100].Disconnect(pilotServer.Pilot.Id);
     }

@@ -29,7 +29,10 @@ public class ChatChannel
     public void Connect(ulong userId)
     {
         if (Users.Contains(userId))
+        {
+            Server.Log("Uzytkownik juz jest polaczony.", userId);
             return;
+        }
 
         Users.Add(userId);
         ConnectStatus(userId, true);
@@ -48,7 +51,10 @@ public class ChatChannel
     {
         PilotServer pilot = GetPilotById(userId);
         if (pilot == null)
+        {
+            Server.Log("Pilot nie istnieje.", userId);
             return;
+        }
 
         Broadcast(new ChatData()
         {
@@ -63,7 +69,10 @@ public class ChatChannel
     public void SendMessage(ChatData chatData)
     {
         if (!Users.Contains(chatData.SenderId) || chatData.SenderId == ulong.MaxValue)
+        {
+            Server.Log("Brak odbiorcy.", chatData.SenderId, chatData.SenderName, chatData.RecipientId, chatData.RecipientName, chatData.Message);
             return;
+        }
 
         chatData.MessageId = MESSAGE_ID++;
         chatData.Date = DateTime.Now;
@@ -141,7 +150,10 @@ public class ChatChannel
     {
         PilotServer pilot = GetPilotById(id);
         if (pilot == null)
+        {
+            Server.Log("Nie znaleziono gracza.", id, command);
             return;
+        }
 
         // Cenzura wiadomosci:
         // Usuwanie spacji, przerw oraz zbednych odstepow

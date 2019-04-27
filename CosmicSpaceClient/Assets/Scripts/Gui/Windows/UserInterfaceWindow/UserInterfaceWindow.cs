@@ -78,17 +78,17 @@ public class UserInterfaceWindow : GameWindow
 
         ButtonListener(ShopButton, ShopButton_Clicked);
 
-        ButtonListener(MissionButton, MissionButton_Clicked);
+        ButtonListener(MissionButton, () => SetActiveWindow(WindowTypes.MissionWindow));
+
+        ButtonListener(SettingsButton, () => SetActiveWindow(WindowTypes.SettingsWindow));
+
+        ButtonListener(QuitButton, () => SetActiveWindow(WindowTypes.QuitWindow));
 
         ButtonListener(CloseMapWindowButton, CloseMapWindowButton_Clicked);
         ButtonListener(MapButton, CloseMapWindowButton_Clicked);
 
         ButtonListener(CloseChatWindowButton, CloseChatWindowButton_Clicked);
         ButtonListener(ChatButton, CloseChatWindowButton_Clicked);
-
-        ButtonListener(SettingsButton, SettingsButton_Clicked);
-
-        ButtonListener(QuitButton, QuitButton_Clicked);
 
         EventTrigger.Entry entry = new EventTrigger.Entry()
         {
@@ -507,24 +507,13 @@ public class UserInterfaceWindow : GameWindow
 
     private void ShopButton_Clicked()
     {
-        SetActiveWindow(WindowTypes.ShopWindow);
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.GetShopItems,
+            Data = Client.Pilot.Id
+        });
     }
-
-    private void MissionButton_Clicked()
-    {
-        SetActiveWindow(WindowTypes.MissionWindow);
-    }
-
-    private void SettingsButton_Clicked()
-    {
-        SetActiveWindow(WindowTypes.SettingsWindow);
-    }
-
-    private void QuitButton_Clicked()
-    {
-        SetActiveWindow(WindowTypes.QuitWindow);
-    }
-
+    
 
 
     public void SetActiveWindow(WindowTypes windowType)

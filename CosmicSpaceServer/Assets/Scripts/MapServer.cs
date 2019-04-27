@@ -112,7 +112,10 @@ public class MapServer : MonoBehaviour
     private void FindOpponents(Opponent pilot)
     {
         if (pilot == null)
+        {
+            Server.Log("Gracz nie istnieje - null.");
             return;
+        }
 
         SearchOpponent(pilot, PilotsOnMap.Where(o => o.Id != pilot.Id));
         SearchOpponent(pilot, EnemiesOnMap);
@@ -158,6 +161,8 @@ public class MapServer : MonoBehaviour
 
             return true;
         }
+        else
+            Server.Log("Gracz juz jest na tej mapie", CurrentMap.Id, pilot?.Name, pilot?.Pilot?.Map.Id);
         return false;
     }
 
@@ -180,15 +185,24 @@ public class MapServer : MonoBehaviour
     {
         // Zgodnosc mapy pilota z mapa portalu
         if (pilot.Pilot.Map.Id != CurrentMap.Id)
+        {
+            Server.Log("Gracz juz jest na tej mapie", CurrentMap.Id, pilot.Pilot.Map.Id);
             return false;
+        }
 
         // Czy portal istnieje na obecnej mapie
         if (portal.Map.Id != CurrentMap.Id)
+        {
+            Server.Log("Portalu nie ma na tej mapie.", CurrentMap.Id, portal.Map.Id);
             return false;
+        }
 
         // Sprawdzenie czy pilot jest przy portalu
         if (Distance(pilot.Position, new Vector2(portal.PositionX, portal.PositionY)) >= 15)
+        {
+            Server.Log("Gracz nie jest przy portalu.", pilot.Position, new Vector2(portal.PositionX, portal.PositionY), Distance(pilot.Position, new Vector2(portal.PositionX, portal.PositionY)));
             return false;
+        }
 
         return ChangeMap(pilot, portal);
     }
@@ -218,7 +232,11 @@ public class MapServer : MonoBehaviour
 
                 return true;
             }
+            else
+                Server.Log("Gracz nie dolaczyc do nowej mapy.", pilotServer.Id, portal.TargetMap.Id);
         }
+        else
+            Server.Log("Gracz nie mogl opuscic mapy.", pilotServer.Id, CurrentMap.Id);
 
         return false;
     }

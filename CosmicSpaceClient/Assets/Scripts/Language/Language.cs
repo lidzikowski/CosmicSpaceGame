@@ -211,6 +211,9 @@ public class Language
     [XmlElement("SHOP")]
     public string SHOP { get; set; }
 
+    [XmlElement("SHIPS")]
+    public string SHIPS { get; set; }
+
 
     #endregion
 }

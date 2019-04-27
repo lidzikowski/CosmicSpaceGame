@@ -17,7 +17,8 @@ public class WebSocket : WebSocketBehavior
 
     protected override void OnError(ErrorEventArgs e)
     {
-        Debug.LogError($"{e.Exception} {Environment.NewLine} {e.Message}");
+        Server.Log("Blad WebSocket.", e.Message);
+        base.OnError(e);
     }
 
     protected Headers GetHeaders()
@@ -33,7 +34,10 @@ public class WebSocket : WebSocketBehavior
     protected bool CheckPacket(ulong userId, bool game = true)
     {
         if (!Server.Pilots.ContainsKey(userId))
+        {
+            Server.Log("Naglowek sesji nie pasuje do gracza.", userId);
             return false;
+        }
 
         if (game)
             return Server.Pilots[userId].Headers?.SocketId == ID;

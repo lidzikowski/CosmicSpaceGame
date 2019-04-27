@@ -1,11 +1,12 @@
 ﻿using CosmicSpaceCommunication.Game.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Resources
 {
     [Serializable]
-    public class Ship : ReqLevel, IShip
+    public class Ship : ReqLevel, IShip, IShopItem
     {
         public double? ScrapPrice { get; set; }
         public double? MetalPrice { get; set; }
@@ -17,6 +18,21 @@ namespace CosmicSpaceCommunication.Game.Resources
         public long Hitpoints { get; set; }
         public Reward Reward { get; set; }
         public Prefab Prefab { get; set; }
+        public long ItemId => Id;
+        public string PrefabName => Prefab.PrefabName;
+        public ItemTypes ItemType => ItemTypes.Ship;
+
+        public Dictionary<ItemProperty, object> ItemDescription => new Dictionary<ItemProperty, object>
+        {
+            { ItemProperty.Lasers, Lasers },
+            { ItemProperty.Generators, Generators },
+            { ItemProperty.Extras, Extras },
+            { ItemProperty.Speed, Speed },
+            { ItemProperty.Cargo, Cargo },
+            { ItemProperty.Hitpoints, Hitpoints },
+        };
+
+
 
         public static Ship GetShip(DataRow row)
         {

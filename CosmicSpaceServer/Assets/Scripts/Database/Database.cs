@@ -84,7 +84,7 @@ public class Database
         }
         catch (MySqlException ex)
         {
-            Debug.Log(ex.Message);
+            Server.Log("Blad bazy danych.", ex.Message);
             return null;
         }
     }
@@ -452,7 +452,7 @@ public class Database
     #endregion
 
     #region Zapis stanu gracza
-    public static async void SavePlayerData(Pilot pilot)
+    public static async Task SavePlayerData(Pilot pilot)
     {
         await ExecuteCommand(Commands.saveplayerdata, new Dictionary<string, object>()
         {

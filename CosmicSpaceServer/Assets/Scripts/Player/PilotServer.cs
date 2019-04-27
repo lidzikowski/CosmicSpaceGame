@@ -359,7 +359,10 @@ public class PilotServer : Opponent
     public void Send(CommandData commandData)
     {
         if (Headers == null)
+        {
+            //Server.Log("Brak odbiorcy dla kanalu Headers", commandData.Command, commandData.Data?.GetType());
             return;
+        }
 
         Send(commandData, Headers);
     }
@@ -373,14 +376,17 @@ public class PilotServer : Opponent
         }
         catch (System.Exception ex)
         {
-            Debug.Log(ex.Message);
+            Server.Log("Blad komunikacji z gniazdem.", ex.Message, channel);
         }
     }
 
     public void SendChat(CommandData commandData)
     {
         if (ChatHeaders == null)
+        {
+            Server.Log("Brak odbiorcy dla kanalu ChatHeaders");
             return;
+        }
 
         Send(commandData, ChatHeaders, "/Chat");
     }

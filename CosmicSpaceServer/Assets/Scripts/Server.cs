@@ -4,6 +4,9 @@ using WebSocketSharp.Server;
 using CosmicSpaceCommunication.Game.Resources;
 using CosmicSpaceCommunication.Game.Enemy;
 using System;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Linq;
 
 public class Server : MonoBehaviour
 {
@@ -29,9 +32,6 @@ public class Server : MonoBehaviour
 
     void Start()
     {
-        //if (Application.version != GameData.GameVersion)
-        //    Debug.Log($"Wersja: {Application.version} DLL: {GameData.GameVersion}");
-
         Application.targetFrameRate = 60;
 
         GameResourcesFromDatabase();
@@ -94,7 +94,7 @@ public class Server : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.Log(ex.Message);
+            Log("Blad tworzenia socketu.", ex.Message);
         }
 
         Debug.Log($"Server: {(WebSocket.IsListening ? "ONLINE" : "OFFLINE")}");
@@ -108,12 +108,38 @@ public class Server : MonoBehaviour
         }
         catch (Exception ex)
         {
-            Debug.Log(ex);
+            Log("Blad zatrzymania socketu.", ex.Message);
         }
 
-        //foreach (KeyValuePair<ulong, PilotServer> pilot in Pilots)
-        //{
-        //    // Zapis do bazy danych
-        //}
+        SavePlayers();
+    }
+
+    private async void SavePlayers()
+    {
+        foreach (PilotServer pilot in Pilots.Values)
+        {
+            await Database.SavePlayerData(pilot.Pilot);
+        }
+    }
+
+    public static void Log(string message, params object[] data)
+    {
+        var method = new System.Diagnostics.StackTrace().GetFrame(1);
+        string dataMessage = string.Empty;
+        if(data != null)
+        {
+            foreach (object o in data)
+            {
+                if (o.GetType().IsArray && o is object[] array)
+                {
+                    dataMessage += $"{Environment.NewLine}Tablica [{array.Length}]:";
+                    for (int i = 0; i < array.Length; i++)
+                        dataMessage += $"{Environment.NewLine}[{i}]: {array[i]}";
+                }
+                else
+                    dataMessage += $"{Environment.NewLine}{o}";
+            }
+        }
+        Debug.LogError($"[Error] '{method.GetMethod().ReflectedType.Name}.{method.GetMethod().Name}' {message}: {dataMessage}");
     }
 }

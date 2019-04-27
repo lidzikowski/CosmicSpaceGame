@@ -38,6 +38,8 @@ namespace CosmicSpaceCommunication
         GetEquipment = 380,
         ChangeEquipment = 381,
 
+        GetShopItems = 390,
+
 
         ChatMessage = 1000,
         ChatConnected = 1001,

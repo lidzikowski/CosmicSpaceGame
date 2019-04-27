@@ -8,5 +8,6 @@ namespace CosmicSpaceCommunication.Game.Resources
         Laser = 1,
         Generator = 2,
         Extra = 3,
+        Ship = 10,
     }
 }

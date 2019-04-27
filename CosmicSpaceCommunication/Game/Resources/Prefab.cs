@@ -11,6 +11,11 @@ namespace CosmicSpaceCommunication.Game.Resources
         public string PrefabName { get; set; }
         public string PrefabTypeName { get; set; }
 
+        public Prefab()
+        {
+
+        }
+
         public Prefab(DataRow row)
         {
             PrefabId = ConvertRow.Row<int>(row["prefabid"]);
