@@ -208,6 +208,9 @@ public class Language
     [XmlElement("NO_EQUIP")]
     public string NO_EQUIP { get; set; }
 
+    [XmlElement("SHOP")]
+    public string SHOP { get; set; }
+
 
     #endregion
 }

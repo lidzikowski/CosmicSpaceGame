@@ -52,6 +52,7 @@ public class UserInterfaceWindow : GameWindow
 
     [Header("Menu Buttons")]
     public Button HangerButton;
+    public Button ShopButton;
     public Button MissionButton;
     public Button MapButton;
     public Button ChatButton;
@@ -74,6 +75,8 @@ public class UserInterfaceWindow : GameWindow
         ButtonListener(SendMessageButton, SendMessageButton_Clicked);
 
         ButtonListener(HangerButton, HangerButton_Clicked);
+
+        ButtonListener(ShopButton, ShopButton_Clicked);
 
         ButtonListener(MissionButton, MissionButton_Clicked);
 
@@ -502,6 +505,11 @@ public class UserInterfaceWindow : GameWindow
         });
     }
 
+    private void ShopButton_Clicked()
+    {
+        SetActiveWindow(WindowTypes.ShopWindow);
+    }
+
     private void MissionButton_Clicked()
     {
         SetActiveWindow(WindowTypes.MissionWindow);
@@ -540,6 +548,7 @@ public class UserInterfaceWindow : GameWindow
         SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
         SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
         SetActiveButton(HangerButton, GuiScript.Windows[WindowTypes.HangarWindow].Active);
+        SetActiveButton(ShopButton, GuiScript.Windows[WindowTypes.ShopWindow].Active);
         SetActiveButton(QuitButton, GuiScript.Windows[WindowTypes.QuitWindow].Active);
     }
 

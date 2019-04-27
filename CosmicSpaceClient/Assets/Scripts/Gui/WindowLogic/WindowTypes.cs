@@ -7,4 +7,5 @@
     MissionWindow,
     SettingsWindow,
     QuitWindow,
+    ShopWindow
 }

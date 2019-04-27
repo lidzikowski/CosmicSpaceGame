@@ -71,6 +71,9 @@ public abstract class GameWindow : MonoBehaviour
             case WindowTypes.HangarWindow:
                 TitleWindow.text = GameSettings.UserLanguage.HANGAR;
                 break;
+            case WindowTypes.ShopWindow:
+                TitleWindow.text = GameSettings.UserLanguage.SHOP;
+                break;
             case WindowTypes.MissionWindow:
                 TitleWindow.text = GameSettings.UserLanguage.MISSIONS;
                 break;
