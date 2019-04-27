@@ -156,7 +156,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3616172009765837129}
-  m_Text: '{SHIELDS}'
+  m_Text: 
   m_OffsetZ: 0
   m_CharacterSize: 0.35
   m_LineSpacing: 1

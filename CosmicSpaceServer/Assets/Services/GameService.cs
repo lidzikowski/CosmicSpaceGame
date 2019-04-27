@@ -26,20 +26,23 @@ public class GameService : WebSocket
 
     private void PilotDisconnect()
     {
-        PilotServer pilotServer = Server.Pilots.Values.FirstOrDefault(o => o.Headers.SocketId == ID);
-
-        if (pilotServer == null)
-            return;
-
-        Database.SavePlayerData(pilotServer.Pilot);
-
-        Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
-        Server.Pilots.Remove(pilotServer.Pilot.Id);
-
-        foreach (ChatChannel chatChannel in Server.ChatChannels.Values)
+        MainThread.Instance().Enqueue(() =>
         {
-            chatChannel.Disconnect(pilotServer.Pilot.Id);
-        }
+            PilotServer pilotServer = Server.Pilots.Values.FirstOrDefault(o => o.Headers?.SocketId == ID);
+
+            if (pilotServer == null)
+                return;
+
+            Database.SavePlayerData(pilotServer.Pilot);
+
+            Server.MapsServer[pilotServer.Pilot.Map.Id].Leave(pilotServer);
+            Server.Pilots.Remove(pilotServer.Pilot.Id);
+
+            foreach (ChatChannel chatChannel in Server.ChatChannels.Values)
+            {
+                chatChannel.Disconnect(pilotServer.Pilot.Id);
+            }
+        });
     }
 
     protected override void OnMessage(MessageEventArgs e)

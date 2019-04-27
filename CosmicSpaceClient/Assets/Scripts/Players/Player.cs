@@ -351,13 +351,13 @@ public class Player : MonoBehaviour
 
         if (hitpoints)
         {
-            shipLogic.Hitpoints = newValue.Value;
             shipLogic.MaxHitpoints = newValue.MaxValue;
+            shipLogic.Hitpoints = newValue.Value;
         }
         else
         {
-            shipLogic.Shields = newValue.Value;
             shipLogic.MaxShields = newValue.MaxValue;
+            shipLogic.Shields = newValue.Value;
         }
     }
 

@@ -31,6 +31,8 @@ public class ToolTip : MonoBehaviour
                 return;
             }
 
+            transform.position = new Vector2(-1000, -1000);
+
             ItemNameText.text = Item.Item.Name;
             ItemTypeText.text = Item.Item.ItemType.ToString();
 
@@ -68,10 +70,14 @@ public class ToolTip : MonoBehaviour
             if (Item.Item.GeneratorShieldRepair > 0)
                 Property(GameSettings.UserLanguage.SHIELD_REPAIR, $"{Item.Item.GeneratorShieldRepair} s.");
 
-
-
-            transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y - GetComponent<RectTransform>().rect.height);
+            StartCoroutine(Position());
         }
+    }
+
+    IEnumerator Position()
+    {
+        yield return new WaitForEndOfFrame();
+        transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y - GetComponent<RectTransform>().rect.height - 5);
     }
 
 

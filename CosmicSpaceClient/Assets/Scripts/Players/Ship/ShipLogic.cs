@@ -83,7 +83,11 @@ public class ShipLogic : MonoBehaviour
         if (status)
         {
             HitpointsText.text = string.Format("{0}/{1}", Hitpoints, MaxHitpoints);
-            ShieldsText.text = string.Format("{0}/{1}", Shields, MaxShields);
+
+            if (shields > 0 && maxShields > 0)
+                ShieldsText.text = string.Format("{0}/{1}", Shields, MaxShields);
+            else
+                ShieldsText.text = string.Empty;
         }
     }
 
@@ -254,48 +258,28 @@ public class ShipLogic : MonoBehaviour
     public long Hitpoints
     {
         get => hitpoints;
-        set
-        {
-            var x = hitpoints;
-            OnChangeHitpointsOrShields(ref x, ref value);
-            hitpoints = x;
-        }
+        set => OnChangeHitpointsOrShields(ref hitpoints, ref value);
     }
 
     private long maxHitpoints;
     public long MaxHitpoints
     {
         get => maxHitpoints;
-        set
-        {
-            var x = maxHitpoints;
-            OnChangeHitpointsOrShields(ref x, ref value);
-            maxHitpoints = x;
-        }
+        set => OnChangeHitpointsOrShields(ref maxHitpoints, ref value);
     }
 
     private long shields;
     public long Shields
     {
         get => shields;
-        set
-        {
-            var x = shields;
-            OnChangeHitpointsOrShields(ref x, ref value);
-            shields = x;
-        }
+        set => OnChangeHitpointsOrShields(ref shields, ref value);
     }
 
     private long maxShields;
     public long MaxShields
     {
         get => maxShields;
-        set
-        {
-            var x = maxShields;
-            OnChangeHitpointsOrShields(ref x, ref value);
-            maxShields = x;
-        }
+        set => OnChangeHitpointsOrShields(ref maxShields, ref value);
     }
     
     private void OnChangeHitpointsOrShields(ref long variable, ref long value)

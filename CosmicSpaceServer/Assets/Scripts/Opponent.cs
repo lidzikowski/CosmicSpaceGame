@@ -323,7 +323,7 @@ public abstract class Opponent
 
             maxHitpoints = value;
 
-            OnChangeHitpoints();
+            //OnChangeHitpoints();
         }
     }
 
@@ -370,7 +370,7 @@ public abstract class Opponent
 
             maxShields = value;
 
-            OnChangeShields();
+            //OnChangeShields();
         }
     }
 
