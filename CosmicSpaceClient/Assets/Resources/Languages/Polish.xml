@@ -66,12 +66,17 @@
   <NO_EQUIP>Brak laserów - wyposaż je w hangarze.</NO_EQUIP>
   <SHOP>Sklep</SHOP>
   <SHIPS>Statki</SHIPS>
+  <CARGO>Ładownia</CARGO>
+  <HITPOINTS>Poszycie</HITPOINTS>
+  <BUY_FOR>Kup za</BUY_FOR>
+  <UNAVAILABLE>NIEDOSTĘPNE</UNAVAILABLE>
   
   
   
   
   
   
+
 
 
 </Language>

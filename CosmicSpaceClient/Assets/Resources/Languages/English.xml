@@ -64,6 +64,15 @@
   <NO_EQUIP>No lasers - equip them in the hangar.</NO_EQUIP>
   <SHOP>Shop</SHOP>
   <SHIPS>Ships</SHIPS>
+  <CARGO>Cargo</CARGO>
+  <HITPOINTS>Hitpoints</HITPOINTS>
+  <BUY_FOR>Buy for</BUY_FOR>
+  <UNAVAILABLE>UNAVAILABLE</UNAVAILABLE>
+
+
+
+
+
 
 
 

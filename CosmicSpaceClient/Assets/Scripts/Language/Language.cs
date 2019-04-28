@@ -214,6 +214,18 @@ public class Language
     [XmlElement("SHIPS")]
     public string SHIPS { get; set; }
 
+    [XmlElement("CARGO")]
+    public string CARGO { get; set; }
+
+    [XmlElement("HITPOINTS")]
+    public string HITPOINTS { get; set; }
+
+    [XmlElement("BUY_FOR")]
+    public string BUY_FOR { get; set; }
+
+    [XmlElement("UNAVAILABLE")]
+    public string UNAVAILABLE { get; set; }
+
 
     #endregion
 }

@@ -117,13 +117,13 @@ public class Database
     /// <summary>
     /// Pobranie wszystkich map z bazy danych
     /// </summary>
-    public static async Task<Dictionary<int, Map>> GetMaps()
+    public static async Task<Dictionary<long, Map>> GetMaps()
     {
         DataTable dt = await ExecuteCommand(Commands.getmaps, new Dictionary<string, object>());
 
         if (dt != null)
         {
-            Dictionary<int, Map> maps = new Dictionary<int, Map>();
+            Dictionary<long, Map> maps = new Dictionary<long, Map>();
             foreach (DataRow row in dt.Rows)
             {
                 maps.Add(ConvertRow.Row<int>(row["mapid"]), Map.GetMap(row));
@@ -136,13 +136,13 @@ public class Database
     /// <summary>
     /// Pobranie wszystkich statkow z bazy danych
     /// </summary>
-    public static async Task<Dictionary<int, Ship>> GetShips()
+    public static async Task<Dictionary<long, Ship>> GetShips()
     {
         DataTable dt = await ExecuteCommand(Commands.getships, new Dictionary<string, object>());
 
         if (dt != null)
         {
-            Dictionary<int, Ship> ships = new Dictionary<int, Ship>();
+            Dictionary<long, Ship> ships = new Dictionary<long, Ship>();
             foreach (DataRow row in dt.Rows)
             {
                 Ship ship = Ship.GetShip(row);
@@ -157,16 +157,16 @@ public class Database
     /// <summary>
     /// Pobranie wszystkiej amunicji z bazy danych
     /// </summary>
-    public static async Task<Dictionary<int, Ammunition>> GetAmmunitions()
+    public static async Task<Dictionary<long, Ammunition>> GetAmmunitions()
     {
         DataTable dt = await ExecuteCommand(Commands.getammunitions, new Dictionary<string, object>());
 
         if (dt != null)
         {
-            Dictionary<int, Ammunition> ammunitions = new Dictionary<int, Ammunition>();
+            Dictionary<long, Ammunition> ammunitions = new Dictionary<long, Ammunition>();
             foreach (DataRow row in dt.Rows)
             {
-                ammunitions.Add(ConvertRow.Row<int>(row["ammunitionid"]), Ammunition.GetAmmunition(row));
+                ammunitions.Add(ConvertRow.Row<long>(row["ammunitionid"]), Ammunition.GetAmmunition(row));
             }
             return ammunitions;
         }
@@ -176,16 +176,16 @@ public class Database
     /// <summary>
     /// Pobranie wszystkich rakiet z bazy danych
     /// </summary>
-    public static async Task<Dictionary<int, Rocket>> GetRockets()
+    public static async Task<Dictionary<long, Rocket>> GetRockets()
     {
         DataTable dt = await ExecuteCommand(Commands.getrockets, new Dictionary<string, object>());
 
         if (dt != null)
         {
-            Dictionary<int, Rocket> rockets = new Dictionary<int, Rocket>();
+            Dictionary<long, Rocket> rockets = new Dictionary<long, Rocket>();
             foreach (DataRow row in dt.Rows)
             {
-                rockets.Add(ConvertRow.Row<int>(row["rocketid"]), Rocket.GetRocket(row));
+                rockets.Add(ConvertRow.Row<long>(row["rocketid"]), Rocket.GetRocket(row));
 
             }
             return rockets;
@@ -210,13 +210,13 @@ public class Database
         return null;
     }
 
-    public static async Task<Dictionary<int, Enemy>> GetEnemies()
+    public static async Task<Dictionary<long, Enemy>> GetEnemies()
     {
         DataTable dt = await ExecuteCommand(Commands.getenemies, new Dictionary<string, object>());
 
         if (dt != null)
         {
-            Dictionary<int, Enemy> enemies = new Dictionary<int, Enemy>();
+            Dictionary<long, Enemy> enemies = new Dictionary<long, Enemy>();
             foreach (DataRow row in dt.Rows)
             {
                 Enemy enemy = Enemy.GetEnemy(row);
@@ -228,7 +228,7 @@ public class Database
         return null;
     }
 
-    public static async Task<List<Portal>> GetPortals(int mapId)
+    public static async Task<List<Portal>> GetPortals(long mapId)
     {
         DataTable dt = await ExecuteCommand(Commands.getportals, new Dictionary<string, object>()
         {
@@ -252,7 +252,7 @@ public class Database
         return null;
     }
 
-    public static async Task<List<EnemyMap>> GetEnemyMap(int mapId)
+    public static async Task<List<EnemyMap>> GetEnemyMap(long mapId)
     {
         DataTable dt = await ExecuteCommand(Commands.getenemymap, new Dictionary<string, object>()
         {

@@ -38,7 +38,7 @@ namespace CosmicSpaceCommunication.Game.Resources
         {
             return new Ship()
             {
-                Id = ConvertRow.Row<int>(row["shipid"]),
+                Id = ConvertRow.Row<long>(row["shipid"]),
                 Name = ConvertRow.Row<string>(row["shipname"]),
                 RequiredLevel = ConvertRow.Row<int>(row["requiredlevel"]),
                 ScrapPrice = ConvertRow.Row<double?>(row["scrapprice"]),

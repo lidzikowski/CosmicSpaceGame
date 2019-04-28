@@ -14,15 +14,15 @@ public class Server : MonoBehaviour
 
 
 
-    public static Dictionary<int, Ship> Ships;
-    public static Dictionary<int, Map> Maps;
-    public static Dictionary<int, Ammunition> Ammunitions;
-    public static Dictionary<int, Rocket> Rockets;
-    public static Dictionary<int, Enemy> Enemies;
+    public static Dictionary<long, Ship> Ships;
+    public static Dictionary<long, Map> Maps;
+    public static Dictionary<long, Ammunition> Ammunitions;
+    public static Dictionary<long, Rocket> Rockets;
+    public static Dictionary<long, Enemy> Enemies;
     public static Dictionary<long, Item> Items;
 
     //private int mapId = 1000; // Instancje map
-    public static Dictionary<int, MapServer> MapsServer;
+    public static Dictionary<long, MapServer> MapsServer;
     public static Dictionary<ulong, PilotServer> Pilots;
 
     //private ulong chatChannelId = 1000; // Instancje kanalow
@@ -58,7 +58,7 @@ public class Server : MonoBehaviour
         GameObject maps = new GameObject() { name = $"Maps [{Maps?.Count}]" };
         Instantiate(maps, transform);
 
-        MapsServer = new Dictionary<int, MapServer>();
+        MapsServer = new Dictionary<long, MapServer>();
         foreach (Map map in Maps.Values)
         {
             GameObject go = new GameObject() { name = $"{map.Id} -> {map.Name}" };

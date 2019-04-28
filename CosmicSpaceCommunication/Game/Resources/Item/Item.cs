@@ -5,10 +5,8 @@ using System.Data;
 namespace CosmicSpaceCommunication.Game.Resources
 {
     [Serializable]
-    public class Item : IShopItem
+    public class Item : ReqLevel, IShopItem
     {
-        public long ItemId { get; set; }
-        public string Name { get; set; }
         public string PrefabName { get; set; }
         public ItemTypes ItemType { get; set; }
 
@@ -39,14 +37,13 @@ namespace CosmicSpaceCommunication.Game.Resources
             { ItemProperty.GeneratorShieldRepair, GeneratorShieldRepair },
         };
 
-
-
         public static Item GetItem(DataRow row)
         {
             return new Item()
             {
-                ItemId = ConvertRow.Row<long>(row["itemid"]),
+                Id = ConvertRow.Row<long>(row["itemid"]),
                 Name = ConvertRow.Row<string>(row["name"]),
+                RequiredLevel = ConvertRow.Row<int>(row["requiredlevel"]),
                 PrefabName = ConvertRow.Row<string>(row["prefabname"]),
                 ItemType = (ItemTypes)ConvertRow.Row<int>(row["itemtypeid"]),
 

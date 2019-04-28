@@ -1,9 +1,11 @@
-﻿namespace CosmicSpaceCommunication.Game.Resources
+﻿using System;
+
+namespace CosmicSpaceCommunication.Game.Resources
 {
-    [System.Serializable]
+    [Serializable]
     public class Base
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
     }
 }

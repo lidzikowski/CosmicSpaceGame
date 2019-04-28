@@ -8,7 +8,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
     [Serializable]
     public class Enemy : IShip
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public long Hitpoints { get; set; }
         public long Shields { get; set; }
@@ -24,7 +24,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
         {
             return new Enemy()
             {
-                Id = ConvertRow.Row<int>(row["enemyid"]),
+                Id = ConvertRow.Row<long>(row["enemyid"]),
                 Name = ConvertRow.Row<string>(row["enemyname"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
