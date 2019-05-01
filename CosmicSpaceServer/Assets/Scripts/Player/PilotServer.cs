@@ -1,6 +1,8 @@
 ﻿using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +21,7 @@ public class PilotServer : Opponent
         CalculateStatistics();
     }
 
+    #region Equipment / Shop
     public void ItemsChange(List<ItemPilot> items)
     {
         foreach (ItemPilot item in items)
@@ -62,6 +65,110 @@ public class PilotServer : Opponent
         CalculateStatistics();
     }
 
+    public ShoppingStatus BuyItem(BuyShopItem buyItem)
+    {
+        IShopItem item = null;
+        ShopStatus status;
+
+        if (buyItem.ItemType == ItemTypes.Ship)
+        {
+            if (!Server.Ships.ContainsKey(buyItem.ItemId) || buyItem.Count <= 0)
+                status = ShopStatus.Error;
+            else
+            {
+                item = Server.Ships[buyItem.ItemId];
+                status = BuyItem(item, buyItem);
+            }
+        }
+        else
+        {
+            if (!Server.Items.ContainsKey(buyItem.ItemId) || buyItem.Count <= 0)
+                status = ShopStatus.Error;
+            else
+            {
+                item = Server.Items[buyItem.ItemId];
+                status = BuyItem(item, buyItem);
+            }
+        }
+
+        return new ShoppingStatus() { Status = status, ShopItem = item };
+    }
+
+    private ShopStatus BuyItem(IShopItem item, BuyShopItem buyItem)
+    {
+        if (item.RequiredLevel > Pilot.Level)
+            return ShopStatus.WrongRequiredLevel;
+
+        if (buyItem.Scrap)
+        {
+            double price = (double)(item.ScrapPrice * buyItem.Count);
+            if (item.ScrapPrice > 0 && Pilot.Scrap >= price)
+            {
+                TakeReward(new ServerReward()
+                {
+                    Scrap = -price
+                });
+
+                if (item is Item it)
+                    SaveItems(it, buyItem.Count);
+                else if (item is Ship ship)
+                    SaveShip(ship);
+
+                return ShopStatus.Buy;
+            }
+            else
+                return ShopStatus.NoScrap;
+        }
+        else
+        {
+            double price = (double)(item.MetalPrice * buyItem.Count);
+            if (item.MetalPrice > 0 && Pilot.Metal >= price)
+            {
+                TakeReward(new ServerReward()
+                {
+                    Metal = -price
+                });
+
+                if (item is Item it)
+                    SaveItems(it, buyItem.Count);
+                else if (item is Ship ship)
+                    SaveShip(ship);
+
+                return ShopStatus.Buy;
+            }
+            else
+                return ShopStatus.NoMetal;
+        }
+    }
+
+    private async void SaveItems(Item item, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Pilot.Items.Add(await Database.SavePlayerItem(new ItemPilot()
+            {
+                PilotId = Id,
+                ItemId = item.Id,
+                Item = item,
+                UpgradeLevel = 1
+            }));
+        }
+    }
+
+    private void SaveShip(Ship ship)
+    {
+        Pilot.Ship = ship;
+
+        SendToPilotsInArea(new CommandData()
+        {
+            Command = Commands.ChangeShip,
+            SenderId = Id,
+            Data = ship
+        }, true);
+
+        CalculateStatistics();
+    }
+    #endregion
 
 
     #region Pilot / Id / Name / isDead
@@ -78,19 +185,33 @@ public class PilotServer : Opponent
         get => Pilot.IsDead;
         set
         {
-            if (Pilot.IsDead.Equals(value))
+            if (Pilot.IsDead == value)
                 return;
 
             Pilot.IsDead = value;
 
-            if(value)
-                Pilot.KillerBy = DeadOpponent?.Name;
+            if (value)
+                Pilot.KillerBy = KillerByString;
             else
                 Pilot.KillerBy = string.Empty;
         }
     }
+    protected string KillerByString
+    {
+        get
+        {
+            string by = string.Empty;
+            for (int i = 0; i < AttackOpponents.Count; i++)
+            {
+                by += AttackOpponents[i].Opponent.Name;
+                if (i < AttackOpponents.Count - 1)
+                    by += ", ";
+            }
+            return by;
+        }
+    }
     #endregion
-    
+
     #region Socket gracza / Wyslanie danych przy inicjalizacji
     private Headers headers;
     public Headers Headers
@@ -238,6 +359,7 @@ public class PilotServer : Opponent
         speed = Pilot.Ship.Speed;
         ShieldDivision = ShieldRepair = 0;
         int generatorCount = 0;
+        int generatorShield = 0;
         foreach (ItemPilot itemPilot in GetItemsGenerators)
         {
             if (generatorCount >= Pilot.Ship.Generators)
@@ -249,13 +371,14 @@ public class PilotServer : Opponent
                 ShieldDivision += itemPilot.Item.GeneratorShieldDivision ?? 0;
                 ShieldRepair += itemPilot.Item.GeneratorShieldRepair ?? 0;
                 if (itemPilot.Item.GeneratorShield > 0)
-                    generatorCount++;
+                    generatorShield++;
+                generatorCount++;
             }
         }
         OnChangePosition();
 
-        Division(ref ShieldDivision, ref generatorCount);
-        Division(ref ShieldRepair, ref generatorCount);
+        Division(ref ShieldDivision, ref generatorShield);
+        Division(ref ShieldRepair, ref generatorShield);
         #endregion
 
         #region Extras
@@ -269,8 +392,6 @@ public class PilotServer : Opponent
                 extrasCount++;
             }
         }
-        Division(ref ShieldDivision, ref generatorCount);
-        Division(ref ShieldRepair, ref generatorCount);
         #endregion
 
 
@@ -311,13 +432,13 @@ public class PilotServer : Opponent
     public override RewardReasons RewardReason => RewardReasons.KillPlayer;
     public override async void TakeReward(ServerReward reward)
     {
-        if (!reward.Experience.Equals(null))
+        if (reward.Experience > 0)
             Pilot.Experience += (ulong)reward.Experience;
 
-        if (!reward.Metal.Equals(null))
+        if (reward.Metal > 0)
             Pilot.Metal += (double)reward.Metal;
 
-        if (!reward.Scrap.Equals(null))
+        if (reward.Scrap > 0)
             Pilot.Scrap += (double)reward.Scrap;
 
         if (reward.Items != null && reward.Items.Count > 0)

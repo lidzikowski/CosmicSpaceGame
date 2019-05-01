@@ -70,12 +70,25 @@
   <HITPOINTS>Poszycie</HITPOINTS>
   <BUY_FOR>Kup za</BUY_FOR>
   <UNAVAILABLE>NIEDOSTĘPNE</UNAVAILABLE>
+  <NOT_HAVE_ENOUGH>Nie masz wystarczająco {0}</NOT_HAVE_ENOUGH>
+  <ITEM_PURCHASED>Przedmiot został zakupiony {0}</ITEM_PURCHASED>
+  <ITEM_ERROR>Błąd przy zakupie przedmiotu.</ITEM_ERROR>
+  <NO_REQUIRED_LEVEL>Brak wymaganego poziomu.</NO_REQUIRED_LEVEL>
+  <NEED>Potrzebujesz {0}</NEED>
+  <YOU_HAVE_SHIP>Posiadasz już ten statek.</YOU_HAVE_SHIP>
+  <REQUIRED_LEVEL>Wymagany poziom</REQUIRED_LEVEL>
   
   
   
   
   
   
+  
+  
+  
+  
+  
+
 
 
 

@@ -7,6 +7,7 @@ using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 
 public class Client : MonoBehaviour
 {
@@ -380,6 +381,53 @@ public class Client : MonoBehaviour
             {
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.ShopWindow);
                 (GuiScript.Windows[WindowTypes.ShopWindow].Script as ShopWindow).ServerItems = data;
+            }
+        }
+        #endregion
+
+
+        #region ZAKUP PRZEDMIOTU
+        else if (commandData.Command == Commands.BuyShopItem)
+        {
+            if(commandData.Data is ShoppingStatus data)
+            {
+                switch(data.Status)
+                {
+                    case ShopStatus.Error:
+                        GuiScript.CreateLogMessage(new List<string> {
+                            GameSettings.UserLanguage.ITEM_ERROR
+                        });
+                        break;
+                    case ShopStatus.NoScrap:
+                    case ShopStatus.NoMetal:
+                        GuiScript.CreateLogMessage(new List<string> {
+                            string.Format(GameSettings.UserLanguage.NOT_HAVE_ENOUGH, data.Status == ShopStatus.NoMetal ? "Metal" : "Scrap"),
+                            string.Format(GameSettings.UserLanguage.NEED, data.Status == ShopStatus.NoMetal ? data.ShopItem.MetalPrice : data.ShopItem.ScrapPrice)
+                        });
+                        break;
+                    case ShopStatus.WrongRequiredLevel:
+                        GuiScript.CreateLogMessage(new List<string> {
+                            GameSettings.UserLanguage.NO_REQUIRED_LEVEL,
+                            string.Format(GameSettings.UserLanguage.NEED, data.ShopItem.RequiredLevel),
+                        });
+                        break;
+                    case ShopStatus.Buy:
+                        GuiScript.CreateLogMessage(new List<string> {
+                            string.Format(GameSettings.UserLanguage.ITEM_PURCHASED, data.ShopItem.Name)
+                        });
+                        break;
+                }
+            }
+        }
+        #endregion
+
+
+        #region ZMIANA STATKU
+        else if (commandData.Command == Commands.ChangeShip)
+        {
+            if (commandData.Data is Ship data)
+            {
+                GetComponent<Player>().SomeoneChangeShip(commandData.SenderId, data);
             }
         }
         #endregion

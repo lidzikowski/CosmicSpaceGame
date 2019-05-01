@@ -122,6 +122,7 @@ public class EnemyServer : Opponent
                 opponent.RemoveOpponentInArea(this);
 
             EnemyOnMap.EnemiesOnMap.Remove(this);
+            EnemyOnMap.CheckEnemyOnMap();
         }
     }
 
@@ -133,6 +134,9 @@ public class EnemyServer : Opponent
             return;
 
         if (opponent.IsDead)
+            return;
+
+        if (opponent.IsCover)
             return;
 
         if (TargetIsNull)

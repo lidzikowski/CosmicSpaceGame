@@ -1,4 +1,5 @@
-﻿using CosmicSpaceCommunication;
+﻿using Assets.Scripts.Enemy;
+using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
@@ -171,6 +172,9 @@ public abstract class Opponent
 
             isCover = value;
 
+            if (!value)
+                IsCoverTimer = 0;
+
             OnCover();
         }
     }
@@ -209,26 +213,35 @@ public abstract class Opponent
             }
         }
     }
-    protected Opponent DeadOpponent { get; set; }
+    protected List<OpponentAttack> AttackOpponents { get; set; } = new List<OpponentAttack>();
     protected virtual void OnDead()
     {
         Target = null;
 
+        SomeoneDead someoneDead = new SomeoneDead()
+        {
+            WhoId = Id,
+            WhoIsPlayer = IsPlayer,
+            Killers = new List<Killer>()
+        };
+
+        for (int i = 0; i < AttackOpponents.Count; i++)
+        {
+            someoneDead.Killers.Add(new Killer()
+            {
+                Id = AttackOpponents[i].Opponent.Id,
+                IsPlayer = AttackOpponents[i].Opponent.IsPlayer,
+                Name = AttackOpponents[i].Opponent.Name,
+            });
+        }
+
         SendToPilotsInArea(new CommandData()
         {
             Command = Commands.Dead,
-            Data = new SomeoneDead()
-            {
-                WhoId = Id,
-                WhoIsPlayer = IsPlayer,
-
-                ById = DeadOpponent.Id,
-                ByIsPlayer = DeadOpponent.IsPlayer,
-                ByName = DeadOpponent.Name
-            }
+            Data = someoneDead
         }, true);
 
-        DeadOpponent = null;
+        AttackOpponents.Clear();
     }
     protected void OnAlive()
     {
@@ -471,6 +484,9 @@ public abstract class Opponent
 
             attack = value;
 
+            if (value && IsCover)
+                IsCover = false;
+
             OnAttackTarget();
         }
     }
@@ -511,6 +527,17 @@ public abstract class Opponent
         if (IsDead)
             return;
 
+        if (IsCover)
+            return;
+
+        OpponentAttack opponentAttack = AttackOpponents.FirstOrDefault(o => o.Opponent.Id == opponent.Id && o.Opponent.IsPlayer == opponent.IsPlayer);
+        if (opponentAttack == null)
+        {
+            AttackOpponents.Add(new OpponentAttack() { Opponent = opponent, LastAttack = 5 });
+        }
+        else
+            opponentAttack.LastAttack = 5;
+
         LastTakeDamage = REPAIR_EVERY_UPDATE;
 
         SendToPilotsInArea(new CommandData()
@@ -531,13 +558,10 @@ public abstract class Opponent
             }
         }, true);
 
-        if (IsCover)
-            return;
-
         if (receivedDamage != null)
         {
             TakeDamage((long)receivedDamage);
-            CheckIfDead(opponent);
+            CheckIfDead();
         }
     }
     protected void TakeDamage(long damage)
@@ -566,17 +590,38 @@ public abstract class Opponent
         else
             Hitpoints = 0;
     }
-    protected void CheckIfDead(Opponent opponent)
+    protected void CheckIfDead()
     {
         if (Hitpoints == 0)
         {
-            DeadOpponent = opponent;
-            IsDead = true;
+            Reward reward;
+            int devide = AttackOpponents.Where(o => o.Opponent.IsPlayer).Count();
+            if (devide > 0)
+            {
+                reward = new Reward()
+                {
+                    Id = Reward.Id,
+                    Items = Reward.Items,
+                    Experience = (ulong)Mathf.CeilToInt((long)Reward.Experience / devide),
+                    Metal = (ulong)Mathf.CeilToInt((long)Reward.Metal / devide),
+                    Scrap = (ulong)Mathf.CeilToInt((long)Reward.Scrap / devide)
+                };
+            }
+            else
+                reward = Reward;
 
-            opponent.TakeReward(ServerReward.GetReward(
-                Reward,
-                RewardReason,
-                Name));
+            foreach (OpponentAttack opponentAttack in AttackOpponents)
+            {
+                if (opponentAttack.Opponent.IsPlayer)
+                {
+                    opponentAttack.Opponent.TakeReward(ServerReward.GetReward(
+                        reward,
+                        RewardReason,
+                        Name));
+                }
+            }
+
+            IsDead = true;
         }
     }
     #endregion
@@ -615,7 +660,6 @@ public abstract class Opponent
                 {
                     if (Ammunition != null)
                     {
-                        LastTakeDamage = REPAIR_EVERY_UPDATE;
                         Target.OnTakeDamage(this, RandomDamage(Target.IsPlayer ? DamagePvp : DamagePve), (int)Ammunition, true);
                     }
                 }
@@ -623,7 +667,16 @@ public abstract class Opponent
             else if (CanRepair)
                 Repair();
             else
+            {
                 LastTakeDamage -= UPDATE_TIME;
+                for (int i = 0; i < AttackOpponents.Count; i++)
+                {
+                    AttackOpponents[i].LastAttack -= 1;
+                }
+
+                if (CanRepair)
+                    AttackOpponents.Clear();
+            }
         }
         else
             timer += Time.deltaTime;

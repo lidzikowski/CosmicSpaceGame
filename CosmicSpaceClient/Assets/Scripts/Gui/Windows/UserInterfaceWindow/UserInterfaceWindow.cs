@@ -498,19 +498,33 @@ public class UserInterfaceWindow : GameWindow
 
     private void HangerButton_Clicked()
     {
+        if (GuiScript.Windows[WindowTypes.HangarWindow].Active)
+        {
+            GuiScript.CloseWindow(WindowTypes.HangarWindow);
+            RefreshButtonStatus();
+            return;
+        }
+
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.GetEquipment,
-            Data = Client.Pilot.Id
+            SenderId = Client.Pilot.Id
         });
     }
 
     private void ShopButton_Clicked()
     {
+        if (GuiScript.Windows[WindowTypes.ShopWindow].Active)
+        {
+            GuiScript.CloseWindow(WindowTypes.ShopWindow);
+            RefreshButtonStatus();
+            return;
+        }
+
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.GetShopItems,
-            Data = Client.Pilot.Id
+            SenderId = Client.Pilot.Id
         });
     }
     

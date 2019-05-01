@@ -156,9 +156,9 @@ public class Player : MonoBehaviour
                 Client.SendToSocket(new CommandData()
                 {
                     Command = Commands.ChangeMap,
+                    SenderId = Client.Pilot.Id,
                     Data = new PlayerChangeMap()
                     {
-                        PlayerId = Client.Pilot.Id,
                         Portal = portal
                     }
                 });
@@ -425,17 +425,18 @@ public class Player : MonoBehaviour
         if (whoShipLogic == null)
             return;
 
-        ShipLogic byShipLogic = someoneDead.ByIsPlayer == true ? FindPilot(someoneDead.ById) : FindEnemy(someoneDead.ById);
+        List<ShipLogic> byShipLogic = someoneDead.Killers.Select(o => o.IsPlayer ? FindPilot(o.Id) : FindEnemy(o.Id)).ToList();
 
         whoShipLogic.IsDead = true;
+        whoShipLogic.KillerBy = someoneDead.KillersToString;
         CreateExplosion(whoShipLogic.transform.position);
 
         if (DebugMode)
-            GuiScript.CreateLogMessage(new List<string>() { $"SomeoneDead '{GuiScript.IsPlayer(whoShipLogic, someoneDead.WhoIsPlayer)}' by '{GuiScript.IsPlayer(byShipLogic, someoneDead.ByIsPlayer)}'" });
+            GuiScript.CreateLogMessage(new List<string>() { $"SomeoneDead '{GuiScript.IsPlayer(whoShipLogic, someoneDead.WhoIsPlayer)}' by '{byShipLogic.Count}'" });
 
         foreach (ShipLogic shipLogic in PlayersController.Values)
         {
-            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic?.gameObject)
+            if (byShipLogic.Any(o => o.gameObject == shipLogic.TargetGameObject || o.TargetGameObject == o.gameObject))
             {
                 shipLogic.TargetGameObject = null;
                 shipLogic.Attack = false;
@@ -444,7 +445,7 @@ public class Player : MonoBehaviour
 
         foreach (ShipLogic shipLogic in EnemiesController.Values)
         {
-            if (shipLogic.TargetGameObject == whoShipLogic.gameObject || shipLogic.TargetGameObject == byShipLogic?.gameObject)
+            if (byShipLogic.Any(o => o.gameObject == shipLogic.TargetGameObject || o.TargetGameObject == o.gameObject))
             {
                 shipLogic.TargetGameObject = null;
                 shipLogic.Attack = false;
@@ -508,7 +509,7 @@ public class Player : MonoBehaviour
                 Client.SendToSocket(new CommandData()
                 {
                     Command = Commands.GetEquipment,
-                    Data = Client.Pilot.Id
+                    SenderId = Client.Pilot.Id
                 });
             }
         }
@@ -536,14 +537,35 @@ public class Player : MonoBehaviour
 
         whoShipLogic.IsCover = safeZone.Status;
 
-        foreach (ShipLogic ship in PlayersController.Values.Where(o => !o.TargetIsNull && o.TargetGameObject == whoShipLogic.gameObject))
+        foreach (ShipLogic ship in PlayersController.Values)
         {
-            ship.Attack = false;
+            if(!ship.TargetIsNull && ship.TargetGameObject == whoShipLogic.gameObject)
+            {
+                ship.Attack = false;
+                if (ship.ID == Client.Pilot.Id)
+                    GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.TARGET_IS_COVER });
+            }
         }
-        foreach (ShipLogic ship in EnemiesController.Values.Where(o => !o.TargetIsNull && o.TargetGameObject == whoShipLogic.gameObject))
+        foreach (ShipLogic ship in EnemiesController.Values)
         {
-            ship.Attack = false;
+            if (!ship.TargetIsNull && ship.TargetGameObject == whoShipLogic.gameObject)
+            {
+                ship.Attack = false;
+            }
         }
+    }
+
+    public void SomeoneChangeShip(ulong pilotId, Ship ship)
+    {
+        ShipLogic player = FindPilot(pilotId);
+
+        if (player == null)
+            return;
+
+        if (pilotId == Client.Pilot.Id)
+            Client.Pilot.Ship = ship;
+
+        player.InitShip(ship.Prefab);
     }
     #endregion
 

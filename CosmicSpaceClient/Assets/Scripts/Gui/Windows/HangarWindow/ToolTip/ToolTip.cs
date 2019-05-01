@@ -82,9 +82,13 @@ public class ToolTip : MonoBehaviour
             {
                 case ItemProperty.LaserDamagePvp:
                 case ItemProperty.LaserDamagePve:
+                    if (duplicateLaserDamage)
+                        continue;
+
                     if (shopItem.ItemDescription.ContainsKey(ItemProperty.LaserDamagePvp) && shopItem.ItemDescription.ContainsKey(ItemProperty.LaserDamagePve) && shopItem.ItemDescription[ItemProperty.LaserDamagePvp].Equals(shopItem.ItemDescription[ItemProperty.LaserDamagePve]))
                     {
                         language = GameSettings.UserLanguage.DAMAGE;
+                        duplicateLaserDamage = true;
                     }
                     else
                     {
@@ -93,10 +97,6 @@ public class ToolTip : MonoBehaviour
                         else
                             language = GameSettings.UserLanguage.DAMAGE_PVE;
                     }
-
-                    if (duplicateLaserDamage)
-                        continue;
-                    duplicateLaserDamage = true;
                     break;
 
                 case ItemProperty.LaserShotRange:
@@ -151,6 +151,10 @@ public class ToolTip : MonoBehaviour
 
                 case ItemProperty.Hitpoints:
                     language = GameSettings.UserLanguage.HITPOINTS;
+                    break;
+
+                case ItemProperty.RequiredLevel:
+                    language = GameSettings.UserLanguage.REQUIRED_LEVEL;
                     break;
             }
 

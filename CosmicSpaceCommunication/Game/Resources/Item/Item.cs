@@ -35,6 +35,8 @@ namespace CosmicSpaceCommunication.Game.Resources
             { ItemProperty.GeneratorShield, GeneratorShield },
             { ItemProperty.GeneratorShieldDivision, GeneratorShieldDivision },
             { ItemProperty.GeneratorShieldRepair, GeneratorShieldRepair },
+
+            { ItemProperty.RequiredLevel, RequiredLevel },
         };
 
         public static Item GetItem(DataRow row)

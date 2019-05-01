@@ -4,6 +4,7 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Interfaces;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -132,6 +133,7 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.NewPosition,
+                SenderId = Client.Pilot.Id,
                 Data = new NewPosition()
                 {
                     PlayerId = Client.Pilot.Id,
@@ -201,6 +203,7 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.SelectTarget,
+                SenderId = Client.Pilot.Id,
                 Data = new NewTarget()
                 {
                     PlayerId = Client.Pilot.Id,
@@ -235,6 +238,7 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.AttackTarget,
+                SenderId = Client.Pilot.Id,
                 Data = new AttackTarget()
                 {
                     PlayerId = Client.Pilot.Id,
@@ -463,7 +467,7 @@ public class ShipLogic : MonoBehaviour
         MaxShields = hitpointsShields.MaxShields;
     }
 
-    private void InitShip(IPrefab prefab)
+    public void InitShip(IPrefab prefab)
     {
         foreach (Transform t in ModelTransform)
         {

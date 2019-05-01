@@ -30,6 +30,8 @@ namespace CosmicSpaceCommunication.Game.Resources
             { ItemProperty.Speed, Speed },
             { ItemProperty.Cargo, Cargo },
             { ItemProperty.Hitpoints, Hitpoints },
+
+            { ItemProperty.RequiredLevel, RequiredLevel },
         };
 
 

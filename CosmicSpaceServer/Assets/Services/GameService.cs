@@ -59,6 +59,12 @@ public class GameService : WebSocket
 
                 CommandData commandData = GameData.Deserialize(e.RawData);
 
+                if (commandData.Command != Commands.LogIn && commandData.Command != Commands.Register && commandData.Command != Commands.PlayerLeave)
+                {
+                    if (!CheckPacket(commandData.SenderId))
+                        return;
+                }
+
                 if (commandData.Command == Commands.LogIn)
                 {
                     if (commandData.Data is LogInUser data)
@@ -94,7 +100,7 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is NewPosition data)
                     {
-                        if (!CheckPacket(data.PlayerId))
+                        if (data.PlayerId != commandData.SenderId)
                             return;
 
                         if (data.IsPlayer)
@@ -110,7 +116,7 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is NewTarget data)
                     {
-                        if (!CheckPacket(data.PlayerId))
+                        if (data.PlayerId != commandData.SenderId)
                             return;
 
                         PilotSelectTarget(data);
@@ -125,7 +131,7 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is AttackTarget data)
                     {
-                        if (!CheckPacket(data.PlayerId))
+                        if (data.PlayerId != commandData.SenderId)
                             return;
 
                         PilotAttackTarget(data);
@@ -138,15 +144,7 @@ public class GameService : WebSocket
 
                 else if (commandData.Command == Commands.RepairShip)
                 {
-                    if (commandData.Data is ulong data)
-                    {
-                        if (!CheckPacket(data))
-                            return;
-
-                        Server.Pilots[data].IsDead = false;
-                    }
-                    else
-                        errorStatus = 2;
+                    Server.Pilots[commandData.SenderId].IsDead = false;
                 }
 
 
@@ -155,10 +153,7 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is PlayerChangeMap data)
                     {
-                        if (!CheckPacket(data.PlayerId))
-                            return;
-
-                        Server.MapsServer[data.Portal.Map.Id].ChangeMapByPortal(Server.Pilots[data.PlayerId], data.Portal);
+                        Server.MapsServer[data.Portal.Map.Id].ChangeMapByPortal(Server.Pilots[commandData.SenderId], data.Portal);
                     }
                     else
                         errorStatus = 2;
@@ -168,23 +163,15 @@ public class GameService : WebSocket
 
                 else if (commandData.Command == Commands.GetEquipment)
                 {
-                    if (commandData.Data is ulong data)
+                    Server.Pilots[commandData.SenderId].Send(new CommandData()
                     {
-                        if (!CheckPacket(data))
-                            return;
-
-                        Server.Pilots[data].Send(new CommandData()
+                        Command = Commands.GetEquipment,
+                        Data = new Pilot()
                         {
-                            Command = Commands.GetEquipment,
-                            Data = new Pilot()
-                            {
-                                Items = Server.Pilots[data].Pilot.Items,
-                                Ship = Server.Pilots[data].Pilot.Ship
-                            }
-                        });
-                    }
-                    else
-                        errorStatus = 2;
+                            Items = Server.Pilots[commandData.SenderId].Pilot.Items,
+                            Ship = Server.Pilots[commandData.SenderId].Pilot.Ship
+                        }
+                    });
                 }
 
 
@@ -193,17 +180,14 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is PilotEquipment data)
                     {
-                        if (!CheckPacket(data.PilotId))
-                            return;
-
                         if (data.Items.FirstOrDefault(o => o.RelationId == 0) != null)
                         {
-                            Server.Log("Ekwipowane przedmioty nie posiadaja id relacji.", data.PilotId, data.Items.Select(o => (object)o.RelationId).ToArray());
+                            Server.Log("Ekwipowane przedmioty nie posiadaja id relacji.", commandData.SenderId, data.Items.Select(o => (object)o.RelationId).ToArray());
                             return;
                         }
 
                         if (data.Items.Count > 0)
-                            Server.Pilots[data.PilotId].ItemsChange(data.Items);
+                            Server.Pilots[commandData.SenderId].ItemsChange(data.Items);
                     }
                     else
                         errorStatus = 2;
@@ -213,19 +197,29 @@ public class GameService : WebSocket
 
                 else if (commandData.Command == Commands.GetShopItems)
                 {
-                    if (commandData.Data is ulong data)
+                    Server.Pilots[commandData.SenderId].Send(new CommandData()
                     {
-                        if (!CheckPacket(data))
-                            return;
-
-                        Server.Pilots[data].Send(new CommandData()
+                        Command = Commands.GetShopItems,
+                        Data = new ShopItems()
                         {
-                            Command = Commands.GetShopItems,
-                            Data = new ShopItems()
-                            {
-                                Items = Server.Items.Values.ToList(),
-                                Ships = Server.Ships.Values.ToList()
-                            }
+                            Items = Server.Items.Values.ToList(),
+                            Ships = Server.Ships.Values.ToList()
+                        }
+                    });
+                }
+
+
+
+                else if (commandData.Command == Commands.BuyShopItem)
+                {
+                    if (commandData.Data is BuyShopItem data)
+                    {
+                        ShoppingStatus status = Server.Pilots[commandData.SenderId].BuyItem(data);
+
+                        Server.Pilots[commandData.SenderId].Send(new CommandData()
+                        {
+                            Command = Commands.BuyShopItem,
+                            Data = status
                         });
                     }
                     else

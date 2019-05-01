@@ -68,6 +68,13 @@
   <HITPOINTS>Hitpoints</HITPOINTS>
   <BUY_FOR>Buy for</BUY_FOR>
   <UNAVAILABLE>UNAVAILABLE</UNAVAILABLE>
+  <NOT_HAVE_ENOUGH>You do not have enough {0}</NOT_HAVE_ENOUGH>
+  <ITEM_PURCHASED>Item was purchased {0}</ITEM_PURCHASED>
+  <ITEM_ERROR>Error when buying the item.</ITEM_ERROR>
+  <NO_REQUIRED_LEVEL>No required level.</NO_REQUIRED_LEVEL>
+  <NEED>You need {0}</NEED>
+  <YOU_HAVE_SHIP>You already have this ship.</YOU_HAVE_SHIP>
+  <REQUIRED_LEVEL>Required level</REQUIRED_LEVEL>
 
 
 

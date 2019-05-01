@@ -68,9 +68,9 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
                     Client.SendToSocket(new CommandData()
                     {
                         Command = Commands.ChangeEquipment,
+                        SenderId = Client.Pilot.Id,
                         Data = new PilotEquipment()
                         {
-                            PilotId = Client.Pilot.Id,
                             Items = new List<ItemPilot>()
                             {
                                 ItemPilot

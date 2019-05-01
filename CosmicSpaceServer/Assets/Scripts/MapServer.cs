@@ -65,7 +65,7 @@ public class MapServer : MonoBehaviour
 
 
     #region Spawn enemy on map
-    private void CheckEnemyOnMap()
+    public void CheckEnemyOnMap()
     {
         foreach (EnemyMap enemyMap in EnemiesOnCurrentMap)
         {

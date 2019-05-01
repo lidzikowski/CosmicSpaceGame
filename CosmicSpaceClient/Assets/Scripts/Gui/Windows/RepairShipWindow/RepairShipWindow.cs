@@ -35,7 +35,7 @@ public class RepairShipWindow : GameWindow
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.RepairShip,
-            Data = Client.Pilot.Id
+            SenderId = Client.Pilot.Id
         });
     }
 }

@@ -21,5 +21,6 @@ namespace CosmicSpaceCommunication.Game.Resources
         Cargo,
         Hitpoints,
 
+        RequiredLevel,
     }
 }

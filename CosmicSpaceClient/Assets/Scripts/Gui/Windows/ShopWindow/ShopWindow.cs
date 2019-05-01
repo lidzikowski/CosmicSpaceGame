@@ -1,5 +1,8 @@
-﻿using CosmicSpaceCommunication.Game.Player.ServerToClient;
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player.ClientToServer;
+using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +30,8 @@ public class ShopWindow : GameWindow
     public Text ItemNameText;
     public Transform ContentTransform;
     public GameObject PropertyPrefab;
+    public RawImage ItemRawImage;
+    public RenderTexture ItemRenderTexture;
 
     [Header("Selected Item Buttons")]
     public Button BuyScrapButton;
@@ -53,6 +58,8 @@ public class ShopWindow : GameWindow
         ButtonListener(LasersButton, () => Buttons_Clicked(ItemTypes.Laser));
         ButtonListener(GeneratorsButton, () => Buttons_Clicked(ItemTypes.Generator));
         ButtonListener(ExtrasButton, () => Buttons_Clicked(ItemTypes.Extra));
+
+        ResourcesUI.Instance.LoadImages();
 
         Player.DestroyChilds(ItemsTransform);
         ShipsButton_Clicked();
@@ -96,23 +103,48 @@ public class ShopWindow : GameWindow
     private void CreateItem(IShopItem item)
     {
         GameObject go = Instantiate(ItemPrefab, ItemsTransform);
+
+        if (ResourcesUI.Instance.ShipSprites.ContainsKey(item.Prefab.PrefabName))
+            go.GetComponent<Image>().sprite = ResourcesUI.Instance.ShipSprites[item.Prefab.PrefabName];
+        else
+            Debug.Log($"Brak prefabu: {item.Prefab.PrefabTypeName} {item.Prefab.PrefabName}");
+
         go.GetComponent<ShopItem>().Item = item;
         go.GetComponent<ShopItem>().OnShowInformation = ShowInformation;
     }
 
+    IShopItem LastShowShopItem = null;
+
     private void ShowInformation(IShopItem item)
     {
+        if (LastShowShopItem != null && LastShowShopItem == item)
+            return;
+        LastShowShopItem = item;
+
         Player.DestroyChilds(ContentTransform);
         if (item == null)
         {
             SelectedItemTransform.gameObject.SetActive(false);
+            ResourcesUI.Instance.RotateItem(null);
             return;
         }
         SelectedItemTransform.gameObject.SetActive(true);
 
         SetText(ItemNameText, item.Name);
 
-        if(item.ScrapPrice > 0)
+        if (ResourcesUI.Instance.ShipSprites.ContainsKey(item.Prefab.PrefabName))
+        {
+            ItemRawImage.texture = ItemRenderTexture;
+            ResourcesUI.Instance.RotateItem(item.Prefab.PrefabName);
+        }
+        else
+        {
+            ItemRawImage.texture = null;
+            ResourcesUI.Instance.RotateItem(null);
+            Debug.Log($"Brak prefabu: {item.Prefab.PrefabTypeName} {item.Prefab.PrefabName}");
+        }
+
+        if (item.ScrapPrice > 0)
         {
             SetText(BuyScrapText, $"{GameSettings.UserLanguage.BUY_FOR} Scrap{System.Environment.NewLine}{item.ScrapPrice}");
             BuyScrapButton.interactable = true;
@@ -149,6 +181,52 @@ public class ShopWindow : GameWindow
 
     private void BuyItem(IShopItem item, bool scrap)
     {
-        Debug.Log($"Kup {item.Id} {item.Name} -> {scrap}");
+        bool status = false;
+
+        if(item.ItemType == ItemTypes.Ship && Client.Pilot.Ship.Id == item.Id)
+        {
+            GuiScript.CreateLogMessage(new List<string> { GameSettings.UserLanguage.YOU_HAVE_SHIP });
+            return;
+        }
+
+        if (scrap)
+        {
+            if (item.ScrapPrice > 0 && Client.Pilot.Scrap >= item.ScrapPrice)
+            {
+                status = true;
+            }
+            else
+                GuiScript.CreateLogMessage(new List<string> { string.Format(GameSettings.UserLanguage.NOT_HAVE_ENOUGH, "Scrap") });
+        }
+        else
+        {
+            if (item.MetalPrice > 0 && Client.Pilot.Metal >= item.MetalPrice)
+            {
+                status = true;
+            }
+            else
+                GuiScript.CreateLogMessage(new List<string> { string.Format(GameSettings.UserLanguage.NOT_HAVE_ENOUGH, "Metal") });
+        }
+
+        if (!status)
+            return;
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.BuyShopItem,
+            SenderId = Client.Pilot.Id,
+            Data = new BuyShopItem()
+            {
+                ItemType = item.ItemType,
+                ItemId = item.Id,
+                Scrap = scrap,
+                Count = 1
+            }
+        });
+    }
+
+    private void OnDisable()
+    {
+        ResourcesUI.Instance.ShipSprites.Clear();
     }
 }

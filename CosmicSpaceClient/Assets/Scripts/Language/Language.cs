@@ -226,6 +226,27 @@ public class Language
     [XmlElement("UNAVAILABLE")]
     public string UNAVAILABLE { get; set; }
 
+    [XmlElement("NOT_HAVE_ENOUGH")]
+    public string NOT_HAVE_ENOUGH { get; set; }
+
+    [XmlElement("ITEM_PURCHASED")]
+    public string ITEM_PURCHASED { get; set; }
+
+    [XmlElement("ITEM_ERROR")]
+    public string ITEM_ERROR { get; set; }
+
+    [XmlElement("NO_REQUIRED_LEVEL")]
+    public string NO_REQUIRED_LEVEL { get; set; }
+
+    [XmlElement("NEED")]
+    public string NEED { get; set; }
+
+    [XmlElement("YOU_HAVE_SHIP")]
+    public string YOU_HAVE_SHIP { get; set; }
+
+    [XmlElement("REQUIRED_LEVEL")]
+    public string REQUIRED_LEVEL { get; set; }
+
 
     #endregion
 }
