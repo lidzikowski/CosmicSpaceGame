@@ -77,6 +77,12 @@
   <NEED>Potrzebujesz {0}</NEED>
   <YOU_HAVE_SHIP>Posiadasz już ten statek.</YOU_HAVE_SHIP>
   <REQUIRED_LEVEL>Wymagany poziom</REQUIRED_LEVEL>
+  <ITEM_INFO>Przedmiot</ITEM_INFO>
+  <SELL_ITEM>Sprzedaj</SELL_ITEM>
+  <SELL_ITEM_ERROR>Wystąpił problem ze sprzedażą przedmiotu.</SELL_ITEM_ERROR>
+  <RESOURCES>Zasoby</RESOURCES>
+  <RESOURCE>Zasób</RESOURCE>
+  <QUANTITY>Ilość</QUANTITY>
   
   
   

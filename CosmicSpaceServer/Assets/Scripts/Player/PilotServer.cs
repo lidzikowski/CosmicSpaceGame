@@ -26,7 +26,7 @@ public class PilotServer : Opponent
     {
         foreach (ItemPilot item in items)
         {
-            ItemPilot localItem = item.RelationId > 0 ? Pilot.Items.FirstOrDefault(o => o.RelationId == item.RelationId && o.Item.ItemType == item.Item.ItemType) : null;
+            ItemPilot localItem = item.RelationId > 0 ? Pilot.Items.FirstOrDefault(o => o.RelationId == item.RelationId && o.Item.ItemType == item.Item.ItemType && !o.IsSold) : null;
 
             if (localItem == null)
             {
@@ -92,6 +92,29 @@ public class PilotServer : Opponent
         }
 
         return new ShoppingStatus() { Status = status, ShopItem = item };
+    }
+
+    public bool SellItem(ItemPilot itemPilot)
+    {
+        if (itemPilot.RelationId == 0 || itemPilot.IsSold)
+            return false;
+
+        ItemPilot localItem = Pilot.Items.FirstOrDefault(o => o.RelationId == itemPilot.RelationId && o.Item.ItemType == itemPilot.Item.ItemType);
+
+        if (localItem == null)
+            return false;
+
+        localItem.IsEquipped = false;
+        localItem.IsSold = true;
+
+        TakeReward(new ServerReward()
+        {
+            Scrap = 10
+        });
+
+        CalculateStatistics();
+
+        return true;
     }
 
     private ShopStatus BuyItem(IShopItem item, BuyShopItem buyItem)
@@ -519,12 +542,8 @@ public class PilotServer : Opponent
         pilot.Map = Server.Maps[ConvertRow.Row<int>(row["mapid"])];
         pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
         pilot.Items = await Database.GetPilotItems(pilot.Id);
+        pilot.Resources = await Database.GetPilotResources(pilot.Id);
 
-        PilotResources resources = await Database.GetPilotResources(pilot.Id);
-
-        pilot.Ammunitions = resources.Ammunitions;
-        pilot.Rockets = resources.Rockets;
-        
         return pilot;
     }
     #endregion

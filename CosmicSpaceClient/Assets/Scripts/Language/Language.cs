@@ -247,6 +247,24 @@ public class Language
     [XmlElement("REQUIRED_LEVEL")]
     public string REQUIRED_LEVEL { get; set; }
 
+    [XmlElement("ITEM_INFO")]
+    public string ITEM_INFO { get; set; }
+
+    [XmlElement("SELL_ITEM")]
+    public string SELL_ITEM { get; set; }
+
+    [XmlElement("SELL_ITEM_ERROR")]
+    public string SELL_ITEM_ERROR { get; set; }
+
+    [XmlElement("RESOURCES")]
+    public string RESOURCES { get; set; }
+
+    [XmlElement("RESOURCE")]
+    public string RESOURCE { get; set; }
+
+    [XmlElement("QUANTITY")]
+    public string QUANTITY { get; set; }
+
 
     #endregion
 }

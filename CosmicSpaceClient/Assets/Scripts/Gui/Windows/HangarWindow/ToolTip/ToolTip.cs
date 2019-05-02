@@ -1,4 +1,5 @@
-﻿using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Resources;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ public class ToolTip : MonoBehaviour
     public GameObject PropertyPrefab;
 
 
-
+    PilotResource PilotResource => itemInfo?.PilotResource;
     ItemPilot Item => itemInfo?.ItemPilot;
 
     private ItemHandler itemInfo;
@@ -35,12 +36,20 @@ public class ToolTip : MonoBehaviour
                 return;
             }
 
-            transform.position = new Vector2(-1000, -1000);
+            transform.position = new Vector2(-10000, -10000);
 
-            ItemNameText.text = Item.Item.Name;
-            ItemTypeText.text = Item.Item.ItemType.ToString();
-
-            FindLanguageToProperties(Item.Item, Property);
+            if (Item.Item != null)
+            {
+                ItemNameText.text = Item.Item.Name;
+                ItemTypeText.text = Item.Item.ItemType.ToString();
+                FindLanguageToProperties(Item.Item, Property);
+            }
+            else if (PilotResource != null)
+            {
+                ItemNameText.text = PilotResource.ColumnName;
+                ItemTypeText.text = GameSettings.UserLanguage.RESOURCE;
+                Property(GameSettings.UserLanguage.QUANTITY, PilotResource.Count);
+            }
 
             StartCoroutine(Position());
         }
@@ -48,8 +57,16 @@ public class ToolTip : MonoBehaviour
 
     IEnumerator Position()
     {
-        yield return new WaitForEndOfFrame();
-        transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y - GetComponent<RectTransform>().rect.height - 5);
+        yield return new WaitForSeconds(0.2f);
+
+        if (ItemInfo.transform.position.y - GetComponent<RectTransform>().rect.height < 50)
+        {
+            transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y + (GetComponent<RectTransform>().rect.height / 2) + 30);
+        }
+        else
+        {
+            transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y - (GetComponent<RectTransform>().rect.height / 2) - 30);
+        }
     }
 
 
@@ -62,10 +79,7 @@ public class ToolTip : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
-        ItemInfo = null;
-    }
+
 
     public static void FindLanguageToProperties(IShopItem shopItem, LanguageFunction languageFunction = null)
     {

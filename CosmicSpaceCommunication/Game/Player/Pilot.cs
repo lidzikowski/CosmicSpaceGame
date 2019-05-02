@@ -23,8 +23,9 @@ namespace CosmicSpaceCommunication.Game.Player
         public bool IsDead { get; set; }
         public string KillerBy { get; set; }
 
-        public List<ulong> Ammunitions { get; set; }
-        public List<ulong> Rockets { get; set; }
+
+
+        public List<PilotResource> Resources { get; set; }
         public List<ItemPilot> Items { get; set; }
 
 

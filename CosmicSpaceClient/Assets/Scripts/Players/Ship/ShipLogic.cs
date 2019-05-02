@@ -107,8 +107,8 @@ public class ShipLogic : MonoBehaviour
 
             Client.Pilot.PositionX = value.x;
             Client.Pilot.PositionY = value.y;
-            
-            GuiScript.RefreshAllActiveWindow();
+
+            GuiScript.Windows[WindowTypes.UserInterface].Script.Refresh();
         }
     }
     private Vector2 targetPosition;
@@ -296,7 +296,7 @@ public class ShipLogic : MonoBehaviour
             return;
 
         if (Player.LocalShipController != null)
-            GuiScript.RefreshAllActiveWindow();
+            GuiScript.Windows[WindowTypes.UserInterface].Script.Refresh();
     }
     #endregion
 

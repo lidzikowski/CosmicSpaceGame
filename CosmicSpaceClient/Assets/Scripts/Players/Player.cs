@@ -516,7 +516,7 @@ public class Player : MonoBehaviour
 
         GuiScript.CreateLogMessage(messages, 6);
 
-        MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
+        MainThread.Instance().Enqueue(() => GuiScript.Windows[WindowTypes.UserInterface].Script.Refresh());
     }
 
     public void ChangeMap(Pilot pilot)

@@ -1,4 +1,5 @@
-﻿using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Resources;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ public class HangarWindow : GameWindow
         Lasers,
         Generators,
         Extras,
-        Warehouse
+        Warehouse,
+        Resources
     }
 
     [Header("Equipment")]
@@ -27,7 +29,7 @@ public class HangarWindow : GameWindow
     public GameObject SlotPanelPrefab;
     public GameObject SlotPrefab;
 
-    Dictionary<HangarPanels, Transform> Panels;
+    Dictionary<HangarPanels, ItemContainer> Panels;
 
 
 
@@ -48,7 +50,7 @@ public class HangarWindow : GameWindow
 
     private void CreateHanger()
     {
-        Panels = new Dictionary<HangarPanels, Transform>();
+        Panels = new Dictionary<HangarPanels, ItemContainer>();
 
         Player.DestroyChilds(EquipmentContent);
         Player.DestroyChilds(WarehouseContent);
@@ -76,6 +78,9 @@ public class HangarWindow : GameWindow
                 case HangarPanels.Extras:
                     slotCount = Client.Pilot.Ship.Extras;
                     break;
+                case HangarPanels.Resources:
+                    slotCount = Client.Pilot.Resources.Count;
+                    break;
             }
 
             for (int i = 0; i < slotCount; i++)
@@ -85,33 +90,55 @@ public class HangarWindow : GameWindow
 
             StartCoroutine(SetPanelCollider(slotPanel));
 
-            switch (hangarPanel)
-            {
-                case HangarPanels.Warehouse:
-                    foreach (ItemPilot item in Client.Pilot.Items.Where(o => !o.IsEquipped))
-                    {
-                        itemContainer.AddItem(item);
-                    }
-                    break;
-                case HangarPanels.Lasers:
-                    foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Laser))
-                    {
-                        itemContainer.AddItem(item);
-                    }
-                    break;
-                case HangarPanels.Generators:
-                    foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Generator))
-                    {
-                        itemContainer.AddItem(item);
-                    }
-                    break;
-                case HangarPanels.Extras:
-                    foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Extra))
-                    {
-                        itemContainer.AddItem(item);
-                    }
-                    break;
-            }
+            StartCoroutine(RefreshPanel(hangarPanel));
+        }
+    }
+
+    public void RefreshAllPanels()
+    {
+        foreach (HangarPanels hangarPanel in Panels.Keys)
+        {
+            StartCoroutine(RefreshPanel(hangarPanel));
+        }
+    }
+
+    public IEnumerator RefreshPanel(HangarPanels hangarPanel)
+    {
+        ItemContainer itemContainer = Panels[hangarPanel];
+        itemContainer.ClearItems();
+        yield return new WaitForEndOfFrame();
+        switch (hangarPanel)
+        {
+            case HangarPanels.Warehouse:
+                foreach (ItemPilot item in Client.Pilot.Items.Where(o => !o.IsEquipped).OrderBy(o => o.RelationId))
+                {
+                    itemContainer.AddItem(item);
+                }
+                break;
+            case HangarPanels.Lasers:
+                foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Laser).OrderBy(o => o.RelationId))
+                {
+                    itemContainer.AddItem(item);
+                }
+                break;
+            case HangarPanels.Generators:
+                foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Generator).OrderBy(o => o.RelationId))
+                {
+                    itemContainer.AddItem(item);
+                }
+                break;
+            case HangarPanels.Extras:
+                foreach (ItemPilot item in Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Extra).OrderBy(o => o.RelationId))
+                {
+                    itemContainer.AddItem(item);
+                }
+                break;
+            case HangarPanels.Resources:
+                foreach (PilotResource resource in Client.Pilot.Resources)
+                {
+                    itemContainer.AddResource(resource);
+                }
+                break;
         }
     }
 
@@ -139,6 +166,9 @@ public class HangarWindow : GameWindow
             case HangarPanels.Warehouse:
                 title = GameSettings.UserLanguage.WAREHOUSE;
                 break;
+            case HangarPanels.Resources:
+                title = GameSettings.UserLanguage.RESOURCES;
+                break;
         }
 
         GameObject go = Instantiate(TitlePanelPrefab, content);
@@ -146,7 +176,7 @@ public class HangarWindow : GameWindow
 
         Transform panel = Instantiate(SlotPanelPrefab, content).transform;
         panel.name = hangarPanel.ToString();
-        Panels.Add(hangarPanel, panel);
+        Panels.Add(hangarPanel, panel.GetComponent<ItemContainer>());
 
         return panel;
     }

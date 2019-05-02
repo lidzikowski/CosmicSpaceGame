@@ -1,13 +1,15 @@
 ﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginDragHandler, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public ItemPilot ItemPilot;
+    public PilotResource PilotResource;
 
     Transform parent;
     public Transform ItemContainer;
@@ -43,18 +45,27 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right)
+            return;
+
         parent = transform.parent;
         transform.SetParent(GuiScript.Windows[WindowTypes.HangarWindow].Window.transform);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right)
+            return;
+
         OnPointerExit(eventData);
         transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (eventData.button == PointerEventData.InputButton.Right)
+            return;
+
         if (ItemContainerTarget != null)
         {
             if (ItemContainer == ItemContainerTarget)
@@ -107,5 +118,16 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
     {
         if (ToolTipInstance != null)
             ToolTipInstance.ItemInfo = null;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Right)
+            return;
+
+        if (!GuiScript.Windows[WindowTypes.ItemInformationWindow].Active)
+            GuiScript.OpenWindow(WindowTypes.ItemInformationWindow);
+
+        (GuiScript.Windows[WindowTypes.ItemInformationWindow].Script as ItemInformationWindow).ShowItemInformation(ItemPilot, PilotResource);
     }
 }

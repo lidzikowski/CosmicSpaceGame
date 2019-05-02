@@ -37,6 +37,7 @@ namespace CosmicSpaceCommunication
 
         GetEquipment = 380,
         ChangeEquipment = 381,
+        SellEquipmentItem = 382,
 
         GetShopItems = 390,
         BuyShopItem = 391,

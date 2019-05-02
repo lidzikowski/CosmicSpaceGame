@@ -75,6 +75,13 @@
   <NEED>You need {0}</NEED>
   <YOU_HAVE_SHIP>You already have this ship.</YOU_HAVE_SHIP>
   <REQUIRED_LEVEL>Required level</REQUIRED_LEVEL>
+  <ITEM_INFO>Item</ITEM_INFO>
+  <SELL_ITEM>Sell</SELL_ITEM>
+  <SELL_ITEM_ERROR>There was a problem with the sale of the item.</SELL_ITEM_ERROR>
+  <RESOURCES>Resources</RESOURCES>
+  <RESOURCE>Resource</RESOURCE>
+  <QUANTITY>Quantity</QUANTITY>
+
 
 
 

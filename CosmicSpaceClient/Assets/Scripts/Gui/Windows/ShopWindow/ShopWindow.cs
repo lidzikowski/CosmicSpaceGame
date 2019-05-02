@@ -94,7 +94,7 @@ public class ShopWindow : GameWindow
     private void Buttons_Clicked(ItemTypes itemType)
     {
         ShowInformation(null);
-        foreach (IShopItem item in ServerItems.Items.Where(o => o.ItemType == itemType).OrderBy(o => o.Id))
+        foreach (IShopItem item in ServerItems.Items.Where(o => o.ItemType == itemType).OrderBy(o => o.RequiredLevel).ThenBy(o => o.Prefab.PrefabName))
         {
             CreateItem(item);
         }

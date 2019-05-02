@@ -83,6 +83,9 @@ public abstract class GameWindow : MonoBehaviour
             case WindowTypes.QuitWindow:
                 TitleWindow.text = GameSettings.UserLanguage.EXIT;
                 break;
+            case WindowTypes.ItemInformationWindow:
+                TitleWindow.text = GameSettings.UserLanguage.ITEM_INFO;
+                break;
         }
 
         TitleWindow.fontSize = 24;

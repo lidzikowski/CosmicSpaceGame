@@ -5,27 +5,25 @@ using System.Data;
 namespace CosmicSpaceCommunication.Game.Player
 {
     [Serializable]
-    public class PilotResources
+    public class PilotResource
     {
-        public List<ulong> Ammunitions { get; set; }
-        public List<ulong> Rockets { get; set; }
+        public int Index { get; set; }
+        public string ColumnName { get; set; }
+        public ulong Count { get; set; }
 
-        public static PilotResources GetPilotResources(DataRow row)
+        public static List<PilotResource> GetPilotResource(DataRow row)
         {
-            return new PilotResources()
+            List<PilotResource> pilotResources = new List<PilotResource>();
+            for (int i = 1; i < row.Table.Columns.Count; i++)
             {
-                Ammunitions = new List<ulong>(){
-                    ConvertRow.Row<ulong>(row["ammunition0"]),
-                    ConvertRow.Row<ulong>(row["ammunition1"]),
-                    ConvertRow.Row<ulong>(row["ammunition2"]),
-                    ConvertRow.Row<ulong>(row["ammunition3"]),
-                },
-                Rockets = new List<ulong>(){
-                    ConvertRow.Row<ulong>(row["rocket0"]),
-                    ConvertRow.Row<ulong>(row["rocket1"]),
-                    ConvertRow.Row<ulong>(row["rocket2"]),
-                }
-            };
+                pilotResources.Add(new PilotResource()
+                {
+                    Index = i,
+                    ColumnName = row.Table.Columns[i].ColumnName,
+                    Count = ConvertRow.Row<ulong>(row[row.Table.Columns[i].ColumnName]),
+                });
+            }
+            return pilotResources;
         }
     }
 }

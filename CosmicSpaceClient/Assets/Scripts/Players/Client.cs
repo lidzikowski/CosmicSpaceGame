@@ -8,6 +8,7 @@ using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Client : MonoBehaviour
 {
@@ -428,6 +429,29 @@ public class Client : MonoBehaviour
             if (commandData.Data is Ship data)
             {
                 GetComponent<Player>().SomeoneChangeShip(commandData.SenderId, data);
+            }
+        }
+        #endregion
+
+
+        #region ZMIANA STATKU
+        else if (commandData.Command == Commands.SellEquipmentItem)
+        {
+            if (commandData.Data is ulong data)
+            {
+                ItemPilot itemPilot = Pilot.Items.FirstOrDefault(o => o.RelationId == data);
+                if (itemPilot != null)
+                {
+                    Pilot.Items.Remove(itemPilot);
+                    if (GuiScript.Windows[WindowTypes.HangarWindow].Active)
+                    {
+                        (GuiScript.Windows[WindowTypes.HangarWindow].Script as HangarWindow).RefreshAllPanels();
+                    }
+                }
+                else
+                    GuiScript.CreateLogMessage(new List<string> {
+                        GameSettings.UserLanguage.SELL_ITEM_ERROR
+                    });
             }
         }
         #endregion

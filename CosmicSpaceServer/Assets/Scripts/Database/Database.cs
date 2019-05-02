@@ -193,19 +193,16 @@ public class Database
         return null;
     }
 
-    public static async Task<PilotResources> GetPilotResources(ulong userId)
+    public static async Task<List<PilotResource>> GetPilotResources(ulong userId)
     {
         DataTable dt = await ExecuteCommand(Commands.getpilotresources, new Dictionary<string, object>()
         {
             { "inuserId", userId }
         });
 
-        if (dt != null)
+        if (dt != null && dt.Rows.Count != 0)
         {
-            foreach (DataRow row in dt.Rows)
-            {
-                return PilotResources.GetPilotResources(row);
-            }
+            return PilotResource.GetPilotResource(dt.Rows[0]);
         }
         return null;
     }
@@ -454,7 +451,7 @@ public class Database
     #region Zapis stanu gracza
     public static async Task SavePlayerData(Pilot pilot)
     {
-        await ExecuteCommand(Commands.saveplayerdata, new Dictionary<string, object>()
+        Dictionary<string, object> parameters = new Dictionary<string, object>()
         {
             { "inuserid", pilot.Id },
             { "inmapid", pilot.Map.Id },
@@ -468,16 +465,15 @@ public class Database
             { "inhitpoints", pilot.Hitpoints },
             { "inshields", pilot.Shields },
             { "inisdead", pilot.IsDead },
-            { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy },
+            { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy }
+        };
 
-            { "inammunition0", pilot.Ammunitions[0] },
-            { "inammunition1", pilot.Ammunitions[1] },
-            { "inammunition2", pilot.Ammunitions[2] },
-            { "inammunition3", pilot.Ammunitions[3] },
-            { "inrocket0", pilot.Rockets[0] },
-            { "inrocket1", pilot.Rockets[1] },
-            { "inrocket2", pilot.Rockets[2] },
-        });
+        foreach (PilotResource resource in pilot.Resources)
+        {
+            parameters.Add($"in{resource.ColumnName}", resource.Count);
+        }
+
+        await ExecuteCommand(Commands.saveplayerdata, parameters);
 
         foreach (ItemPilot item in pilot.Items)
         {

@@ -168,7 +168,7 @@ public class GameService : WebSocket
                         Command = Commands.GetEquipment,
                         Data = new Pilot()
                         {
-                            Items = Server.Pilots[commandData.SenderId].Pilot.Items,
+                            Items = Server.Pilots[commandData.SenderId].Pilot.Items.Where(o => !o.IsSold).ToList(),
                             Ship = Server.Pilots[commandData.SenderId].Pilot.Ship
                         }
                     });
@@ -220,6 +220,24 @@ public class GameService : WebSocket
                         {
                             Command = Commands.BuyShopItem,
                             Data = status
+                        });
+                    }
+                    else
+                        errorStatus = 2;
+                }
+
+
+
+                else if (commandData.Command == Commands.SellEquipmentItem)
+                {
+                    if (commandData.Data is ItemPilot data)
+                    {
+                        bool status = Server.Pilots[commandData.SenderId].SellItem(data);
+
+                        Server.Pilots[commandData.SenderId].Send(new CommandData()
+                        {
+                            Command = Commands.SellEquipmentItem,
+                            Data = status ? data.RelationId : (ulong?)null
                         });
                     }
                     else
