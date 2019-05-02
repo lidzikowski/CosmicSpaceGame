@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemContainer : MonoBehaviour
 {
@@ -38,6 +39,10 @@ public class ItemContainer : MonoBehaviour
                 itemHandler.ItemContainer = transform;
                 itemHandler.transform.localPosition = Vector3.zero;
                 itemHandler.ItemPilot.IsEquipped = HangarType != HangarWindow.HangarPanels.Warehouse;
+
+                if (ResourcesUI.Instance.ShipSprites.ContainsKey(itemPilot.Item.Prefab.PrefabName))
+                    itemHandler.ItemTexture.sprite = ResourcesUI.Instance.ShipSprites[itemPilot.Item.Prefab.PrefabName];
+
                 return true;
             }
         }

@@ -227,6 +227,6 @@ public class ShopWindow : GameWindow
 
     private void OnDisable()
     {
-        ResourcesUI.Instance.ShipSprites.Clear();
+        ResourcesUI.Instance.Dispose();
     }
 }

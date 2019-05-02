@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourcesUI : MonoBehaviour
@@ -24,6 +25,13 @@ public class ResourcesUI : MonoBehaviour
 
     public void LoadImages()
     {
+        if (DisposeCoroutine?.Current != null && ShipSprites.Count > 0)
+        {
+            StopCoroutine(DisposeCoroutine);
+            DisposeCoroutine = null;
+            return;
+        }
+
         if (RotatingGameObject != null)
         {
             RotatingGameObject.transform.rotation = new Quaternion();
@@ -37,9 +45,10 @@ public class ResourcesUI : MonoBehaviour
             t.gameObject.SetActive(true);
             ResourceCamera.transform.position = new Vector3(t.gameObject.transform.position.x - 9, t.gameObject.transform.position.y + 12, t.gameObject.transform.position.z + 10);
             ResourceCamera.GetComponent<Camera>().Render();
-            Texture2D texture = new Texture2D(SpriteSize, SpriteSize, TextureFormat.RGB24, false);
+            Texture2D texture = new Texture2D(SpriteSize, SpriteSize, TextureFormat.ARGB32, false);
             RenderTexture.active = RenderTexture;
             texture.ReadPixels(new Rect(0, 0, SpriteSize, SpriteSize), 0, 0);
+            texture.alphaIsTransparency = true;
             texture.Apply();
             ShipSprites.Add(t.name, Sprite.Create(texture, new Rect(0, 0, SpriteSize, SpriteSize), new Vector2(0.5f, 0.5f), 100.0f));
 
@@ -57,7 +66,7 @@ public class ResourcesUI : MonoBehaviour
     private GameObject RotatingGameObject;
     public void RotateItem(string key)
     {
-        if(key == null)
+        if (key == null)
         {
             if(RotatingGameObject != null)
             {
@@ -84,5 +93,28 @@ public class ResourcesUI : MonoBehaviour
         ResourceCamera.transform.position = new Vector3(RotatingGameObject.transform.position.x - 9, RotatingGameObject.transform.position.y + 12, RotatingGameObject.transform.position.z + 10);
 
         ResourceCamera.SetActive(true);
+    }
+
+    public void Dispose()
+    {
+        if (DisposeCoroutine?.Current != null)
+        {
+            StopCoroutine(DisposeCoroutine);
+        }
+
+        DisposeCoroutine = DisposeTextures();
+        try
+        {
+            StartCoroutine(DisposeCoroutine);
+        }
+        catch (System.Exception) { }
+    }
+
+    IEnumerator DisposeCoroutine;
+
+    IEnumerator DisposeTextures()
+    {
+        yield return new WaitForSeconds(60);
+        ShipSprites.Clear();
     }
 }

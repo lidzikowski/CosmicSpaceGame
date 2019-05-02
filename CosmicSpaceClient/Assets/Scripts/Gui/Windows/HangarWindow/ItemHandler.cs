@@ -39,6 +39,8 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
     public GameObject ToolTipPrefab;
     public static ToolTip ToolTipInstance;
 
+    public Image ItemTexture;
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         parent = transform.parent;

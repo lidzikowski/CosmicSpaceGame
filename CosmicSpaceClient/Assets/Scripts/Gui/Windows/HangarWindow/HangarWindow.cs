@@ -160,6 +160,13 @@ public class HangarWindow : GameWindow
 
     private void OnEnable()
     {
+        ResourcesUI.Instance.LoadImages();
+
         CreateHanger();
+    }
+
+    private void OnDisable()
+    {
+        ResourcesUI.Instance.Dispose();
     }
 }
