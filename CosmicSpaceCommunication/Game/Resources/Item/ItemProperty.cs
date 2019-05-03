@@ -22,5 +22,10 @@ namespace CosmicSpaceCommunication.Game.Resources
         Hitpoints,
 
         RequiredLevel,
+
+        MultiplierPlayer,
+        MultiplierEnemy,
+        IsAmmunition,
+        BaseDamage,
     }
 }

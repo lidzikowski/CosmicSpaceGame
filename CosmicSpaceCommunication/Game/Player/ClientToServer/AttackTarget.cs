@@ -7,8 +7,8 @@ namespace CosmicSpaceCommunication.Game.Player.ClientToServer
     {
         public bool Attack { get; set; }
         
-        public int? SelectedAmmunition { get; set; }
-        public int? SelectedRocket { get; set; }
+        public long? SelectedAmmunition { get; set; }
+        public long? SelectedRocket { get; set; }
         //public int? UseSkill { get; set; }
     }
 }

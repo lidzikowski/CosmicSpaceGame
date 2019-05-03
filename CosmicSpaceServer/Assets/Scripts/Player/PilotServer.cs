@@ -109,7 +109,9 @@ public class PilotServer : Opponent
 
         TakeReward(new ServerReward()
         {
-            Scrap = 10
+            Scrap = 10,
+            Reason = RewardReasons.SellItem,
+            Data = itemPilot.Item.Name
         });
 
         CalculateStatistics();
@@ -129,7 +131,9 @@ public class PilotServer : Opponent
             {
                 TakeReward(new ServerReward()
                 {
-                    Scrap = -price
+                    Scrap = -price,
+                    Reason = RewardReasons.BuyItem,
+                    Data = item.Name
                 });
 
                 if (item is Item it)
@@ -149,7 +153,9 @@ public class PilotServer : Opponent
             {
                 TakeReward(new ServerReward()
                 {
-                    Metal = -price
+                    Metal = -price,
+                    Reason = RewardReasons.BuyItem,
+                    Data = item.Name
                 });
 
                 if (item is Item it)
@@ -432,6 +438,73 @@ public class PilotServer : Opponent
     }
     #endregion
 
+    #region Ammunition / Rocket
+    public override long? Ammunition
+    {
+        get => Pilot.AmmunitionId;
+        set
+        {
+            if (Pilot.AmmunitionId == value)
+                return;
+
+            if (value == null)
+                return;
+
+            if (!Server.ServerResources.ContainsKey((long)value) || !Server.ServerResources[(long)value].IsAmmunition)
+                return;
+
+            Pilot.AmmunitionId = (long)value;
+
+            OnChangeResource(Pilot.Resources[(long)value]);
+        }
+    }
+    public override long? Rocket
+    {
+        get => Pilot.RocketId;
+        set
+        {
+            if (Pilot.RocketId == value)
+                return;
+
+            if (value == null)
+                return;
+
+            if (!Server.ServerResources.ContainsKey((long)value) || Server.ServerResources[(long)value].IsAmmunition)
+                return;
+
+            Pilot.RocketId = (long)value;
+
+            OnChangeResource(Pilot.Resources[(long)value]);
+        }
+    }
+
+    public bool SubtractAmmunition(PilotResource pilotResource)
+    {
+        long lasers = GetItemsLasers.Count();
+        if (pilotResource.Count >= lasers)
+        {
+            pilotResource.Count -= lasers;
+            OnChangeResource(pilotResource);
+            return true;
+        }
+        return false;
+    }
+
+    private void OnChangeResource(PilotResource pilotResource)
+    {
+        Send(new CommandData()
+        {
+            Command = Commands.ChangeAmmunition,
+            Data = new ChangeAmmunition()
+            {
+                ResourceId = pilotResource.AmmunitionId,
+                Count = pilotResource.Count,
+                SelectedAmmunitionId = (long)Ammunition,
+                SelectedRocketId = (long)Rocket,
+            }
+        });
+    }
+    #endregion
 
 
     #region Damage / ShotDistance
@@ -463,6 +536,12 @@ public class PilotServer : Opponent
 
         if (reward.Scrap > 0)
             Pilot.Scrap += (double)reward.Scrap;
+
+        if (reward.AmmunitionId > 0 && reward.AmmunitionQuantity > 0)
+        {
+            Pilot.Resources[(int)reward.AmmunitionId].Count += (long)reward.AmmunitionQuantity;
+            OnChangeResource(Pilot.Resources[(int)reward.AmmunitionId]);
+        }
 
         if (reward.Items != null && reward.Items.Count > 0)
         {
@@ -543,6 +622,7 @@ public class PilotServer : Opponent
         pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
         pilot.Items = await Database.GetPilotItems(pilot.Id);
         pilot.Resources = await Database.GetPilotResources(pilot.Id);
+        pilot.ServerResources = Server.ServerResources;
 
         return pilot;
     }

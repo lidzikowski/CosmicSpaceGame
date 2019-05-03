@@ -48,6 +48,7 @@ public class ToolTip : MonoBehaviour
             {
                 ItemNameText.text = PilotResource.ColumnName;
                 ItemTypeText.text = GameSettings.UserLanguage.RESOURCE;
+                FindLanguageToProperties(Client.Pilot.ServerResources[PilotResource.AmmunitionId], Property);
                 Property(GameSettings.UserLanguage.QUANTITY, PilotResource.Count);
             }
 
@@ -169,6 +170,34 @@ public class ToolTip : MonoBehaviour
 
                 case ItemProperty.RequiredLevel:
                     language = GameSettings.UserLanguage.REQUIRED_LEVEL;
+                    break;
+
+                case ItemProperty.MultiplierPlayer:
+                case ItemProperty.MultiplierEnemy:
+                    if (duplicateLaserDamage)
+                        continue;
+
+                    if (shopItem.ItemDescription.ContainsKey(ItemProperty.MultiplierPlayer) && shopItem.ItemDescription.ContainsKey(ItemProperty.MultiplierEnemy) && shopItem.ItemDescription[ItemProperty.MultiplierPlayer].Equals(shopItem.ItemDescription[ItemProperty.MultiplierEnemy]))
+                    {
+                        language = GameSettings.UserLanguage.MULTIPLIER;
+                        duplicateLaserDamage = true;
+                    }
+                    else
+                    {
+                        if (item.Key == ItemProperty.MultiplierPlayer)
+                            language = GameSettings.UserLanguage.MULTIPLIER_PLAYER;
+                        else
+                            language = GameSettings.UserLanguage.MULTIPLIER_ENEMY;
+                    }
+                    break;
+
+                case ItemProperty.IsAmmunition:
+                    language = GameSettings.UserLanguage.IS_AMMO;
+                    value = (bool)value ? GameSettings.UserLanguage.IS_AMMO_LASER : GameSettings.UserLanguage.IS_AMMO_ROCKET;
+                    break;
+
+                case ItemProperty.BaseDamage:
+                    language = GameSettings.UserLanguage.BASE_DAMAGE;
                     break;
             }
 

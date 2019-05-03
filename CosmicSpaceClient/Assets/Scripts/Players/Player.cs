@@ -44,11 +44,11 @@ public class Player : MonoBehaviour
         LoadExplosions();
         LoadBlasters();
 
-        #if DEBUG
+#if DEBUG
         //DebugMode = true;
-        #endif
+#endif
     }
-    
+
     private void Update()
     {
         if (Client.Pilot == null || LocalShipController == null)
@@ -56,10 +56,10 @@ public class Player : MonoBehaviour
 
         MouseControl();
         KeyboardControl();
-        
+
         PlayerNewPosition();
     }
-    
+
     #region Mouse / Keyboard
     public static Vector2 TargetPosition;
     float timer = 0;
@@ -119,9 +119,15 @@ public class Player : MonoBehaviour
 
     private void KeyboardControl()
     {
-        if(Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+        if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
         {
-            if(Client.Pilot.Items.Where(o=>o.IsEquipped).Count() == 0)
+            if (Client.Pilot.Resources[Client.Pilot.AmmunitionId].Count < Client.Pilot.Items.Where(o => o.Item.ItemType == ItemTypes.Laser && o.IsEquipped).Count())
+            {
+                GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.NO_AMMO });
+                return;
+            }
+
+            if (Client.Pilot.Items.Where(o => o.IsEquipped).Count() == 0)
             {
                 GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.NO_EQUIP });
                 return;
@@ -137,19 +143,19 @@ public class Player : MonoBehaviour
             else
                 GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.TARGET_NOT_FOUND });
         }
-        else if(Input.GetKeyDown(KeyCode.J))
+        else if (Input.GetKeyDown(KeyCode.J))
         {
             Portal portal = null;
             foreach (Transform p in PortalTransform.transform)
             {
-                if(Vector2.Distance(LocalShipController.Position, p.position) < 15)
+                if (Vector2.Distance(LocalShipController.Position, p.position) < 15)
                 {
                     portal = p.GetComponent<ClientPortal>().Portal;
                     break;
                 }
             }
 
-            if(portal != null && Client.Pilot.Map.Id == portal.Map.Id)
+            if (portal != null && Client.Pilot.Map.Id == portal.Map.Id)
             {
                 GuiScript.CreateLogMessage(new List<string>() { string.Format(GameSettings.UserLanguage.PORTAL_FOUND, portal.TargetMap.Name) });
 
@@ -166,6 +172,54 @@ public class Player : MonoBehaviour
             else
                 GuiScript.CreateLogMessage(new List<string>() { GameSettings.UserLanguage.PORTAL_NOT_FOUND });
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
+            ChangeAmmunition(100);
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+            ChangeAmmunition(101);
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+            ChangeAmmunition(102);
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+            ChangeAmmunition(103);
+        else if (Input.GetKeyDown(KeyCode.Alpha5))
+            ChangeRocket(104);
+        else if (Input.GetKeyDown(KeyCode.Alpha6))
+            ChangeRocket(105);
+        else if (Input.GetKeyDown(KeyCode.Alpha7))
+            ChangeRocket(106);
+    }
+
+    private void ChangeAmmunition(int key)
+    {
+        if (Client.Pilot.AmmunitionId == key)
+            return;
+
+        SwitchAmmoType(key, Client.Pilot.RocketId);
+    }
+    private void ChangeRocket(int key)
+    {
+        if (Client.Pilot.RocketId == key)
+            return;
+
+        SwitchAmmoType(Client.Pilot.AmmunitionId, key);
+    }
+    private void SwitchAmmoType(long ammunitionId, long rocketId)
+    {
+        if (!Client.Pilot.Resources.ContainsKey(ammunitionId) || !Client.Pilot.Resources.ContainsKey(rocketId))
+            return;
+
+        if (!Client.Pilot.ServerResources.ContainsKey(ammunitionId) || !Client.Pilot.ServerResources.ContainsKey(rocketId))
+            return;
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.ChangeAmmunition,
+            SenderId = Client.Pilot.Id,
+            Data = new ChangeAmmunition()
+            {
+                SelectedAmmunitionId = ammunitionId,
+                SelectedRocketId = rocketId
+            }
+        });
     }
     #endregion
 
@@ -415,7 +469,12 @@ public class Player : MonoBehaviour
 
         fromShipLogic.TargetGameObject = toShipLogic.gameObject;
         fromShipLogic.Attack = true;
-        fromShipLogic.ShotToTarget(takeDamage.Damage, BlastersGameObject[Random.Range(0, BlastersGameObject.Count - 1)]);
+
+        int blasterId = takeDamage.AmmunitionId - 100;
+        if (blasterId < BlastersGameObject.Count)
+            fromShipLogic.ShotToTarget(takeDamage.Damage, BlastersGameObject[blasterId]);
+        else
+            Debug.Log($"Brak lasera: {blasterId}");
     }
 
     public void SomeoneDead(SomeoneDead someoneDead)
@@ -478,6 +537,12 @@ public class Player : MonoBehaviour
             case RewardReasons.KillEnemy:
                 messages.Add(string.Format(GameSettings.UserLanguage.DEFEATED_ENEMY, reward.Data));
                 break;
+            case RewardReasons.SellItem:
+                messages.Add(string.Format(GameSettings.UserLanguage.ITEM_SOLD, reward.Data));
+                break;
+            case RewardReasons.BuyItem:
+                messages.Add(string.Format(GameSettings.UserLanguage.ITEM_PURCHASED, reward.Data));
+                break;
         }
 
         if (reward.Experience != null)
@@ -495,7 +560,12 @@ public class Player : MonoBehaviour
             Client.Pilot.Scrap += (double)reward.Scrap;
             messages.Add($"Scrap {reward.Scrap}");
         }
-        if(reward.Items?.Count > 0)
+        if (reward.AmmunitionId != null)
+        {
+            messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_RESOURCE, reward.AmmunitionId, reward.AmmunitionQuantity));
+        }
+
+        if (reward.Items?.Count > 0)
         {
             foreach (ItemPilot item in reward.PilotItems)
             {

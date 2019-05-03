@@ -16,7 +16,7 @@ public class Server : MonoBehaviour
 
     public static Dictionary<long, Ship> Ships;
     public static Dictionary<long, Map> Maps;
-    public static Dictionary<long, Ammunition> Ammunitions;
+    public static Dictionary<long, Ammunition> ServerResources;
     public static Dictionary<long, Rocket> Rockets;
     public static Dictionary<long, Enemy> Enemies;
     public static Dictionary<long, Item> Items;
@@ -49,7 +49,7 @@ public class Server : MonoBehaviour
 
         Maps = await Database.GetMaps();
 
-        Ammunitions = await Database.GetAmmunitions();
+        ServerResources = await Database.GetAmmunitions();
 
         Rockets = await Database.GetRockets();
 

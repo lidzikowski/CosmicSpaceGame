@@ -7,9 +7,9 @@ namespace CosmicSpaceCommunication.Game.Player
     [Serializable]
     public class PilotResource
     {
-        public int Index { get; set; }
+        public long AmmunitionId { get; set; }
         public string ColumnName { get; set; }
-        public ulong Count { get; set; }
+        public long Count { get; set; }
 
         public static List<PilotResource> GetPilotResource(DataRow row)
         {
@@ -18,9 +18,9 @@ namespace CosmicSpaceCommunication.Game.Player
             {
                 pilotResources.Add(new PilotResource()
                 {
-                    Index = i,
+                    AmmunitionId = 99 + i,
                     ColumnName = row.Table.Columns[i].ColumnName,
-                    Count = ConvertRow.Row<ulong>(row[row.Table.Columns[i].ColumnName]),
+                    Count = ConvertRow.Row<long>(row[row.Table.Columns[i].ColumnName]),
                 });
             }
             return pilotResources;

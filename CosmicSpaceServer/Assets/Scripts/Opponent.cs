@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Enemy;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Enemy;
+using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
@@ -259,8 +260,8 @@ public abstract class Opponent
     #endregion
 
     #region Ammunition / Rocket
-    public virtual int? Ammunition { get; set; }
-    public virtual int? Rocket { get; set; }
+    public virtual long? Ammunition { get; set; }
+    public virtual long? Rocket { get; set; }
     #endregion
 
     #region Position / NewPosition
@@ -506,7 +507,7 @@ public abstract class Opponent
                 SelectedAmmunition = Ammunition,
                 SelectedRocket = Rocket
             }
-        });
+        }, true);
     }
     #endregion
 
@@ -602,10 +603,17 @@ public abstract class Opponent
                 {
                     Id = Reward.Id,
                     Items = Reward.Items,
-                    Experience = (ulong)Mathf.CeilToInt((long)Reward.Experience / devide),
-                    Metal = (ulong)Mathf.CeilToInt((long)Reward.Metal / devide),
-                    Scrap = (ulong)Mathf.CeilToInt((long)Reward.Scrap / devide)
+                    AmmunitionId = Reward.AmmunitionId,
                 };
+
+                if (Reward.Experience > 0)
+                    reward.Experience = (ulong)Mathf.CeilToInt((long)Reward.Experience / devide);
+                if (Reward.Metal > 0)
+                    reward.Metal = (ulong)Mathf.CeilToInt((long)Reward.Metal / devide);
+                if (Reward.Scrap > 0)
+                    reward.Scrap = (ulong)Mathf.CeilToInt((long)Reward.Scrap / devide);
+                if (Reward.AmmunitionQuantity > 0)
+                    reward.AmmunitionQuantity = Mathf.CeilToInt((long)Reward.AmmunitionQuantity / devide);
             }
             else
                 reward = Reward;
@@ -660,7 +668,36 @@ public abstract class Opponent
                 {
                     if (Ammunition != null)
                     {
-                        Target.OnTakeDamage(this, RandomDamage(Target.IsPlayer ? DamagePvp : DamagePve), (int)Ammunition, true);
+                        if (!Server.ServerResources.ContainsKey((long)Ammunition))
+                        {
+                            Attack = false;
+                            Ammunition = 100;
+                            return;
+                        }
+                        Ammunition ammunition = Server.ServerResources[(long)Ammunition];
+
+                        long damage = DamagePve;
+
+                        if (IsPlayer)
+                        {
+                            if(!(this as PilotServer).Pilot.Resources.ContainsKey(ammunition.Id))
+                            {
+                                Attack = false;
+                                (this as PilotServer).Pilot.AmmunitionId = 100;
+                                Debug.Log("Brak zaznaczonego zasobu u gracza.");
+                                return;
+                            }
+
+                            if (!(this as PilotServer).SubtractAmmunition((this as PilotServer).Pilot.Resources[ammunition.Id]))
+                            {
+                                Attack = false;
+                                return;
+                            }
+
+                            damage = (long)(Target.IsPlayer ? (ammunition.MultiplierPlayer * DamagePvp) : (ammunition.MultiplierEnemy * DamagePve));
+                        }
+
+                        Target.OnTakeDamage(this, RandomDamage(damage), (int)Ammunition, true);
                     }
                 }
             }

@@ -22,6 +22,8 @@ namespace CosmicSpaceCommunication.Game.Resources
                 Metal = reward.Metal,
                 Scrap = reward.Scrap,
                 Items = reward.Items.ToList(),
+                AmmunitionId = reward.AmmunitionId,
+                AmmunitionQuantity = reward.AmmunitionQuantity,
                 Reason = reason,
                 Data = data,
             };

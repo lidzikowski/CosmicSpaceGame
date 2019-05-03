@@ -64,11 +64,11 @@ public class ItemContainer : MonoBehaviour
                 ItemHandler itemHandler = go.GetComponent<ItemHandler>();
                 itemHandler.ItemContainer = transform;
                 itemHandler.transform.localPosition = Vector3.zero;
-                itemHandler.ItemPilot.IsEquipped = HangarType != HangarWindow.HangarPanels.Warehouse;
 
                 if(itemGameObject is ItemPilot itemPilot)
                 {
                     ApplyItemPilot(itemHandler, itemPilot);
+                    itemHandler.ItemPilot.IsEquipped = HangarType != HangarWindow.HangarPanels.Warehouse;
                 }
                 else if (itemGameObject is PilotResource pilotResource)
                 {

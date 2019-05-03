@@ -20,13 +20,16 @@ namespace CosmicSpaceCommunication.Game.Player
         public double Metal { get; set; }
         public long Hitpoints { get; set; }
         public long Shields { get; set; }
+        public long AmmunitionId { get; set; }
+        public long RocketId { get; set; }
         public bool IsDead { get; set; }
         public string KillerBy { get; set; }
 
 
 
-        public List<PilotResource> Resources { get; set; }
+        public Dictionary<long, PilotResource> Resources { get; set; }
         public List<ItemPilot> Items { get; set; }
+        public Dictionary<long, Ammunition> ServerResources { get; set; }
 
 
 
@@ -50,6 +53,8 @@ namespace CosmicSpaceCommunication.Game.Player
                 Metal = ConvertRow.Row<double>(row["metal"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
+                AmmunitionId = ConvertRow.Row<int>(row["ammunitionid"]),
+                RocketId = ConvertRow.Row<int>(row["rocketid"]),
                 IsDead = ConvertRow.Row<bool>(row["isdead"]),
                 KillerBy = ConvertRow.Row<string>(row["killerby"]),
             };

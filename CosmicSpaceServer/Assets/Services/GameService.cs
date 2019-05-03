@@ -203,7 +203,7 @@ public class GameService : WebSocket
                         Data = new ShopItems()
                         {
                             Items = Server.Items.Values.ToList(),
-                            Ships = Server.Ships.Values.ToList()
+                            Ships = Server.Ships.Values.ToList(),
                         }
                     });
                 }
@@ -243,6 +243,20 @@ public class GameService : WebSocket
                     else
                         errorStatus = 2;
                 }
+
+
+
+                else if (commandData.Command == Commands.ChangeAmmunition)
+                {
+                    if (commandData.Data is ChangeAmmunition data)
+                    {
+                        Server.Pilots[commandData.SenderId].Ammunition = data.SelectedAmmunitionId;
+                        Server.Pilots[commandData.SenderId].Rocket = data.SelectedRocketId;
+                    }
+                    else
+                        errorStatus = 2;
+                }
+
 
 
 

@@ -25,7 +25,8 @@ public class EnemyServer : Opponent
         Position = position;
         NewPostion = position;
 
-        Ammunition = 1;
+        Ammunition = enemy.AmmunitionId;
+        Rocket = enemy.RocketId;
     }
 
 

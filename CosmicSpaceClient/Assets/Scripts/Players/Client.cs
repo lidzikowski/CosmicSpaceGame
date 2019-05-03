@@ -390,9 +390,9 @@ public class Client : MonoBehaviour
         #region ZAKUP PRZEDMIOTU
         else if (commandData.Command == Commands.BuyShopItem)
         {
-            if(commandData.Data is ShoppingStatus data)
+            if (commandData.Data is ShoppingStatus data)
             {
-                switch(data.Status)
+                switch (data.Status)
                 {
                     case ShopStatus.Error:
                         GuiScript.CreateLogMessage(new List<string> {
@@ -412,11 +412,6 @@ public class Client : MonoBehaviour
                             string.Format(GameSettings.UserLanguage.NEED, data.ShopItem.RequiredLevel),
                         });
                         break;
-                    case ShopStatus.Buy:
-                        GuiScript.CreateLogMessage(new List<string> {
-                            string.Format(GameSettings.UserLanguage.ITEM_PURCHASED, data.ShopItem.Name)
-                        });
-                        break;
                 }
             }
         }
@@ -434,7 +429,7 @@ public class Client : MonoBehaviour
         #endregion
 
 
-        #region ZMIANA STATKU
+        #region SPRZEDAZ PRZEDMIOTU Z EKWIPUNKU
         else if (commandData.Command == Commands.SellEquipmentItem)
         {
             if (commandData.Data is ulong data)
@@ -457,9 +452,26 @@ public class Client : MonoBehaviour
         #endregion
 
 
+        #region ZMIANA AMUNICJI
+        else if (commandData.Command == Commands.ChangeAmmunition)
+        {
+            if (commandData.Data is ChangeAmmunition data)
+            {
+                Pilot.AmmunitionId = data.SelectedAmmunitionId;
+                Pilot.RocketId = data.SelectedRocketId;
+
+                if (Pilot.Resources.ContainsKey(data.ResourceId))
+                    Pilot.Resources[data.ResourceId].Count = data.Count;
+            }
+        }
+        #endregion
 
 
 
+
+
+        else
+            Debug.LogError(commandData.Command);
     }
 
     private void Socket_OnError(object sender, ErrorEventArgs e)

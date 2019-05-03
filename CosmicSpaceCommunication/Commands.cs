@@ -43,6 +43,7 @@ namespace CosmicSpaceCommunication
         BuyShopItem = 391,
         ChangeShip = 392,
 
+        ChangeAmmunition = 400,
 
         ChatMessage = 1000,
         ChatConnected = 1001,

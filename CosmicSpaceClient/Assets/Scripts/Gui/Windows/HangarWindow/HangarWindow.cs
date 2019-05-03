@@ -134,7 +134,7 @@ public class HangarWindow : GameWindow
                 }
                 break;
             case HangarPanels.Resources:
-                foreach (PilotResource resource in Client.Pilot.Resources)
+                foreach (PilotResource resource in Client.Pilot.Resources.Values)
                 {
                     itemContainer.AddResource(resource);
                 }

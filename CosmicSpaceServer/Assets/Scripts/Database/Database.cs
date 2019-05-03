@@ -193,7 +193,7 @@ public class Database
         return null;
     }
 
-    public static async Task<List<PilotResource>> GetPilotResources(ulong userId)
+    public static async Task<Dictionary<long, PilotResource>> GetPilotResources(ulong userId)
     {
         DataTable dt = await ExecuteCommand(Commands.getpilotresources, new Dictionary<string, object>()
         {
@@ -202,7 +202,13 @@ public class Database
 
         if (dt != null && dt.Rows.Count != 0)
         {
-            return PilotResource.GetPilotResource(dt.Rows[0]);
+            List<PilotResource> resources = PilotResource.GetPilotResource(dt.Rows[0]);
+            Dictionary<long, PilotResource> resorcesList = new Dictionary<long, PilotResource>();
+            foreach (PilotResource item in resources)
+            {
+                resorcesList.Add(item.AmmunitionId, item);
+            }
+            return resorcesList;
         }
         return null;
     }
@@ -464,11 +470,13 @@ public class Database
             { "inmetal", pilot.Metal },
             { "inhitpoints", pilot.Hitpoints },
             { "inshields", pilot.Shields },
+            { "inammunitionid", pilot.AmmunitionId },
+            { "inrocketid", pilot.RocketId },
             { "inisdead", pilot.IsDead },
             { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy }
         };
 
-        foreach (PilotResource resource in pilot.Resources)
+        foreach (PilotResource resource in pilot.Resources.Values)
         {
             parameters.Add($"in{resource.ColumnName}", resource.Count);
         }

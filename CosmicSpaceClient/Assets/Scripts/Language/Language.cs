@@ -265,6 +265,36 @@ public class Language
     [XmlElement("QUANTITY")]
     public string QUANTITY { get; set; }
 
+    [XmlElement("ITEM_SOLD")]
+    public string ITEM_SOLD { get; set; }
+
+    [XmlElement("RECEIVE_RESOURCE")]
+    public string RECEIVE_RESOURCE { get; set; }
+
+    [XmlElement("NO_AMMO")]
+    public string NO_AMMO { get; set; }
+
+    [XmlElement("MULTIPLIER")]
+    public string MULTIPLIER { get; set; }
+
+    [XmlElement("MULTIPLIER_PLAYER")]
+    public string MULTIPLIER_PLAYER { get; set; }
+
+    [XmlElement("MULTIPLIER_ENEMY")]
+    public string MULTIPLIER_ENEMY { get; set; }
+
+    [XmlElement("IS_AMMO")]
+    public string IS_AMMO { get; set; }
+
+    [XmlElement("IS_AMMO_LASER")]
+    public string IS_AMMO_LASER { get; set; }
+
+    [XmlElement("IS_AMMO_ROCKET")]
+    public string IS_AMMO_ROCKET { get; set; }
+
+    [XmlElement("BASE_DAMAGE")]
+    public string BASE_DAMAGE { get; set; }
+
 
     #endregion
 }

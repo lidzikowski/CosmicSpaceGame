@@ -17,6 +17,11 @@ namespace CosmicSpaceCommunication.Game.Enemy
         public int ShotDistance { get; set; }
         public bool IsAggressive { get; set; }
 
+        public long? AmmunitionId { get; set; }
+        public long? RocketId { get; set; }
+        public Ammunition Ammunition { get; set; }
+        public Ammunition Rocket { get; set; }
+
         public Reward Reward { get; set; }
         public Prefab Prefab { get; set; }
 
@@ -28,10 +33,14 @@ namespace CosmicSpaceCommunication.Game.Enemy
                 Name = ConvertRow.Row<string>(row["enemyname"]),
                 Hitpoints = ConvertRow.Row<long>(row["hitpoints"]),
                 Shields = ConvertRow.Row<long>(row["shields"]),
-                Speed = ConvertRow.Row<float>(row["speed"]) / 4.0f,
+                Speed = ConvertRow.Row<float>(row["speed"]) / 3.0f,
                 Damage = ConvertRow.Row<long>(row["damage"]),
                 ShotDistance = ConvertRow.Row<int>(row["shotdistance"]),
                 IsAggressive = ConvertRow.Row<bool>(row["isaggressive"]),
+
+                AmmunitionId = ConvertRow.Row<long?>(row["ammunitionid"]),
+                RocketId = ConvertRow.Row<long?>(row["rocketid"]),
+
                 Reward = Reward.GetReward(row),
                 Prefab = new Prefab(row),
             };

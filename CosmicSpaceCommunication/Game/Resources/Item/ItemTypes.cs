@@ -9,5 +9,6 @@ namespace CosmicSpaceCommunication.Game.Resources
         Generator = 2,
         Extra = 3,
         Ship = 10,
+        Ammunition = 15,
     }
 }

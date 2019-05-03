@@ -81,6 +81,21 @@
   <RESOURCES>Resources</RESOURCES>
   <RESOURCE>Resource</RESOURCE>
   <QUANTITY>Quantity</QUANTITY>
+  <ITEM_SOLD>Item sold {0}</ITEM_SOLD>
+  <RECEIVE_RESOURCE>Receive resource {0} ({1})</RECEIVE_RESOURCE>
+  <NO_AMMO>No ammunition.</NO_AMMO>
+  <MULTIPLIER>Multiplier of damage</MULTIPLIER>
+  <MULTIPLIER_PLAYER>Multiplier in Player</MULTIPLIER_PLAYER>
+  <MULTIPLIER_ENEMY>Multiplier in Enemy</MULTIPLIER_ENEMY>
+  <IS_AMMO>Resource type</IS_AMMO>
+  <IS_AMMO_LASER>Laser</IS_AMMO_LASER>
+  <IS_AMMO_ROCKET>Rocket</IS_AMMO_ROCKET>
+  <BASE_DAMAGE>Base damage</BASE_DAMAGE>
+
+
+
+
+
 
 
 

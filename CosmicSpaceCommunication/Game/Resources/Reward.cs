@@ -12,6 +12,8 @@ namespace CosmicSpaceCommunication.Game.Resources
         public ulong? Experience { get; set; }
         public double? Metal { get; set; }
         public double? Scrap { get; set; }
+        public int? AmmunitionId { get; set; }
+        public long? AmmunitionQuantity { get; set; }
 
         public List<ItemReward> Items { get; set; }
 
@@ -25,6 +27,9 @@ namespace CosmicSpaceCommunication.Game.Resources
                 Experience = ConvertRow.Row<ulong?>(row["experience"]),
                 Metal = ConvertRow.Row<double?>(row["metal"]),
                 Scrap = ConvertRow.Row<double?>(row["scrap"]),
+
+                AmmunitionId = ConvertRow.Row<int?>(row["ammunitionid"]),
+                AmmunitionQuantity = ConvertRow.Row<long?>(row["ammunition_quantity"]),
 
                 Items = new List<ItemReward>()
             };

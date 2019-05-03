@@ -83,6 +83,16 @@
   <RESOURCES>Zasoby</RESOURCES>
   <RESOURCE>Zasób</RESOURCE>
   <QUANTITY>Ilość</QUANTITY>
+  <ITEM_SOLD>Sprzedano przedmiot {0}</ITEM_SOLD>
+  <RECEIVE_RESOURCE>Otrzymano zasób {0} ({1})</RECEIVE_RESOURCE>
+  <NO_AMMO>Brak amunicji.</NO_AMMO>
+  <MULTIPLIER>Mnożnik obrażeń</MULTIPLIER>
+  <MULTIPLIER_PLAYER>Mnożnik w Gracza</MULTIPLIER_PLAYER>
+  <MULTIPLIER_ENEMY>Mnożnik w Przeciwnika</MULTIPLIER_ENEMY>
+  <IS_AMMO>Typ zasobu</IS_AMMO>
+  <IS_AMMO_LASER>Laser</IS_AMMO_LASER>
+  <IS_AMMO_ROCKET>Rakieta</IS_AMMO_ROCKET>
+  <BASE_DAMAGE>Bazowe obrażenia</BASE_DAMAGE>
   
   
   
