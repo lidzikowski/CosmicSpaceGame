@@ -296,5 +296,6 @@ public class Language
     public string BASE_DAMAGE { get; set; }
 
 
+
     #endregion
 }

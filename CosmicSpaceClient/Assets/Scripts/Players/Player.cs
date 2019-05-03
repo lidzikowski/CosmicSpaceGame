@@ -560,7 +560,7 @@ public class Player : MonoBehaviour
             Client.Pilot.Scrap += (double)reward.Scrap;
             messages.Add($"Scrap {reward.Scrap}");
         }
-        if (reward.AmmunitionId != null)
+        if (reward.AmmunitionId != null && reward.AmmunitionQuantity > 0)
         {
             messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_RESOURCE, reward.AmmunitionId, reward.AmmunitionQuantity));
         }

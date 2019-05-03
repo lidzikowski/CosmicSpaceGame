@@ -14,12 +14,14 @@ public class ShopWindow : GameWindow
     public Button LasersButton;
     public Button GeneratorsButton;
     public Button ExtrasButton;
+    public Button ResourcesButton;
 
     [Header("Buttons Text")]
     public Text ShipsText;
     public Text LasersText;
     public Text GeneratorsText;
     public Text ExtrasText;
+    public Text ResourcesText;
 
     [Header("Items")]
     public Transform ItemsTransform;
@@ -38,6 +40,8 @@ public class ShopWindow : GameWindow
     public Text BuyScrapText;
     public Button BuyMetalButton;
     public Text BuyMetalText;
+    public InputField QuantityInputField;
+    public Text QuantityText;
 
 
 
@@ -53,11 +57,15 @@ public class ShopWindow : GameWindow
         ButtonListener(LasersButton, () => Player.DestroyChilds(ItemsTransform));
         ButtonListener(GeneratorsButton, () => Player.DestroyChilds(ItemsTransform));
         ButtonListener(ExtrasButton, () => Player.DestroyChilds(ItemsTransform));
+        ButtonListener(ResourcesButton, () => Player.DestroyChilds(ItemsTransform));
 
         ButtonListener(ShipsButton, ShipsButton_Clicked);
         ButtonListener(LasersButton, () => Buttons_Clicked(ItemTypes.Laser));
         ButtonListener(GeneratorsButton, () => Buttons_Clicked(ItemTypes.Generator));
         ButtonListener(ExtrasButton, () => Buttons_Clicked(ItemTypes.Extra));
+        ButtonListener(ResourcesButton, () => Buttons_Clicked(ItemTypes.Ammunition));
+
+        QuantityInputField.onValueChanged.AddListener((s) => QuantityInputField_Changed(s));
 
         ResourcesUI.Instance.LoadImages();
 
@@ -68,6 +76,33 @@ public class ShopWindow : GameWindow
     public override void Refresh()
     {
         base.Refresh();
+
+        if (LastShowShopItem == null)
+            return;
+
+        if (LastShowShopItem.ScrapPrice > 0)
+        {
+            SetText(BuyScrapText, $"{GameSettings.UserLanguage.BUY_FOR} Scrap{System.Environment.NewLine}{LastShowShopItem.ScrapPrice * long.Parse(QuantityInputField.text)}");
+            BuyScrapButton.interactable = true;
+            ButtonListener(BuyScrapButton, () => BuyItem(LastShowShopItem, true), true);
+        }
+        else
+        {
+            SetText(BuyScrapText, GameSettings.UserLanguage.UNAVAILABLE);
+            BuyScrapButton.interactable = false;
+        }
+
+        if (LastShowShopItem.MetalPrice > 0)
+        {
+            SetText(BuyMetalText, $"{GameSettings.UserLanguage.BUY_FOR} Metal{System.Environment.NewLine}{LastShowShopItem.MetalPrice * long.Parse(QuantityInputField.text)}");
+            BuyMetalButton.interactable = true;
+            ButtonListener(BuyMetalButton, () => BuyItem(LastShowShopItem, false), true);
+        }
+        else
+        {
+            SetText(BuyMetalText, GameSettings.UserLanguage.UNAVAILABLE);
+            BuyMetalButton.interactable = false;
+        }
     }
 
     public override void ChangeLanguage()
@@ -78,6 +113,8 @@ public class ShopWindow : GameWindow
         SetText(LasersText, GameSettings.UserLanguage.LASERS);
         SetText(GeneratorsText, GameSettings.UserLanguage.GENERATORS);
         SetText(ExtrasText, GameSettings.UserLanguage.EXTRAS);
+        SetText(ResourcesText, GameSettings.UserLanguage.RESOURCES);
+        SetText(QuantityText, GameSettings.UserLanguage.QUANTITY);
     }
 
 
@@ -94,6 +131,16 @@ public class ShopWindow : GameWindow
     private void Buttons_Clicked(ItemTypes itemType)
     {
         ShowInformation(null);
+
+        if(itemType == ItemTypes.Ammunition)
+        {
+            foreach (IShopItem item in Client.Pilot.ServerResources.Values)
+            {
+                CreateItem(item);
+            }
+            return;
+        }
+
         foreach (IShopItem item in ServerItems.Items.Where(o => o.ItemType == itemType).OrderBy(o => o.RequiredLevel).ThenBy(o => o.Prefab.PrefabName))
         {
             CreateItem(item);
@@ -144,29 +191,10 @@ public class ShopWindow : GameWindow
             Debug.Log($"Brak prefabu: {item.Prefab.PrefabTypeName} {item.Prefab.PrefabName}");
         }
 
-        if (item.ScrapPrice > 0)
-        {
-            SetText(BuyScrapText, $"{GameSettings.UserLanguage.BUY_FOR} Scrap{System.Environment.NewLine}{item.ScrapPrice}");
-            BuyScrapButton.interactable = true;
-            ButtonListener(BuyScrapButton, () => BuyItem(item, true), true);
-        }
-        else
-        {
-            SetText(BuyScrapText, GameSettings.UserLanguage.UNAVAILABLE);
-            BuyScrapButton.interactable = false;
-        }
+        QuantityInputField.text = item.ItemType == ItemTypes.Ammunition ? "1000" : "1";
+        QuantityInputField.interactable = item.ItemType != ItemTypes.Ship;
 
-        if (item.MetalPrice > 0)
-        {
-            SetText(BuyMetalText, $"{GameSettings.UserLanguage.BUY_FOR} Metal{System.Environment.NewLine}{item.MetalPrice}");
-            BuyMetalButton.interactable = true;
-            ButtonListener(BuyMetalButton, () => BuyItem(item, false), true);
-        }
-        else
-        {
-            SetText(BuyMetalText, GameSettings.UserLanguage.UNAVAILABLE);
-            BuyMetalButton.interactable = false;
-        }
+        Refresh();
 
         ToolTip.FindLanguageToProperties(item, Property);
     }
@@ -211,6 +239,9 @@ public class ShopWindow : GameWindow
         if (!status)
             return;
 
+        if (!int.TryParse(QuantityInputField.text, out int quantity))
+            return;
+
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.BuyShopItem,
@@ -220,9 +251,20 @@ public class ShopWindow : GameWindow
                 ItemType = item.ItemType,
                 ItemId = item.Id,
                 Scrap = scrap,
-                Count = 1
+                Count = quantity
             }
         });
+    }
+
+    private void QuantityInputField_Changed(string s)
+    {
+        if (string.IsNullOrWhiteSpace(s) || !int.TryParse(s, out int number) || number < 1)
+        {
+            QuantityInputField.text = "1";
+            return;
+        }
+
+        Refresh();
     }
 
     private void OnDisable()

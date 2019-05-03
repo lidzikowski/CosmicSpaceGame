@@ -72,7 +72,7 @@ public class PilotServer : Opponent
 
         if (buyItem.ItemType == ItemTypes.Ship)
         {
-            if (!Server.Ships.ContainsKey(buyItem.ItemId) || buyItem.Count <= 0)
+            if (!Server.Ships.ContainsKey(buyItem.ItemId) || buyItem.Count != 1)
                 status = ShopStatus.Error;
             else
             {
@@ -80,9 +80,19 @@ public class PilotServer : Opponent
                 status = BuyItem(item, buyItem);
             }
         }
+        else if(buyItem.ItemType == ItemTypes.Ammunition)
+        {
+            if (!Server.ServerResources.ContainsKey(buyItem.ItemId) || buyItem.Count < 1)
+                status = ShopStatus.Error;
+            else
+            {
+                item = Server.ServerResources[buyItem.ItemId];
+                status = BuyItem(item, buyItem);
+            }
+        }
         else
         {
-            if (!Server.Items.ContainsKey(buyItem.ItemId) || buyItem.Count <= 0)
+            if (!Server.Items.ContainsKey(buyItem.ItemId) || buyItem.Count < 1)
                 status = ShopStatus.Error;
             else
             {
@@ -140,6 +150,8 @@ public class PilotServer : Opponent
                     SaveItems(it, buyItem.Count);
                 else if (item is Ship ship)
                     SaveShip(ship);
+                else if (item is Ammunition ammunition)
+                    SaveAmmunition(ammunition, buyItem.Count);
 
                 return ShopStatus.Buy;
             }
@@ -162,6 +174,8 @@ public class PilotServer : Opponent
                     SaveItems(it, buyItem.Count);
                 else if (item is Ship ship)
                     SaveShip(ship);
+                else if (item is Ammunition ammunition)
+                    SaveAmmunition(ammunition, buyItem.Count);
 
                 return ShopStatus.Buy;
             }
@@ -196,6 +210,12 @@ public class PilotServer : Opponent
         }, true);
 
         CalculateStatistics();
+    }
+
+    private void SaveAmmunition(Ammunition ammunition, int count)
+    {
+        Pilot.Resources[ammunition.Id].Count += count;
+        OnChangeResource(Pilot.Resources[ammunition.Id]);
     }
     #endregion
 
@@ -542,6 +562,8 @@ public class PilotServer : Opponent
             Pilot.Resources[(int)reward.AmmunitionId].Count += (long)reward.AmmunitionQuantity;
             OnChangeResource(Pilot.Resources[(int)reward.AmmunitionId]);
         }
+        else
+            reward.AmmunitionId = null;
 
         if (reward.Items != null && reward.Items.Count > 0)
         {
