@@ -467,6 +467,18 @@ public class Client : MonoBehaviour
         #endregion
 
 
+        #region POBRANIE GALAKTYKI
+        else if (commandData.Command == Commands.GetAllMaps)
+        {
+            if (commandData.Data is Dictionary<long, Map> data)
+            {
+                (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.GalacticWindow);
+                GalacticWindow.ServerMaps = data;
+            }
+        }
+        #endregion
+
+
 
 
 

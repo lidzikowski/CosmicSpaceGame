@@ -295,6 +295,9 @@ public class Language
     [XmlElement("BASE_DAMAGE")]
     public string BASE_DAMAGE { get; set; }
 
+    [XmlElement("GALAXY")]
+    public string GALAXY { get; set; }
+
 
 
     #endregion

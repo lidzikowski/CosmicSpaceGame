@@ -53,6 +53,7 @@ public class UserInterfaceWindow : GameWindow
     [Header("Menu Buttons")]
     public Button HangerButton;
     public Button ShopButton;
+    public Button GalacticButton;
     public Button MissionButton;
     public Button MapButton;
     public Button ChatButton;
@@ -77,6 +78,8 @@ public class UserInterfaceWindow : GameWindow
         ButtonListener(HangerButton, HangerButton_Clicked);
 
         ButtonListener(ShopButton, ShopButton_Clicked);
+
+        ButtonListener(GalacticButton, GalacticButton_Clicked);
 
         ButtonListener(MissionButton, () => SetActiveWindow(WindowTypes.MissionWindow));
 
@@ -527,7 +530,29 @@ public class UserInterfaceWindow : GameWindow
             SenderId = Client.Pilot.Id
         });
     }
-    
+
+    private void GalacticButton_Clicked()
+    {
+        if (GuiScript.Windows[WindowTypes.GalacticWindow].Active)
+        {
+            GuiScript.CloseWindow(WindowTypes.GalacticWindow);
+            RefreshButtonStatus();
+            return;
+        }
+
+        if (GalacticWindow.ServerMaps?.Count > 0)
+        {
+            SetActiveWindow(WindowTypes.GalacticWindow);
+            return;
+        }
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.GetAllMaps,
+            SenderId = Client.Pilot.Id
+        });
+    }
+
 
 
     public void SetActiveWindow(WindowTypes windowType)

@@ -86,6 +86,9 @@ public abstract class GameWindow : MonoBehaviour
             case WindowTypes.ItemInformationWindow:
                 TitleWindow.text = GameSettings.UserLanguage.ITEM_INFO;
                 break;
+            case WindowTypes.GalacticWindow:
+                TitleWindow.text = GameSettings.UserLanguage.GALAXY;
+                break;
         }
 
         TitleWindow.fontSize = 24;

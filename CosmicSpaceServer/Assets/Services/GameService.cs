@@ -259,6 +259,17 @@ public class GameService : WebSocket
 
 
 
+                else if (commandData.Command == Commands.GetAllMaps)
+                {
+                    Server.Pilots[commandData.SenderId].Send(new CommandData()
+                    {
+                        Command = Commands.GetAllMaps,
+                        Data = Server.Maps
+                    });
+                }
+
+
+
 
 
                 else

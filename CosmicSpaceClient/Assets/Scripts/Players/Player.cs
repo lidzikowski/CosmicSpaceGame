@@ -243,7 +243,7 @@ public class Player : MonoBehaviour
 
         GuiScript.CreateLogMessage(new List<string>() { "Hello world!" });
 
-        CreateBackground(Client.Pilot.Map);
+        CreateBackground(Client.Pilot.Map, BackgroundTransform, PortalTransform, StarsGameObject);
     }
 
     public void InitPlayer(PlayerJoin player)
@@ -323,15 +323,15 @@ public class Player : MonoBehaviour
 
 
 
-    public void CreateBackground(Map map)
+    public static void CreateBackground(Map map, Transform backgroundTransform, Transform portalTransform, GameObject starsPrefab)
     {
         #region Background
-        DestroyChilds(BackgroundTransform);
+        DestroyChilds(backgroundTransform);
 
         // Create stars - settings
-        if (true)
+        if (true && starsPrefab != null)
         {
-            GameObject stars = Instantiate(StarsGameObject, BackgroundTransform);
+            GameObject stars = Instantiate(starsPrefab, backgroundTransform);
             #pragma warning disable CS0618 // Type or member is obsolete
             stars.GetComponent<ParticleSystem>().maxParticles = 2000;
             #pragma warning restore CS0618 // Type or member is obsolete
@@ -340,16 +340,17 @@ public class Player : MonoBehaviour
         // Create background - settings
         if (true)
         {
-            Instantiate(Resources.Load<GameObject>($"Maps/{map.Name}"), BackgroundTransform);
+            GameObject go = Instantiate(Resources.Load<GameObject>($"Maps/{map.Name}"), backgroundTransform);
+            go.name = map.Name;
         }
         #endregion
 
         #region Portals
-        DestroyChilds(PortalTransform);
+        DestroyChilds(portalTransform);
 
         foreach (Portal portal in map.Portals)
         {
-            GameObject p = Instantiate(Resources.Load<GameObject>($"{portal.PrefabTypeName}/{portal.PrefabName}"), PortalTransform);
+            GameObject p = Instantiate(Resources.Load<GameObject>($"{portal.PrefabTypeName}/{portal.PrefabName}"), portalTransform);
 
             p.AddComponent<ClientPortal>().Portal = portal;
         }
@@ -595,7 +596,7 @@ public class Player : MonoBehaviour
 
         LocalShipController.Position = LocalShipController.TargetPosition = TargetPosition = new Vector2(pilot.PositionX, pilot.PositionY);
 
-        CreateBackground(pilot.Map);
+        CreateBackground(pilot.Map, BackgroundTransform, PortalTransform, StarsGameObject);
     }
 
     public void SafeZone(SafeZone safeZone)

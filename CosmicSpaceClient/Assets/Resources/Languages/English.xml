@@ -91,10 +91,13 @@
   <IS_AMMO_LASER>Laser</IS_AMMO_LASER>
   <IS_AMMO_ROCKET>Rocket</IS_AMMO_ROCKET>
   <BASE_DAMAGE>Base damage</BASE_DAMAGE>
+  <GALAXY>Map of the galaxy</GALAXY>
   
   
   
   
   
   
+
+
 </Language>

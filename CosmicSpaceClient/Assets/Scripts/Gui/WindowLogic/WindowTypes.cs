@@ -4,6 +4,7 @@
     UserInterface,
     RepairShip,
     HangarWindow,
+    GalacticWindow,
     MissionWindow,
     SettingsWindow,
     QuitWindow,

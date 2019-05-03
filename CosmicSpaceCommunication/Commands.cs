@@ -34,6 +34,7 @@ namespace CosmicSpaceCommunication
 
         ChangeMap = 360,
         SafeZone = 361,
+        GetAllMaps = 362,
 
         GetEquipment = 380,
         ChangeEquipment = 381,
@@ -45,11 +46,14 @@ namespace CosmicSpaceCommunication
 
         ChangeAmmunition = 400,
 
-        ChatMessage = 1000,
-        ChatConnected = 1001,
-        ChatDisconnected = 1002,
-        ChatUserNotFound = 1003,
 
+
+
+
+        ChatMessage = 10000,
+        ChatConnected = 10001,
+        ChatDisconnected = 10002,
+        ChatUserNotFound = 10003,
 
 
     }
