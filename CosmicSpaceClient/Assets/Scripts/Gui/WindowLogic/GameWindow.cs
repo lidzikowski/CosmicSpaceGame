@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -60,6 +61,14 @@ public abstract class GameWindow : MonoBehaviour
 
         label.text = message;
     }
+    public static void SetText(TextMeshProUGUI label, string message)
+    {
+        if (label == null)
+            return;
+
+        label.text = message;
+    }
+
 
     public virtual void ChangeLanguage()
     {

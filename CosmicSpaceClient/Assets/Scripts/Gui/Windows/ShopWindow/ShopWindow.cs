@@ -160,6 +160,7 @@ public class ShopWindow : GameWindow
         go.GetComponent<ShopItem>().OnShowInformation = ShowInformation;
     }
 
+
     IShopItem LastShowShopItem = null;
 
     private void ShowInformation(IShopItem item)
@@ -269,6 +270,7 @@ public class ShopWindow : GameWindow
 
     private void OnDisable()
     {
+        ResourcesUI.Instance.RotateItem(null);
         ResourcesUI.Instance.Dispose();
     }
 }

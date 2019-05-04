@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class UserInterfaceWindow : GameWindow
 {
@@ -28,12 +29,12 @@ public class UserInterfaceWindow : GameWindow
     }
 
     [Header("User Panel")]
-    public Text UserText;
-    public Text MetalText;
-    public Text ScrapText;
+    public TextMeshProUGUI UserText;
+    public TextMeshProUGUI MetalText;
+    public TextMeshProUGUI ScrapText;
 
     [Header("Mini Map")]
-    public Text MapPositionText;
+    public TextMeshProUGUI MapPositionText;
     public GameObject MapGameObject;
     public Button CloseMapWindowButton;
     public GameObject MapBackgroundGameObject;
@@ -121,8 +122,10 @@ public class UserInterfaceWindow : GameWindow
 
     public override void ChangeLanguage()
     {
-
+        base.ChangeLanguage();
     }
+
+
 
     public void CreateLogMessage(string message, float time)
     {
@@ -480,23 +483,6 @@ public class UserInterfaceWindow : GameWindow
         SetActiveWindow(ChatGameObject, ChatButton);
     }
 
-    private void SetActiveWindow(GameObject windowGameObject, Button windowButton)
-    {
-        bool status = !windowGameObject.activeSelf;
-        windowGameObject?.SetActive(status);
-
-        if (windowButton != null)
-            SetActiveButton(windowButton, status);
-    }
-
-    private void SetActiveButton(Button windowButton, bool status)
-    {
-        if (windowButton == null)
-            return;
-
-        windowButton.gameObject.GetComponent<Image>().sprite = status ? ActiveSprite : DisactiveSprite;
-    }
-
 
 
     private void HangerButton_Clicked()
@@ -555,6 +541,26 @@ public class UserInterfaceWindow : GameWindow
 
 
 
+
+    private void SetActiveWindow(GameObject windowGameObject, Button windowButton)
+    {
+        bool status = !windowGameObject.activeSelf;
+        windowGameObject?.SetActive(status);
+
+        if (windowButton != null)
+            SetActiveButton(windowButton, status);
+    }
+
+    private void SetActiveButton(Button windowButton, bool status)
+    {
+        if (windowButton == null)
+            return;
+
+        Color color = windowButton.gameObject.GetComponent<Image>().color;
+        color.a = status ? 1 : 0.4f;
+        windowButton.gameObject.GetComponent<Image>().color = color;
+    }
+
     public void SetActiveWindow(WindowTypes windowType)
     {
         foreach (KeyValuePair<WindowTypes, WindowInstance> window in GuiScript.Windows.Where(o => o.Key != windowType && o.Key != WindowTypes.UserInterface))
@@ -573,12 +579,14 @@ public class UserInterfaceWindow : GameWindow
 
     private void RefreshButtonStatus()
     {
-        SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
-        SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
         SetActiveButton(HangerButton, GuiScript.Windows[WindowTypes.HangarWindow].Active);
         SetActiveButton(ShopButton, GuiScript.Windows[WindowTypes.ShopWindow].Active);
+        SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
+        SetActiveButton(GalacticButton, GuiScript.Windows[WindowTypes.GalacticWindow].Active);
+        SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
         SetActiveButton(QuitButton, GuiScript.Windows[WindowTypes.QuitWindow].Active);
     }
+    
 
 
     public void ClickMap(PointerEventData data)

@@ -42,6 +42,48 @@ public class ResourcesUI : MonoBehaviour
             Destroy(t.gameObject);
     }
 
+
+
+
+    #region SHOP
+    private void FixedUpdate()
+    {
+        if (RotatingGameObject != null)
+            RotatingGameObject.transform.Rotate(0, 0.5f, 0);
+    }
+
+    private GameObject RotatingGameObject;
+    public void RotateItem(string key)
+    {
+        if (key == null)
+        {
+            if (RotatingGameObject != null)
+            {
+                RotatingGameObject.transform.rotation = new Quaternion();
+                RotatingGameObject.SetActive(false);
+                RotatingGameObject = null;
+            }
+            ResourceCamera.SetActive(false);
+            return;
+        }
+
+        Transform child = transform.Find(key);
+        if (child == null)
+            return;
+
+        if (RotatingGameObject != null)
+        {
+            RotatingGameObject.transform.rotation = new Quaternion();
+            RotatingGameObject.SetActive(false);
+        }
+        RotatingGameObject = child.gameObject;
+        RotatingGameObject.SetActive(true);
+
+        ResourceCamera.transform.position = new Vector3(RotatingGameObject.transform.position.x - 9, RotatingGameObject.transform.position.y + 12, RotatingGameObject.transform.position.z + 10);
+
+        ResourceCamera.SetActive(true);
+    }
+
     public void LoadImages()
     {
         if (DisposeCoroutine?.Current != null && ShipSprites.Count > 0)
@@ -70,42 +112,76 @@ public class ResourcesUI : MonoBehaviour
             texture.ReadPixels(new Rect(0, 0, SpriteSize, SpriteSize), 0, 0);
             texture.alphaIsTransparency = true;
             texture.Apply();
-            ShipSprites.Add(t.name, Sprite.Create(texture, new Rect(0, 0, SpriteSize, SpriteSize), new Vector2(0.5f, 0.5f), 100.0f));
+            ShipSprites.Add(t.name, Sprite.Create(texture, new Rect(0, 0, SpriteSize, SpriteSize), new Vector2(1,1), 100.0f));
 
             t.gameObject.SetActive(false);
         }
         ResourceCamera.SetActive(false);
     }
-    
+
+    public void Dispose()
+    {
+        if (DisposeCoroutine?.Current != null)
+        {
+            StopCoroutine(DisposeCoroutine);
+        }
+
+        DisposeCoroutine = DisposeTextures();
+        try
+        {
+            StartCoroutine(DisposeCoroutine);
+        }
+        catch (System.Exception) { }
+    }
+
+    IEnumerator DisposeCoroutine;
+
+    IEnumerator DisposeTextures()
+    {
+        yield return new WaitForSeconds(180);
+        ShipSprites.Clear();
+    }
+    #endregion
+
+
+    #region MAPS
     public IEnumerator LoadMaps(Dictionary<long, Map> maps, GalacticWindow galacticWindow)
     {
-        GalacticSprites.Clear();
-
-        foreach (Transform tr in GalacticTransform)
-            Destroy(tr.gameObject);
-        foreach (Transform tr in PortalsGalacticTransform)
-            Destroy(tr.gameObject);
-
-        GalacticCamera.SetActive(true);
-        foreach (Map map in maps.Values)
+        if (DisposeGalacticCoroutine?.Current != null && GalacticSprites.Count > 0)
         {
-            Player.CreateBackground(map, GalacticTransform, PortalsGalacticTransform, null);
-
-            yield return new WaitForEndOfFrame();
-
-            GalacticCamera.GetComponent<Camera>().Render();
-            Texture2D texture = new Texture2D(GalacticSpriteSize, GalacticSpriteSize, TextureFormat.ARGB32, false);
-            RenderTexture.active = GalacticRenderTexture;
-            texture.ReadPixels(new Rect(0, 0, GalacticSpriteSize, GalacticSpriteSize), 0, 0);
-            texture.Apply();
-            GalacticSprites.Add(map.Name, Sprite.Create(texture, new Rect(0, 0, GalacticSpriteSize, GalacticSpriteSize), new Vector2(0.5f, 0.5f), 100.0f));
+            StopCoroutine(DisposeGalacticCoroutine);
+            DisposeGalacticCoroutine = null;
+        }
+        else
+        {
+            GalacticSprites.Clear();
 
             foreach (Transform tr in GalacticTransform)
                 Destroy(tr.gameObject);
             foreach (Transform tr in PortalsGalacticTransform)
                 Destroy(tr.gameObject);
+
+            GalacticCamera.SetActive(true);
+            foreach (Map map in maps.Values)
+            {
+                Player.CreateBackground(map, GalacticTransform, PortalsGalacticTransform, null);
+
+                yield return new WaitForEndOfFrame();
+
+                GalacticCamera.GetComponent<Camera>().Render();
+                Texture2D texture = new Texture2D(GalacticSpriteSize, GalacticSpriteSize, TextureFormat.ARGB32, false);
+                RenderTexture.active = GalacticRenderTexture;
+                texture.ReadPixels(new Rect(0, 0, GalacticSpriteSize, GalacticSpriteSize), 0, 0);
+                texture.Apply();
+                GalacticSprites.Add(map.Name, Sprite.Create(texture, new Rect(0, 0, GalacticSpriteSize, GalacticSpriteSize), new Vector2(0.5f, 0.5f), 100.0f));
+
+                foreach (Transform tr in GalacticTransform)
+                    Destroy(tr.gameObject);
+                foreach (Transform tr in PortalsGalacticTransform)
+                    Destroy(tr.gameObject);
+            }
+            GalacticCamera.SetActive(false);
         }
-        GalacticCamera.SetActive(false);
 
         float divider = 10.417f;
         float subtract = 48;
@@ -149,69 +225,27 @@ public class ResourcesUI : MonoBehaviour
         }
     }
 
-    public void UnloadMaps()
+    public void DisposeMaps()
     {
-        GalacticSprites.Clear();
-    }
-
-    private void FixedUpdate()
-    {
-        if(RotatingGameObject != null)
-            RotatingGameObject.transform.Rotate(0, 0.5f, 0);
-    }
-
-    private GameObject RotatingGameObject;
-    public void RotateItem(string key)
-    {
-        if (key == null)
+        if (DisposeGalacticCoroutine?.Current != null)
         {
-            if(RotatingGameObject != null)
-            {
-                RotatingGameObject.transform.rotation = new Quaternion();
-                RotatingGameObject.SetActive(false);
-                RotatingGameObject = null;
-            }
-            ResourceCamera.SetActive(false);
-            return;
+            StopCoroutine(DisposeGalacticCoroutine);
         }
 
-        Transform child = transform.Find(key);
-        if (child == null)
-            return;
-
-        if (RotatingGameObject != null)
-        {
-            RotatingGameObject.transform.rotation = new Quaternion();
-            RotatingGameObject.SetActive(false);
-        }
-        RotatingGameObject = child.gameObject;
-        RotatingGameObject.SetActive(true);
-
-        ResourceCamera.transform.position = new Vector3(RotatingGameObject.transform.position.x - 9, RotatingGameObject.transform.position.y + 12, RotatingGameObject.transform.position.z + 10);
-
-        ResourceCamera.SetActive(true);
-    }
-
-    public void Dispose()
-    {
-        if (DisposeCoroutine?.Current != null)
-        {
-            StopCoroutine(DisposeCoroutine);
-        }
-
-        DisposeCoroutine = DisposeTextures();
+        DisposeGalacticCoroutine = DisposeGalactic();
         try
         {
-            StartCoroutine(DisposeCoroutine);
+            StartCoroutine(DisposeGalacticCoroutine);
         }
         catch (System.Exception) { }
     }
 
-    IEnumerator DisposeCoroutine;
+    IEnumerator DisposeGalacticCoroutine;
 
-    IEnumerator DisposeTextures()
+    IEnumerator DisposeGalactic()
     {
-        yield return new WaitForSeconds(60);
-        ShipSprites.Clear();
+        yield return new WaitForSeconds(180);
+        GalacticSprites.Clear();
     }
+    #endregion
 }

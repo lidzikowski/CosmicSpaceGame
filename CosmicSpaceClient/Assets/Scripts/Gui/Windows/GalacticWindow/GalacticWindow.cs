@@ -36,7 +36,6 @@ public class GalacticWindow : GameWindow
 
     private void OnDisable()
     {
-        ServerMaps?.Clear();
-        ResourcesUI.Instance.UnloadMaps();
+        ResourcesUI.Instance.DisposeMaps();
     }
 }

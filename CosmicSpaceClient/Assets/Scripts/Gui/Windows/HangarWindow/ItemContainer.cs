@@ -91,6 +91,8 @@ public class ItemContainer : MonoBehaviour
     private void ApplyPilotResource(ItemHandler itemHandler, PilotResource pilotResource)
     {
         itemHandler.PilotResource = pilotResource;
+        if (ResourcesUI.Instance.ShipSprites.ContainsKey(pilotResource.ColumnName))
+            itemHandler.ItemTexture.sprite = ResourcesUI.Instance.ShipSprites[pilotResource.ColumnName];
     }
 
 
