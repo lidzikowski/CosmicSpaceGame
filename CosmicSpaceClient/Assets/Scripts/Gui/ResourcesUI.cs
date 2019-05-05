@@ -110,7 +110,7 @@ public class ResourcesUI : MonoBehaviour
             Texture2D texture = new Texture2D(SpriteSize, SpriteSize, TextureFormat.ARGB32, false);
             RenderTexture.active = RenderTexture;
             texture.ReadPixels(new Rect(0, 0, SpriteSize, SpriteSize), 0, 0);
-            texture.alphaIsTransparency = true;
+            //texture.alphaIsTransparency = true;
             texture.Apply();
             ShipSprites.Add(t.name, Sprite.Create(texture, new Rect(0, 0, SpriteSize, SpriteSize), new Vector2(1,1), 100.0f));
 
