@@ -1,0 +1,38 @@
+BUGI:
+- ws.WaitTime = 10000; // Klient,serwer
+- MainSocket = dead, kill chat
+- wiadomosci z serwera podczas logowania/rejestracji w main menu
+- przy pisaniu na czacie zablokowac j
+- zmiana statku = zmiana hp
+- strefa ochronna
+- naprawa = 10% hp
+- ogranicznik itemow w ekwipunku dla gracza - max 1K
+- tooltip w wyposazeniu
+- ogranicznik fps w kliencie
+- gracz sie odznacza jak zniszczy obcego
+- obsluga klawiszy podczas pisania na czacie - zablokowac
+
+
+
+TODO:
+- Osiagniecia
+- Zadania (obsluga z osiagniec)
+- Surowce na mapie (surowce jako materialy na mapie oraz z pokonanego przeciwnika)
+- System grup
+- Zadania grupowe
+- Eskorta do najblizszego portalu po naprawie statku gracza
+- Baza gwiezdna na mapie (1-1 oraz 5-1 lub na okolicznej mapie)
+- Mozliwosc budowy modulow na mapie gdzie gracz moze produkowac surowce
+- Po wyjsciu z gry - logout czasowy
+- Wzmacniacze czasowe poszycia / oslony / obrazen
+- Ekwipowanie statku tylko w gwiezdnej bazie
+
+
+
+
+
+
+
+
+
+
