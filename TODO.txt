@@ -1,14 +1,9 @@
 BUGI:
-- ws.WaitTime = 10000; // Klient,serwer
-- MainSocket = dead, kill chat
 - wiadomosci z serwera podczas logowania/rejestracji w main menu
-- przy pisaniu na czacie zablokowac j
-- zmiana statku = zmiana hp
+- przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
-- naprawa = 10% hp
 - ogranicznik itemow w ekwipunku dla gracza - max 1K
 - tooltip w wyposazeniu
-- ogranicznik fps w kliencie
 - gracz sie odznacza jak zniszczy obcego
 - obsluga klawiszy podczas pisania na czacie - zablokowac
 

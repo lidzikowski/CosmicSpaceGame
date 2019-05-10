@@ -246,7 +246,7 @@ public abstract class Opponent
     }
     protected void OnAlive()
     {
-        Hitpoints = 1000;
+        Hitpoints = MaxHitpoints / 10;
         LastTakeDamage = 0;
 
         IsCoverTimer = 10;

@@ -329,6 +329,8 @@ public class UserInterfaceWindow : GameWindow
 
         ChatSocket = new WebSocket($"{Client.SERVER_IP}/Chat");
 
+        ChatSocket.WaitTime = new TimeSpan(1, 0, 0);
+
         ChatSocket.OnOpen += ChatSocket_OnOpen;
         ChatSocket.OnClose += ChatSocket_OnClose;
         ChatSocket.OnError += ChatSocket_OnError;

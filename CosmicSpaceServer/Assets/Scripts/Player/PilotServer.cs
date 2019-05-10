@@ -210,6 +210,8 @@ public class PilotServer : Opponent
         }, true);
 
         CalculateStatistics();
+
+        Hitpoints = MaxHitpoints / 10;
     }
 
     private void SaveAmmunition(Ammunition ammunition, int count)

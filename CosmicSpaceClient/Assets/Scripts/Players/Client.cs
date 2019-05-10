@@ -60,7 +60,20 @@ public class Client : MonoBehaviour
 
             socketConnected = value;
             if (!value)
+            {
+                if(UserInterfaceWindow.ChatSocketConnected)
+                {
+                    try
+                    {
+                        UserInterfaceWindow.ChatSocket?.Close();
+                    }
+                    catch(Exception ex)
+                    {
+                        Debug.Log(ex.Message);
+                    }
+                }
                 Pilot = null;
+            }
             
             MainThread.Instance().Enqueue(() => GuiScript.RefreshAllActiveWindow());
         }
@@ -87,6 +100,8 @@ public class Client : MonoBehaviour
     void CreateSocket()
     {
         Socket = new WebSocket($"{SERVER_IP}/Game");
+
+        Socket.WaitTime = new TimeSpan(0, 20, 0);
 
         Socket.OnOpen += Socket_OnOpen;
         Socket.OnClose += Socket_OnClose;
