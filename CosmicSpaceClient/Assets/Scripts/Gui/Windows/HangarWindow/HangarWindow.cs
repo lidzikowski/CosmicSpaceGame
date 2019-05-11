@@ -156,19 +156,30 @@ public class HangarWindow : GameWindow
     private Transform CreateSlotPanel(Transform content, HangarPanels hangarPanel)
     {
         string title = string.Empty;
+        int itemCount = 0;
+        int itemSlot = 0;
+
         switch(hangarPanel)
         {
             case HangarPanels.Lasers:
                 title = GameSettings.UserLanguage.LASERS;
+                itemCount = Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Laser).Count();
+                itemSlot = Client.Pilot.Ship.Lasers;
                 break;
             case HangarPanels.Generators:
                 title = GameSettings.UserLanguage.GENERATORS;
+                itemCount = Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Generator).Count();
+                itemSlot = Client.Pilot.Ship.Generators;
                 break;
             case HangarPanels.Extras:
                 title = GameSettings.UserLanguage.EXTRAS;
+                itemCount = Client.Pilot.Items.Where(o => o.IsEquipped && o.Item.ItemType == ItemTypes.Extra).Count();
+                itemSlot = Client.Pilot.Ship.Extras;
                 break;
             case HangarPanels.Warehouse:
                 title = GameSettings.UserLanguage.WAREHOUSE;
+                itemCount = Client.Pilot.Items.Where(o => !o.IsEquipped).Count();
+                itemSlot = Client.Pilot.Items.Count + 10;
                 break;
             case HangarPanels.Resources:
                 title = GameSettings.UserLanguage.RESOURCES;
@@ -177,6 +188,8 @@ public class HangarWindow : GameWindow
 
         GameObject go = Instantiate(TitlePanelPrefab, content);
         go.GetComponent<Text>().text = $"  {title}";
+        if(itemSlot > 0)
+            go.GetComponent<Text>().text += $"  [{itemCount}/{itemSlot}]";
 
         Transform panel = Instantiate(SlotPanelPrefab, content).transform;
         panel.name = hangarPanel.ToString();

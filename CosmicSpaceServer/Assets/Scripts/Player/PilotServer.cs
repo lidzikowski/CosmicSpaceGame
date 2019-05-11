@@ -82,7 +82,7 @@ public class PilotServer : Opponent
         }
         else if(buyItem.ItemType == ItemTypes.Ammunition)
         {
-            if (!Server.ServerResources.ContainsKey(buyItem.ItemId) || buyItem.Count < 1)
+            if (!Server.ServerResources.ContainsKey(buyItem.ItemId) || buyItem.Count < 1 || Pilot.Resources[buyItem.ItemId].Count + buyItem.Count > 100000000)
                 status = ShopStatus.Error;
             else
             {
@@ -92,7 +92,7 @@ public class PilotServer : Opponent
         }
         else
         {
-            if (!Server.Items.ContainsKey(buyItem.ItemId) || buyItem.Count < 1)
+            if (!Server.Items.ContainsKey(buyItem.ItemId) || buyItem.Count < 1 || Pilot.Items.Count + buyItem.Count > 1000)
                 status = ShopStatus.Error;
             else
             {
@@ -554,10 +554,16 @@ public class PilotServer : Opponent
             Pilot.Experience += (ulong)reward.Experience;
 
         if (reward.Metal > 0)
+        {
+            reward.Metal = System.Math.Round((double)reward.Metal, 2);
             Pilot.Metal += (double)reward.Metal;
+        }
 
         if (reward.Scrap > 0)
+        {
+            reward.Scrap = System.Math.Round((double)reward.Scrap, 2);
             Pilot.Scrap += (double)reward.Scrap;
+        }
 
         if (reward.AmmunitionId > 0 && reward.AmmunitionQuantity > 0)
         {

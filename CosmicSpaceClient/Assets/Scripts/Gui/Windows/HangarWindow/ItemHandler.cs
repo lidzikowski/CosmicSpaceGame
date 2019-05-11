@@ -48,6 +48,9 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
         if (eventData.button == PointerEventData.InputButton.Right)
             return;
 
+        if (GuiScript.Windows[WindowTypes.ItemInformationWindow].Active)
+            GuiScript.CloseWindow(WindowTypes.ItemInformationWindow);
+
         parent = transform.parent;
         transform.SetParent(GuiScript.Windows[WindowTypes.HangarWindow].Window.transform);
     }

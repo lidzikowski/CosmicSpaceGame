@@ -80,10 +80,13 @@ public class ShopWindow : GameWindow
         if (LastShowShopItem == null)
             return;
 
+        long count = long.Parse(QuantityInputField.text);
+        bool buttonStatus = count > 0;
+
         if (LastShowShopItem.ScrapPrice > 0)
         {
-            SetText(BuyScrapText, $"{GameSettings.UserLanguage.BUY_FOR} Scrap{System.Environment.NewLine}{LastShowShopItem.ScrapPrice * long.Parse(QuantityInputField.text)}");
-            BuyScrapButton.interactable = true;
+            SetText(BuyScrapText, $"{GameSettings.UserLanguage.BUY_FOR} Scrap{System.Environment.NewLine}{LastShowShopItem.ScrapPrice * count}");
+            BuyScrapButton.interactable = buttonStatus;
             ButtonListener(BuyScrapButton, () => BuyItem(LastShowShopItem, true), true);
         }
         else
@@ -94,8 +97,8 @@ public class ShopWindow : GameWindow
 
         if (LastShowShopItem.MetalPrice > 0)
         {
-            SetText(BuyMetalText, $"{GameSettings.UserLanguage.BUY_FOR} Metal{System.Environment.NewLine}{LastShowShopItem.MetalPrice * long.Parse(QuantityInputField.text)}");
-            BuyMetalButton.interactable = true;
+            SetText(BuyMetalText, $"{GameSettings.UserLanguage.BUY_FOR} Metal{System.Environment.NewLine}{LastShowShopItem.MetalPrice * count}");
+            BuyMetalButton.interactable = buttonStatus;
             ButtonListener(BuyMetalButton, () => BuyItem(LastShowShopItem, false), true);
         }
         else
@@ -194,8 +197,7 @@ public class ShopWindow : GameWindow
 
         QuantityInputField.text = item.ItemType == ItemTypes.Ammunition ? "1000" : "1";
         QuantityInputField.interactable = item.ItemType != ItemTypes.Ship;
-
-        Refresh();
+        QuantityInputField_Changed(QuantityInputField.text);
 
         ToolTip.FindLanguageToProperties(item, Property);
     }
@@ -257,15 +259,38 @@ public class ShopWindow : GameWindow
         });
     }
 
-    private void QuantityInputField_Changed(string s)
+    private void QuantityInputField_Changed(string text)
     {
-        if (string.IsNullOrWhiteSpace(s) || !int.TryParse(s, out int number) || number < 1)
+        QuantityInputField.onValueChanged.RemoveAllListeners();
+
+        if (string.IsNullOrWhiteSpace(text) || !int.TryParse(text, out int number) || number < 0)
         {
             QuantityInputField.text = "1";
-            return;
+        }
+        else if(LastShowShopItem != null)
+        {
+            if (LastShowShopItem.ItemType == ItemTypes.Ammunition)
+            {
+                if(Client.Pilot.Resources[LastShowShopItem.Id].Count > 100000000)
+                {
+                    QuantityInputField.text = "0";
+                }
+                else if (Client.Pilot.Resources[LastShowShopItem.Id].Count + number > 100000000)
+                {
+                    QuantityInputField.text = $"{100000000 - Client.Pilot.Resources[LastShowShopItem.Id].Count}";
+                }
+            }
+            else if (LastShowShopItem.ItemType != ItemTypes.Ship)
+            {
+                if (Client.Pilot.Items.Count + number > 1000)
+                {
+                    QuantityInputField.text = $"{1000 - Client.Pilot.Items.Count}";
+                }
+            }
         }
 
         Refresh();
+        QuantityInputField.onValueChanged.AddListener((s) => QuantityInputField_Changed(s));
     }
 
     private void OnDisable()

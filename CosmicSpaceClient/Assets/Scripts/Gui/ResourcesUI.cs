@@ -63,7 +63,8 @@ public class ResourcesUI : MonoBehaviour
                 RotatingGameObject.SetActive(false);
                 RotatingGameObject = null;
             }
-            ResourceCamera.SetActive(false);
+            if (ResourceCamera.activeSelf)
+                ResourceCamera?.SetActive(false);
             return;
         }
 
@@ -145,7 +146,11 @@ public class ResourcesUI : MonoBehaviour
 
 
     #region MAPS
-    public IEnumerator LoadMaps(Dictionary<long, Map> maps, GalacticWindow galacticWindow)
+    public void LoadMaps(Dictionary<long, Map> maps, GalacticWindow galacticWindow)
+    {
+        StartCoroutine(LoadMapsAsync(maps, galacticWindow));
+    }
+    private IEnumerator LoadMapsAsync(Dictionary<long, Map> maps, GalacticWindow galacticWindow)
     {
         if (DisposeGalacticCoroutine?.Current != null && GalacticSprites.Count > 0)
         {
@@ -183,6 +188,9 @@ public class ResourcesUI : MonoBehaviour
             GalacticCamera.SetActive(false);
         }
 
+        if (galacticWindow == null)
+            yield break;
+
         float divider = 10.417f;
         float subtract = 48;
         foreach (Transform t in galacticWindow.MapsGameObject.transform)
@@ -196,8 +204,6 @@ public class ResourcesUI : MonoBehaviour
 
                     Vector2 fromPosition = new Vector2(t.position.x - subtract + portal.PositionX / divider, t.position.y + subtract + portal.PositionY / divider);
                     Vector2 toPosition = new Vector2(targetMap.position.x - subtract + portal.TargetPositionX / divider, targetMap.position.y + subtract + portal.TargetPositionY / divider);
-                    //Vector2 fromPosition = new Vector2(t.position.x, t.position.y);
-                    //Vector2 toPosition = new Vector2(targetMap.position.x, targetMap.position.y);
 
                     if (galacticWindow.PortalsTransform.Find($"{portal.TargetMap.Name}:{portal.Map.Name}") == null)
                     {
@@ -245,7 +251,7 @@ public class ResourcesUI : MonoBehaviour
     IEnumerator DisposeGalactic()
     {
         yield return new WaitForSeconds(360);
-        GalacticSprites.Clear();
+        GalacticSprites?.Clear();
     }
     #endregion
 }

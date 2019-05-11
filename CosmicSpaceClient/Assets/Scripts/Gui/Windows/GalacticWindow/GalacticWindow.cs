@@ -14,14 +14,6 @@ public class GalacticWindow : GameWindow
     public override void Start()
     {
         base.Start();
-
-        foreach (Transform t in MapsGameObject.transform)
-        {
-            t.gameObject.SetActive(false);
-        }
-
-        if (ServerMaps != null)
-            StartCoroutine(ResourcesUI.Instance.LoadMaps(ServerMaps, this));
     }
 
     public override void Refresh()
@@ -32,6 +24,17 @@ public class GalacticWindow : GameWindow
     public override void ChangeLanguage()
     {
         base.ChangeLanguage();
+    }
+
+    private void OnEnable()
+    {
+        foreach (Transform t in MapsGameObject.transform)
+        {
+            t.gameObject.SetActive(false);
+        }
+
+        if (ServerMaps != null)
+            ResourcesUI.Instance.LoadMaps(ServerMaps, this);
     }
 
     private void OnDisable()

@@ -494,18 +494,15 @@ public class Player : MonoBehaviour
         if (DebugMode)
             GuiScript.CreateLogMessage(new List<string>() { $"SomeoneDead '{GuiScript.IsPlayer(whoShipLogic, someoneDead.WhoIsPlayer)}' by '{byShipLogic.Count}'" });
 
-        foreach (ShipLogic shipLogic in PlayersController.Values)
-        {
-            if (byShipLogic.Any(o => o.gameObject == shipLogic.TargetGameObject || o.TargetGameObject == o.gameObject))
-            {
-                shipLogic.TargetGameObject = null;
-                shipLogic.Attack = false;
-            }
-        }
+        UnselectDeadTarget(PlayersController, whoShipLogic);
+        UnselectDeadTarget(EnemiesController, whoShipLogic);
+    }
 
-        foreach (ShipLogic shipLogic in EnemiesController.Values)
+    private void UnselectDeadTarget(Dictionary<ulong, ShipLogic> list, ShipLogic whoDead)
+    {
+        foreach (ShipLogic shipLogic in list.Values)
         {
-            if (byShipLogic.Any(o => o.gameObject == shipLogic.TargetGameObject || o.TargetGameObject == o.gameObject))
+            if (shipLogic.TargetGameObject == whoDead.gameObject)
             {
                 shipLogic.TargetGameObject = null;
                 shipLogic.Attack = false;
@@ -563,6 +560,7 @@ public class Player : MonoBehaviour
         }
         if (reward.AmmunitionId != null && reward.AmmunitionQuantity > 0)
         {
+            Client.Pilot.Resources[(int)reward.AmmunitionId].Count += (long)reward.AmmunitionQuantity;
             messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_RESOURCE, reward.AmmunitionId, reward.AmmunitionQuantity));
         }
 

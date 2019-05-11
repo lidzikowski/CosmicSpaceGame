@@ -2,8 +2,6 @@ BUGI:
 - wiadomosci z serwera podczas logowania/rejestracji w main menu
 - przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
-- ogranicznik itemow w ekwipunku dla gracza - max 1K
-- gracz sie odznacza jak zniszczy obcego
 - obsluga klawiszy podczas pisania na czacie - zablokowac
 
 
