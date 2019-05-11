@@ -390,13 +390,13 @@ public class Client : MonoBehaviour
         #endregion
 
 
-        #region EKWIPUNEK
+        #region SHOP ITEMS
         else if (commandData.Command == Commands.GetShopItems)
         {
             if (commandData.Data is ShopItems data)
             {
+                ShopWindow.ServerItems = data;
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.ShopWindow);
-                (GuiScript.Windows[WindowTypes.ShopWindow].Script as ShopWindow).ServerItems = data;
             }
         }
         #endregion

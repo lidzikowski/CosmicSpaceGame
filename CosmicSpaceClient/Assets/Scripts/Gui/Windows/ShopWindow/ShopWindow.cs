@@ -45,7 +45,7 @@ public class ShopWindow : GameWindow
 
 
 
-    public ShopItems ServerItems;
+    public static ShopItems ServerItems;
 
 
 

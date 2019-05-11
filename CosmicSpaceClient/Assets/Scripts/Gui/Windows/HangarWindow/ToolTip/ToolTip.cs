@@ -60,6 +60,9 @@ public class ToolTip : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
 
+        if (ItemInfo == null)
+            yield break;
+
         if (ItemInfo.transform.position.y - GetComponent<RectTransform>().rect.height < 50)
         {
             transform.position = new Vector2(ItemInfo.transform.position.x, ItemInfo.transform.position.y + (GetComponent<RectTransform>().rect.height / 2) + 30);

@@ -119,7 +119,7 @@ public class PilotServer : Opponent
 
         TakeReward(new ServerReward()
         {
-            Scrap = 10,
+            Scrap = itemPilot.Item.ScrapPrice / 20 ?? itemPilot.Item.MetalPrice * 5,
             Reason = RewardReasons.SellItem,
             Data = itemPilot.Item.Name
         });

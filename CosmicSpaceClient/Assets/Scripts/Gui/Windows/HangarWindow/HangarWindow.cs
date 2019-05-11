@@ -35,12 +35,16 @@ public class HangarWindow : GameWindow
 
     public override void Start()
     {
+        ResourcesUI.Instance.LoadImages();
+
         base.Start();
     }
 
     public override void Refresh()
     {
         base.Refresh();
+
+        CreateHanger();
     }
 
     public override void ChangeLanguage()
@@ -186,13 +190,6 @@ public class HangarWindow : GameWindow
         Transform slot = Instantiate(SlotPrefab, itemContainer.transform).transform;
         itemContainer.Slots.Add(slot);
         return slot;
-    }
-
-    private void OnEnable()
-    {
-        ResourcesUI.Instance.LoadImages();
-
-        CreateHanger();
     }
 
     private void OnDisable()

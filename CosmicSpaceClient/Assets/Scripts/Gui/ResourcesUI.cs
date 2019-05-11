@@ -138,7 +138,7 @@ public class ResourcesUI : MonoBehaviour
 
     IEnumerator DisposeTextures()
     {
-        yield return new WaitForSeconds(180);
+        yield return new WaitForSeconds(360);
         ShipSprites.Clear();
     }
     #endregion
@@ -244,7 +244,7 @@ public class ResourcesUI : MonoBehaviour
 
     IEnumerator DisposeGalactic()
     {
-        yield return new WaitForSeconds(180);
+        yield return new WaitForSeconds(360);
         GalacticSprites.Clear();
     }
     #endregion

@@ -329,7 +329,7 @@ public class UserInterfaceWindow : GameWindow
 
         ChatSocket = new WebSocket($"{Client.SERVER_IP}/Chat");
 
-        ChatSocket.WaitTime = new TimeSpan(1, 0, 0);
+        ChatSocket.WaitTime = new TimeSpan(0, 15, 0);
 
         ChatSocket.OnOpen += ChatSocket_OnOpen;
         ChatSocket.OnClose += ChatSocket_OnClose;
@@ -496,6 +496,12 @@ public class UserInterfaceWindow : GameWindow
             return;
         }
 
+        if (Client.Pilot.Items != null)
+        {
+            SetActiveWindow(WindowTypes.HangarWindow);
+            return;
+        }
+
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.GetEquipment,
@@ -509,6 +515,12 @@ public class UserInterfaceWindow : GameWindow
         {
             GuiScript.CloseWindow(WindowTypes.ShopWindow);
             RefreshButtonStatus();
+            return;
+        }
+
+        if (ShopWindow.ServerItems != null)
+        {
+            SetActiveWindow(WindowTypes.ShopWindow);
             return;
         }
 

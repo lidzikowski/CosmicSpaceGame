@@ -3,7 +3,6 @@ BUGI:
 - przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
 - ogranicznik itemow w ekwipunku dla gracza - max 1K
-- tooltip w wyposazeniu
 - gracz sie odznacza jak zniszczy obcego
 - obsluga klawiszy podczas pisania na czacie - zablokowac
 
@@ -21,13 +20,6 @@ TODO:
 - Po wyjsciu z gry - logout czasowy
 - Wzmacniacze czasowe poszycia / oslony / obrazen
 - Ekwipowanie statku tylko w gwiezdnej bazie
-
-
-
-
-
-
-
 
 
 

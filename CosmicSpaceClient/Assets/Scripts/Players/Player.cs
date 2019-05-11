@@ -573,16 +573,10 @@ public class Player : MonoBehaviour
                 messages.Add(string.Format(GameSettings.UserLanguage.RECEIVE_ITEM, item.Item.Name));
             }
 
-            if(GuiScript.Windows[WindowTypes.HangarWindow].Active)
-            {
-                GuiScript.Windows[WindowTypes.HangarWindow].Script.Close();
+            Client.Pilot.Items.AddRange(reward.PilotItems);
 
-                Client.SendToSocket(new CommandData()
-                {
-                    Command = Commands.GetEquipment,
-                    SenderId = Client.Pilot.Id
-                });
-            }
+            if (GuiScript.Windows[WindowTypes.HangarWindow].Active)
+                GuiScript.Windows[WindowTypes.HangarWindow].Script.Refresh();
         }
 
         GuiScript.CreateLogMessage(messages, 6);

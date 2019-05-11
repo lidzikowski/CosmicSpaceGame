@@ -35,13 +35,21 @@ public class ItemInformationWindow : GameWindow
     {
         base.ChangeLanguage();
 
-        SetText(ItemSellText, GameSettings.UserLanguage.SELL_ITEM);
+        if (ItemPilot?.Item != null)
+        {
+            bool scrap = ItemPilot.Item.ScrapPrice > 0;
+            SetText(ItemSellText, $"{GameSettings.UserLanguage.SELL_ITEM}{System.Environment.NewLine}{(scrap ? ItemPilot.Item.ScrapPrice / 20 : ItemPilot.Item.MetalPrice * 5)} Scrap");
+        }
+        else
+            SetText(ItemSellText, GameSettings.UserLanguage.SELL_ITEM);
     }
 
     public void ShowItemInformation(ItemPilot itemPilot, PilotResource pilotResource)
     {
         ItemPilot = itemPilot;
         PilotResource = pilotResource;
+
+        ChangeLanguage();
 
         if(ItemPilot.Item != null)
         {
