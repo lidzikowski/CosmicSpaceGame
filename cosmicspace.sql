@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 05 Maj 2019, 13:38
--- Wersja serwera: 10.1.37-MariaDB
--- Wersja PHP: 7.3.0
+-- Czas generowania: 12 Maj 2019, 19:10
+-- Wersja serwera: 10.1.38-MariaDB
+-- Wersja PHP: 7.1.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -293,15 +293,16 @@ CREATE TABLE `enemies` (
 --
 
 INSERT INTO `enemies` (`enemyid`, `enemyname`, `prefabid`, `hitpoints`, `shields`, `speed`, `damage`, `shotdistance`, `isaggressive`, `rewardid`, `ammunitionid`, `rocketid`) VALUES
-(1, 'Kingfisher', 49, 200, 100, 6, 15, 25, 0, 10, 100, NULL),
-(2, 'Comet', 50, 400, 200, 8, 30, 27, 0, 11, 100, NULL),
-(3, 'Unicorn', 51, 800, 400, 10, 70, 28, 1, 12, 100, NULL),
+(1, 'Kingfisher', 49, 1000, 500, 6, 15, 25, 0, 10, 100, NULL),
+(2, 'Comet', 50, 2000, 1000, 8, 30, 27, 0, 11, 100, NULL),
+(3, 'Unicorn', 51, 4000, 400, 10, 70, 28, 1, 12, 100, NULL),
 (4, 'Roosevelt', 52, 1200, 600, 9, 110, 26, 0, 13, 100, NULL),
 (5, 'Herminia', 53, 2000, 1000, 7, 170, 30, 0, 14, 100, NULL),
 (6, 'Lancaster', 54, 2600, 1300, 12, 250, 30, 1, 15, 100, NULL),
 (7, 'Meteor', 55, 3200, 1600, 11, 400, 30, 0, 16, 100, NULL),
 (8, 'Starhammer', 56, 4000, 2000, 10, 550, 30, 1, 17, 100, NULL),
-(9, 'Elba', 57, 6000, 3000, 13, 800, 30, 0, 18, 100, NULL);
+(9, 'Elba', 57, 6000, 3000, 13, 800, 30, 0, 18, 100, NULL),
+(10, 'Kingfisher', 49, 1000, 500, 6, 15, 25, 0, 10, 100, NULL);
 
 -- --------------------------------------------------------
 
@@ -312,6 +313,7 @@ INSERT INTO `enemies` (`enemyid`, `enemyname`, `prefabid`, `hitpoints`, `shields
 CREATE TABLE `enemymap` (
   `id` int(10) UNSIGNED NOT NULL,
   `enemyid` int(10) UNSIGNED NOT NULL,
+  `enemytypeid` int(10) UNSIGNED NOT NULL DEFAULT '1',
   `mapid` int(10) UNSIGNED NOT NULL,
   `count` smallint(6) NOT NULL DEFAULT '50'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
@@ -320,13 +322,32 @@ CREATE TABLE `enemymap` (
 -- Zrzut danych tabeli `enemymap`
 --
 
-INSERT INTO `enemymap` (`id`, `enemyid`, `mapid`, `count`) VALUES
-(1, 1, 100, 25),
-(2, 2, 100, 12),
-(3, 3, 100, 3),
-(4, 1, 101, 7),
-(5, 2, 101, 13),
-(6, 3, 101, 20);
+INSERT INTO `enemymap` (`id`, `enemyid`, `enemytypeid`, `mapid`, `count`) VALUES
+(1, 1, 1, 100, 25),
+(2, 2, 1, 100, 12),
+(3, 3, 1, 100, 3),
+(4, 1, 1, 101, 7),
+(5, 2, 1, 101, 13),
+(6, 3, 1, 101, 20);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `enemytypes`
+--
+
+CREATE TABLE `enemytypes` (
+  `enemytypeid` int(10) UNSIGNED NOT NULL,
+  `enemytypename` varchar(150) COLLATE utf8_polish_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+
+--
+-- Zrzut danych tabeli `enemytypes`
+--
+
+INSERT INTO `enemytypes` (`enemytypeid`, `enemytypename`) VALUES
+(1, 'Normal'),
+(2, 'Boss');
 
 -- --------------------------------------------------------
 
@@ -509,8 +530,8 @@ CREATE TABLE `pilotresources` (
 
 INSERT INTO `pilotresources` (`userid`, `ammunition0`, `ammunition1`, `ammunition2`, `ammunition3`, `rocket0`, `rocket1`, `rocket2`) VALUES
 (100, 500, 0, 0, 0, 0, 0, 0),
-(101, 500, 0, 0, 0, 0, 0, 0),
-(102, 1000037275, 16998, 16989, 1000016633, 17000, 1000016999, 17000),
+(101, 495, 0, 0, 0, 0, 0, 0),
+(102, 1000040309, 16998, 100000000, 1000016579, 100000000, 1000016999, 100000000),
 (103, 500, 0, 0, 0, 0, 0, 0),
 (104, 500, 0, 0, 0, 0, 0, 0),
 (105, 500, 0, 0, 0, 0, 0, 0),
@@ -551,8 +572,8 @@ CREATE TABLE `pilots` (
 
 INSERT INTO `pilots` (`userid`, `nickname`, `mapid`, `positionx`, `positiony`, `shipid`, `experience`, `level`, `scrap`, `metal`, `hitpoints`, `shields`, `ammunitionid`, `rocketid`, `isdead`, `killerby`) VALUES
 (100, 'test1', 100, 319.613, -275.955, 100, 2, 1, 0, 0, 874, 706, 100, 104, 0, NULL),
-(101, 'test2', 100, 881.718, -861.051, 101, 1356, 1, 57, 3, 1600, 0, 100, 104, 0, NULL),
-(102, 'test3', 100, 909, -300, 129, 165602, 100, 69999902544, 8869993383, 200000, 0, 103, 104, 0, NULL),
+(101, 'test2', 100, 897, -527, 101, 2216, 1, 73, 7, 1600, 0, 100, 104, 0, NULL),
+(102, 'test3', 100, 935, -336, 129, 169718, 100, 69999905563.5, 8869993400, 200000, 150, 101, 104, 0, NULL),
 (103, 'test4', 101, 81.0209, -74.1459, 103, 28355, 1, 57, 0, 3700, 0, 100, 104, 0, NULL),
 (104, 'test5', 100, 910, -929, 104, 791, 1, 36, 1, 5000, 150, 100, 104, 0, NULL),
 (105, 'test6', 100, 284.76, -360.721, 105, 0, 1, 0, 0, 41166, 0, 100, 104, 0, NULL),
@@ -589,7 +610,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (5, 102, 2, 1, 0, 1),
 (6, 102, 3, 1, 1, 0),
 (7, 102, 3, 1, 0, 1),
-(8, 102, 1, 1, 0, 0),
+(8, 102, 1, 1, 0, 1),
 (9, 102, 2, 1, 0, 0),
 (10, 102, 1, 1, 0, 0),
 (11, 102, 2, 1, 0, 0),
@@ -597,8 +618,8 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (13, 102, 1, 1, 0, 1),
 (14, 102, 2, 1, 0, 0),
 (15, 102, 3, 1, 1, 0),
-(16, 102, 2, 1, 0, 0),
-(17, 102, 1, 1, 0, 0),
+(16, 102, 2, 1, 0, 1),
+(17, 102, 1, 1, 1, 0),
 (18, 102, 3, 1, 0, 1),
 (19, 102, 2, 1, 0, 0),
 (20, 106, 1, 1, 1, 0),
@@ -614,14 +635,14 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (30, 102, 2, 1, 0, 0),
 (31, 102, 1, 1, 0, 0),
 (32, 102, 3, 1, 1, 0),
-(33, 102, 1, 1, 0, 0),
+(33, 102, 1, 1, 1, 0),
 (34, 102, 1, 1, 0, 0),
 (35, 102, 1, 1, 0, 1),
 (36, 102, 3, 1, 0, 1),
-(37, 102, 2, 1, 0, 0),
+(37, 102, 2, 1, 0, 1),
 (38, 102, 1, 1, 0, 1),
 (39, 102, 1, 1, 0, 1),
-(40, 102, 1, 1, 0, 0),
+(40, 102, 1, 1, 0, 1),
 (41, 102, 2, 1, 0, 1),
 (42, 102, 1, 1, 1, 0),
 (43, 102, 2, 1, 0, 0),
@@ -632,53 +653,53 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (48, 102, 2, 1, 0, 1),
 (49, 102, 1, 1, 0, 1),
 (50, 102, 2, 1, 0, 0),
-(51, 102, 2, 1, 0, 0),
+(51, 102, 2, 1, 1, 0),
 (52, 102, 3, 1, 1, 0),
-(53, 102, 1, 1, 0, 0),
+(53, 102, 1, 1, 0, 1),
 (54, 102, 3, 1, 1, 0),
-(55, 102, 2, 1, 0, 0),
-(56, 102, 3, 1, 1, 0),
-(57, 102, 1, 1, 0, 0),
+(55, 102, 2, 1, 0, 1),
+(56, 102, 3, 1, 0, 1),
+(57, 102, 1, 1, 0, 1),
 (58, 102, 3, 1, 1, 0),
 (59, 102, 1, 1, 0, 0),
 (60, 102, 1, 1, 0, 0),
 (61, 102, 2, 1, 0, 0),
 (62, 102, 1, 1, 0, 0),
-(63, 102, 2, 1, 0, 0),
-(64, 102, 3, 1, 1, 0),
-(65, 102, 1, 1, 0, 0),
+(63, 102, 2, 1, 0, 1),
+(64, 102, 3, 1, 0, 1),
+(65, 102, 1, 1, 0, 1),
 (66, 102, 1, 1, 0, 0),
 (67, 102, 3, 1, 1, 0),
 (68, 102, 1, 1, 0, 0),
 (69, 102, 2, 1, 0, 0),
 (70, 102, 2, 1, 0, 0),
-(71, 102, 2, 1, 0, 0),
-(72, 102, 1, 1, 0, 0),
+(71, 102, 2, 1, 0, 1),
+(72, 102, 1, 1, 0, 1),
 (73, 102, 2, 1, 0, 1),
 (74, 102, 1, 1, 0, 0),
-(75, 102, 3, 1, 1, 0),
-(76, 102, 1, 1, 0, 0),
+(75, 102, 3, 1, 0, 1),
+(76, 102, 1, 1, 0, 1),
 (77, 102, 3, 1, 0, 1),
 (78, 102, 3, 1, 1, 0),
-(79, 102, 1, 1, 0, 0),
-(80, 102, 1, 1, 0, 0),
+(79, 102, 1, 1, 0, 1),
+(80, 102, 1, 1, 0, 1),
 (81, 102, 1, 1, 0, 0),
-(82, 102, 3, 1, 1, 0),
-(83, 102, 1, 1, 0, 0),
+(82, 102, 3, 1, 0, 1),
+(83, 102, 1, 1, 0, 1),
 (84, 102, 3, 1, 1, 0),
 (85, 102, 1, 1, 0, 0),
 (86, 102, 2, 1, 0, 1),
-(87, 102, 1, 1, 0, 0),
+(87, 102, 1, 1, 0, 1),
 (88, 102, 3, 1, 1, 0),
-(89, 102, 1, 1, 0, 0),
-(90, 102, 2, 1, 0, 0),
+(89, 102, 1, 1, 0, 1),
+(90, 102, 2, 1, 0, 1),
 (91, 102, 3, 1, 1, 0),
-(92, 102, 3, 1, 1, 0),
-(93, 102, 1, 1, 0, 0),
+(92, 102, 3, 1, 0, 1),
+(93, 102, 1, 1, 0, 1),
 (94, 102, 1, 1, 0, 0),
 (95, 102, 2, 1, 0, 0),
 (96, 102, 1, 1, 0, 0),
-(97, 102, 3, 1, 1, 0),
+(97, 102, 3, 1, 0, 1),
 (98, 102, 1, 1, 0, 0),
 (99, 102, 4, 1, 0, 0),
 (100, 110, 1, 1, 1, 0),
@@ -700,8 +721,8 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (117, 102, 4, 1, 0, 0),
 (118, 102, 4, 1, 0, 1),
 (119, 102, 4, 1, 0, 0),
-(120, 102, 4, 1, 0, 0),
-(121, 102, 6, 1, 0, 0),
+(120, 102, 4, 1, 0, 1),
+(121, 102, 6, 1, 0, 1),
 (122, 102, 5, 1, 0, 0),
 (123, 102, 5, 1, 0, 0),
 (124, 102, 5, 1, 0, 0),
@@ -709,8 +730,8 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (126, 102, 4, 1, 0, 0),
 (127, 102, 6, 1, 1, 0),
 (128, 102, 6, 1, 1, 0),
-(129, 102, 6, 1, 0, 0),
-(130, 102, 6, 1, 0, 0),
+(129, 102, 6, 1, 1, 0),
+(130, 102, 6, 1, 1, 0),
 (131, 102, 5, 1, 0, 0),
 (132, 102, 5, 1, 0, 0),
 (133, 102, 1, 1, 0, 0),
@@ -840,7 +861,23 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (257, 102, 2, 1, 0, 0),
 (258, 102, 3, 1, 0, 0),
 (259, 102, 3, 1, 0, 0),
-(260, 102, 1, 1, 0, 0);
+(260, 102, 1, 1, 0, 0),
+(261, 102, 2, 1, 0, 0),
+(262, 102, 1, 1, 0, 0),
+(263, 102, 2, 1, 0, 0),
+(264, 102, 1, 1, 0, 0),
+(265, 102, 2, 1, 0, 0),
+(266, 102, 1, 1, 0, 0),
+(267, 102, 2, 1, 0, 0),
+(268, 102, 3, 1, 0, 1),
+(269, 102, 2, 1, 0, 0),
+(270, 102, 3, 1, 0, 0),
+(271, 102, 1, 1, 0, 0),
+(272, 102, 2, 1, 0, 1),
+(273, 102, 2, 1, 0, 0),
+(274, 101, 3, 1, 0, 0),
+(275, 101, 3, 1, 0, 0),
+(276, 102, 3, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -3503,7 +3540,109 @@ INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `userage
 (2099, 102, '2019-05-04 17:35:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2100, 102, '2019-05-04 17:35:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2101, 102, '2019-05-04 17:40:14', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
-(2102, 102, '2019-05-04 17:43:00', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+(2102, 102, '2019-05-04 17:43:00', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2103, 102, '2019-05-09 20:31:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2104, 102, '2019-05-10 17:45:12', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2105, 102, '2019-05-10 17:45:55', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2106, 102, '2019-05-11 08:08:41', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2107, 102, '2019-05-11 08:20:16', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2108, 102, '2019-05-11 08:25:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2109, 102, '2019-05-11 08:31:25', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2110, 102, '2019-05-11 08:32:56', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2111, 102, '2019-05-11 08:34:51', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2112, 102, '2019-05-11 08:34:51', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2113, 102, '2019-05-11 08:39:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2114, 102, '2019-05-11 08:39:30', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2115, 102, '2019-05-11 08:39:31', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2116, 102, '2019-05-11 08:39:31', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2117, 102, '2019-05-11 08:39:32', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2118, 102, '2019-05-11 08:39:32', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2119, 102, '2019-05-11 08:39:48', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2120, 102, '2019-05-11 08:39:49', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2121, 102, '2019-05-11 08:39:49', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2122, 102, '2019-05-11 08:39:50', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2123, 102, '2019-05-11 08:39:50', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2124, 102, '2019-05-11 08:40:05', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2125, 102, '2019-05-11 08:40:06', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2126, 102, '2019-05-11 08:40:38', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2127, 102, '2019-05-11 08:40:39', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2128, 102, '2019-05-11 08:40:40', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2129, 102, '2019-05-11 08:40:41', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2130, 102, '2019-05-11 08:41:38', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2131, 102, '2019-05-11 08:42:39', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2132, 102, '2019-05-11 08:43:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2133, 102, '2019-05-11 08:44:16', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2134, 102, '2019-05-11 08:48:35', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2135, 102, '2019-05-11 08:55:55', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2136, 102, '2019-05-11 08:57:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2137, 102, '2019-05-11 08:58:45', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2138, 102, '2019-05-11 08:59:51', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2139, 102, '2019-05-11 09:00:55', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2140, 102, '2019-05-11 09:10:05', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2141, 101, '2019-05-11 09:13:19', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2142, 102, '2019-05-11 09:13:59', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2143, 102, '2019-05-11 09:23:34', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2144, 102, '2019-05-11 10:14:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2145, 102, '2019-05-11 10:18:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2146, 102, '2019-05-11 10:20:12', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2147, 102, '2019-05-11 10:20:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2148, 102, '2019-05-11 10:21:04', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2149, 102, '2019-05-11 10:25:18', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2150, 102, '2019-05-11 10:25:35', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2151, 102, '2019-05-11 10:31:48', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2152, 102, '2019-05-11 10:36:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2153, 102, '2019-05-11 10:41:38', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2154, 102, '2019-05-11 10:42:25', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2155, 102, '2019-05-11 10:43:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2156, 102, '2019-05-11 10:51:49', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2157, 102, '2019-05-11 11:01:53', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2158, 102, '2019-05-11 11:07:58', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2159, 102, '2019-05-11 11:11:29', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2160, 102, '2019-05-11 11:22:15', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2161, 102, '2019-05-11 11:28:10', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2162, 102, '2019-05-11 11:30:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2163, 102, '2019-05-11 11:30:28', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2164, 102, '2019-05-11 11:30:49', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2165, 102, '2019-05-11 11:30:51', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2166, 102, '2019-05-11 11:30:52', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2167, 102, '2019-05-11 11:31:15', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2168, 102, '2019-05-11 11:37:27', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2169, 102, '2019-05-11 11:38:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2170, 102, '2019-05-11 11:40:27', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2171, 102, '2019-05-11 11:43:58', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2172, 102, '2019-05-11 11:43:58', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2173, 102, '2019-05-11 11:44:21', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2174, 102, '2019-05-11 11:44:21', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2175, 102, '2019-05-11 11:44:38', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2176, 102, '2019-05-11 11:44:41', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2177, 102, '2019-05-11 11:44:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2178, 102, '2019-05-11 11:44:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2179, 102, '2019-05-11 11:44:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2180, 102, '2019-05-11 11:44:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2181, 102, '2019-05-11 11:44:42', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2182, 102, '2019-05-11 11:44:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2183, 102, '2019-05-11 11:44:43', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2184, 102, '2019-05-11 11:45:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2185, 102, '2019-05-11 11:46:14', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2186, 102, '2019-05-11 11:49:03', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2187, 102, '2019-05-11 11:51:37', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2188, 102, '2019-05-11 11:52:49', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2189, 102, '2019-05-11 11:55:17', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2190, 102, '2019-05-11 11:57:24', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2191, 102, '2019-05-11 12:03:47', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2192, 102, '2019-05-11 12:03:47', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2193, 102, '2019-05-11 12:04:33', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2194, 102, '2019-05-11 12:04:35', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2195, 102, '2019-05-11 12:04:35', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2196, 102, '2019-05-11 12:04:35', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2197, 102, '2019-05-11 12:04:36', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2198, 102, '2019-05-11 12:05:03', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2199, 102, '2019-05-11 12:09:59', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2200, 102, '2019-05-11 12:09:59', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2201, 102, '2019-05-11 12:10:32', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2202, 102, '2019-05-11 12:12:17', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2203, 102, '2019-05-11 12:14:05', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2204, 102, '2019-05-11 12:24:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -3531,7 +3670,14 @@ ALTER TABLE `enemies`
 ALTER TABLE `enemymap`
   ADD PRIMARY KEY (`id`),
   ADD KEY `enemyid` (`enemyid`),
-  ADD KEY `mapid` (`mapid`);
+  ADD KEY `mapid` (`mapid`),
+  ADD KEY `enemytypeid` (`enemytypeid`);
+
+--
+-- Indeksy dla tabeli `enemytypes`
+--
+ALTER TABLE `enemytypes`
+  ADD PRIMARY KEY (`enemytypeid`);
 
 --
 -- Indeksy dla tabeli `gamesettings`
@@ -3676,13 +3822,19 @@ ALTER TABLE `ammunitions`
 -- AUTO_INCREMENT dla tabeli `enemies`
 --
 ALTER TABLE `enemies`
-  MODIFY `enemyid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `enemyid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT dla tabeli `enemymap`
 --
 ALTER TABLE `enemymap`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT dla tabeli `enemytypes`
+--
+ALTER TABLE `enemytypes`
+  MODIFY `enemytypeid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT dla tabeli `gamesettings`
@@ -3718,7 +3870,7 @@ ALTER TABLE `maps`
 -- AUTO_INCREMENT dla tabeli `pilotsitems`
 --
 ALTER TABLE `pilotsitems`
-  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=261;
+  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=277;
 
 --
 -- AUTO_INCREMENT dla tabeli `portalpositions`
@@ -3772,7 +3924,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT dla tabeli `userslog`
 --
 ALTER TABLE `userslog`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2103;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2205;
 
 --
 -- Ograniczenia dla zrzutów tabel
@@ -3792,7 +3944,8 @@ ALTER TABLE `enemies`
 --
 ALTER TABLE `enemymap`
   ADD CONSTRAINT `enemymap_ibfk_1` FOREIGN KEY (`enemyid`) REFERENCES `enemies` (`enemyid`),
-  ADD CONSTRAINT `enemymap_ibfk_2` FOREIGN KEY (`mapid`) REFERENCES `maps` (`mapid`);
+  ADD CONSTRAINT `enemymap_ibfk_2` FOREIGN KEY (`mapid`) REFERENCES `maps` (`mapid`),
+  ADD CONSTRAINT `enemymap_ibfk_3` FOREIGN KEY (`enemytypeid`) REFERENCES `enemytypes` (`enemytypeid`);
 
 --
 -- Ograniczenia dla tabeli `itemreward`

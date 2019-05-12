@@ -8,6 +8,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
     {
         public int Id { get; set; }
         public int EnemyId { get; set; }
+        public EnemyTypes EnemyType{ get; set; }
         public int MapId { get; set; }
         public int Count { get; set; }
 
@@ -17,6 +18,7 @@ namespace CosmicSpaceCommunication.Game.Enemy
             {
                 Id = ConvertRow.Row<int>(row["id"]),
                 EnemyId = ConvertRow.Row<int>(row["enemyid"]),
+                EnemyType = (EnemyTypes)ConvertRow.Row<int>(row["enemytypeid"]),
                 MapId = ConvertRow.Row<int>(row["mapid"]),
                 Count = ConvertRow.Row<int>(row["count"]),
             };
