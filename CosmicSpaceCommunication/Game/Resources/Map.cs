@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CosmicSpaceCommunication.Game.Resources
 {
-    [System.Serializable]
+    [Serializable]
     public class Map : ReqLevel
     {
         public bool IsPvp { get; set; }

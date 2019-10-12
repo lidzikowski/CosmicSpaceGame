@@ -1,4 +1,5 @@
-﻿using CosmicSpaceCommunication.Game.Resources;
+﻿using CosmicSpaceCommunication.Game.Quest;
+using CosmicSpaceCommunication.Game.Resources;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +31,7 @@ namespace CosmicSpaceCommunication.Game.Player
         public Dictionary<long, PilotResource> Resources { get; set; }
         public List<ItemPilot> Items { get; set; }
         public Dictionary<long, Ammunition> ServerResources { get; set; }
+        public List<PilotTask> Tasks { get; set; }
 
 
 

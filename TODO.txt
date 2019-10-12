@@ -3,7 +3,7 @@ BUGI:
 - przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
 - obsluga klawiszy podczas pisania na czacie - zablokowac
-
+- rodzaje npc w bazie
 
 
 TODO:

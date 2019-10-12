@@ -14,7 +14,8 @@ public class MapServer : MonoBehaviour
 
     public List<PilotServer> PilotsOnMap = new List<PilotServer>();
 
-    static ulong enemyId = 1000000;
+    private static ulong enemyId = 1000;
+    private static ulong enemyMaxId = ulong.MaxValue - 1000;
     public List<EnemyServer> EnemiesOnMap = new List<EnemyServer>();
 
 
@@ -79,9 +80,16 @@ public class MapServer : MonoBehaviour
 
     private void SpawnEnemy(Enemy enemy, int count)
     {
+        if (enemyId + ulong.Parse(count.ToString()) > enemyMaxId)
+        {
+            enemyId = 1000;
+        }
+
         for (int i = 0; i < count; i++)
         {
-            EnemiesOnMap.Add(new EnemyServer(enemy, enemyId++, RandomPosition(), this));
+            EnemyServer enemyServer = new EnemyServer(enemy, enemyId++, RandomPosition(), this);
+            EnemiesOnMap.Add(enemyServer);
+            //Debug.Log($"{nameof(SpawnEnemy)}: [{enemyServer.Id}] {enemyServer.ParentEnemy.Name}");
         }
     }
 

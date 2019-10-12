@@ -2,13 +2,13 @@
 using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Player;
+using CosmicSpaceCommunication.Game.Quest;
 using CosmicSpaceCommunication.Game.Resources;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using UnityEngine;
 
 public class Database
 {
@@ -38,6 +38,10 @@ public class Database
         getenemymap,
         getportals,
         getrewarditems,
+        getquests,
+        getquestmaps,
+        gettasks,
+        gettaskquests,
 
         occupiedaccount,
         ocuppiednickname,
@@ -52,8 +56,10 @@ public class Database
         getplayerid,
         getplayerdata,
         getpilotresources,
+        getpilottasks,
         getitems,
-        getpilotitems
+        getpilotitems,
+        getpilottaskquests,
     }
 
     #region Baza danych i obsluga danych
@@ -213,6 +219,51 @@ public class Database
         return null;
     }
 
+    public static async Task<List<PilotTask>> GetPilotTasks(ulong userId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getpilottasks, new Dictionary<string, object>()
+        {
+            { "inuserid", userId }
+        });
+
+        if (dt != null && dt.Rows.Count != 0)
+        {
+            List<PilotTask> pilotTasks = new List<PilotTask>();
+            foreach (DataRow row in dt.Rows)
+            {
+                PilotTask pilotTask = PilotTask.GetPilotTask(row);
+                pilotTask.Task = Server.Tasks[ConvertRow.Row<uint>(row["taskid"])];
+                pilotTask.TaskQuest = await GetPilotTaskQuests(pilotTask.Id);
+                pilotTasks.Add(pilotTask);
+            }
+            return pilotTasks;
+        }
+        return null;
+    }
+
+    public static async Task<List<PilotTaskQuest>> GetPilotTaskQuests(uint id)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getpilottaskquests, new Dictionary<string, object>()
+        {
+            { "inpilottaskid", id }
+        });
+
+        if (dt != null)
+        {
+            List<PilotTaskQuest> pilotTaskQuests = new List<PilotTaskQuest>();
+            foreach (DataRow row in dt.Rows)
+            {
+                PilotTaskQuest pilotTaskQuest = PilotTaskQuest.GetPilotTaskQuest(row);
+                pilotTaskQuest.Quest = Server.Quests[ConvertRow.Row<uint>(row["questid"])];
+                pilotTaskQuests.Add(pilotTaskQuest);
+            }
+            return pilotTaskQuests;
+        }
+        return null;
+    }
+
+
+
     public static async Task<Dictionary<long, Enemy>> GetEnemies()
     {
         DataTable dt = await ExecuteCommand(Commands.getenemies, new Dictionary<string, object>());
@@ -329,6 +380,81 @@ public class Database
                 itemRewards.Add(itemReward);
             }
             return itemRewards;
+        }
+        return null;
+    }
+
+    public static async Task<Dictionary<uint, Quest>> GetQuests()
+    {
+        DataTable dt = await ExecuteCommand(Commands.getquests, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<uint, Quest> quests = new Dictionary<uint, Quest>();
+            foreach (DataRow row in dt.Rows)
+            {
+                Quest quest = Quest.GetQuest(row);
+                quest.Maps = await GetQuestMaps(quest.Id);
+                quests.Add(quest.Id, quest);
+            }
+            return quests;
+        }
+        return null;
+    }
+
+    public static async Task<List<ulong>> GetQuestMaps(uint id)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getquestmaps, new Dictionary<string, object>()
+        {
+            { "inquestid", id }
+        });
+
+        if (dt != null)
+        {
+            List<ulong> questMaps = new List<ulong>();
+            foreach (DataRow row in dt.Rows)
+            {
+                questMaps.Add(ConvertRow.Row<ulong>(row["mapid"]));
+            }
+            return questMaps;
+        }
+        return null;
+    }
+
+    public static async Task<Dictionary<uint, QuestTask>> GetTasks()
+    {
+        DataTable dt = await ExecuteCommand(Commands.gettasks, new Dictionary<string, object>());
+
+        if (dt != null)
+        {
+            Dictionary<uint, QuestTask> tasks = new Dictionary<uint, QuestTask>();
+            foreach (DataRow row in dt.Rows)
+            {
+                QuestTask task = QuestTask.GetTask(row);
+                task.Reward.Items = await GetRewardItems(task.Reward.Id);
+                task.Quests = await GetTaskQuests(task.Id);
+                tasks.Add(task.Id, task);
+            }
+            return tasks;
+        }
+        return null;
+    }
+
+    public static async Task<List<Quest>> GetTaskQuests(uint id)
+    {
+        DataTable dt = await ExecuteCommand(Commands.gettaskquests, new Dictionary<string, object>()
+        {
+            { "intaskid", id }
+        });
+
+        if (dt != null)
+        {
+            List<Quest> quests = new List<Quest>();
+            foreach (DataRow row in dt.Rows)
+            {
+                quests.Add(Server.Quests[ConvertRow.Row<uint>(row["questid"])]);
+            }
+            return quests;
         }
         return null;
     }

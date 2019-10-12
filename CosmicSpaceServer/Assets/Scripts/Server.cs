@@ -4,6 +4,7 @@ using WebSocketSharp.Server;
 using CosmicSpaceCommunication.Game.Resources;
 using CosmicSpaceCommunication.Game.Enemy;
 using System;
+using CosmicSpaceCommunication.Game.Quest;
 
 public class Server : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class Server : MonoBehaviour
     public static Dictionary<long, Rocket> Rockets;
     public static Dictionary<long, Enemy> Enemies;
     public static Dictionary<long, Item> Items;
+    public static Dictionary<uint, Quest> Quests;
+    public static Dictionary<uint, QuestTask> Tasks;
 
     //private int mapId = 1000; // Instancje map
     public static Dictionary<long, MapServer> MapsServer;
@@ -69,6 +72,12 @@ public class Server : MonoBehaviour
 
             MapsServer.Add(map.Id, mapServer);
         }
+
+        Quests = await Database.GetQuests();
+
+        Tasks = await Database.GetTasks();
+
+
 
         ChatChannels = new Dictionary<ulong, ChatChannel>();
         // Global channel:

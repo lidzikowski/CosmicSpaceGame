@@ -653,6 +653,7 @@ public class PilotServer : Opponent
         pilot.Items = await Database.GetPilotItems(pilot.Id);
         pilot.Resources = await Database.GetPilotResources(pilot.Id);
         pilot.ServerResources = Server.ServerResources;
+        pilot.Tasks = await Database.GetPilotTasks(pilot.Id);
 
         return pilot;
     }
