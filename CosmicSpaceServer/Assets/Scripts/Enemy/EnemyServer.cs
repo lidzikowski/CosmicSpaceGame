@@ -33,6 +33,12 @@ public class EnemyServer : Opponent
 
     public override ulong Id { get; protected set; }
 
+    public override ulong ShipId
+    {
+        get => (ulong)ParentEnemy.Id;
+        protected set { }
+    }
+
     public override Reward Reward => ParentEnemy.Reward;
 
     public override RewardReasons RewardReason => RewardReasons.KillEnemy;

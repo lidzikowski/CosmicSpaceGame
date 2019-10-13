@@ -212,6 +212,8 @@ public class MapServer : MonoBehaviour
             return false;
         }
 
+        pilot.AddAchievement(o => o.Map, (ulong)portal.TargetMap.Id);
+
         return ChangeMap(pilot, portal);
     }
 

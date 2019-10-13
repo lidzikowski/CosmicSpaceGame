@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Enemy;
 using CosmicSpaceCommunication;
 using CosmicSpaceCommunication.Game.Enemy;
-using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Resources;
@@ -139,6 +138,7 @@ public abstract class Opponent
     #region Id / Name / IsPlayer / Opponent
     public abstract ulong Id { get; protected set; }
     public abstract string Name { get; }
+    public abstract ulong ShipId { get; protected set; }
     public bool IsPlayer { get; private set; }
 
     public Opponent()
@@ -625,7 +625,16 @@ public abstract class Opponent
                     opponentAttack.Opponent.TakeReward(ServerReward.GetReward(
                         reward,
                         RewardReason,
-                        Name));
+                        Id));
+
+                    if (RewardReason == RewardReasons.KillEnemy)
+                    {
+                        (opponentAttack.Opponent as PilotServer).AddAchievement(o => o.KillNPC, ShipId);
+                    }
+                    else if (RewardReason == RewardReasons.KillPlayer)
+                    {
+                        (opponentAttack.Opponent as PilotServer).AddAchievement(o => o.KillPlayer, ShipId);
+                    }
                 }
             }
 

@@ -583,6 +583,8 @@ public class Database
     #region Zapis stanu gracza
     public static async Task SavePlayerData(Pilot pilot)
     {
+        pilot.Achievements.TimeInGame += (ulong)(DateTime.Now - pilot.JoinToServer).Seconds;
+
         Dictionary<string, object> parameters = new Dictionary<string, object>()
         {
             { "inuserid", pilot.Id },
@@ -599,7 +601,8 @@ public class Database
             { "inammunitionid", pilot.AmmunitionId },
             { "inrocketid", pilot.RocketId },
             { "inisdead", pilot.IsDead },
-            { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy }
+            { "inkillerby", string.IsNullOrEmpty(pilot.KillerBy) ? DBNull.Value : (object)pilot.KillerBy },
+            { "inachievement", pilot.Achievements.Serialize() }
         };
 
         foreach (PilotResource resource in pilot.Resources.Values)

@@ -32,6 +32,8 @@ namespace CosmicSpaceCommunication.Game.Player
         public List<ItemPilot> Items { get; set; }
         public Dictionary<long, Ammunition> ServerResources { get; set; }
         public List<PilotTask> Tasks { get; set; }
+        public Achievement Achievements { get; set; }
+        public DateTime JoinToServer { get; set; } = DateTime.Now;
 
 
 
@@ -59,6 +61,7 @@ namespace CosmicSpaceCommunication.Game.Player
                 RocketId = ConvertRow.Row<int>(row["rocketid"]),
                 IsDead = ConvertRow.Row<bool>(row["isdead"]),
                 KillerBy = ConvertRow.Row<string>(row["killerby"]),
+                Achievements = Achievement.GetAchievement(ConvertRow.Row<string>(row["achievement"]))
             };
         }
     }

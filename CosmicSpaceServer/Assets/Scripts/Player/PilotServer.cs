@@ -7,6 +7,7 @@ using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using WebSocketSharp.Server;
@@ -20,6 +21,8 @@ public class PilotServer : Opponent
         NewPostion = Position;
         CalculateStatistics();
     }
+
+
 
     #region Equipment / Shop
     public void ItemsChange(List<ItemPilot> items)
@@ -225,11 +228,50 @@ public class PilotServer : Opponent
     #region Pilot / Id / Name / isDead
     public Pilot Pilot { get; set; }
 
+    public void AddAchievement(Expression<System.Func<Achievement, ulong>> expression, ulong? value = null)
+    {
+        var property = expression.Body.ToString().Remove(0, 2);
+
+        ulong startValue = (ulong)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+
+        Pilot.Achievements.GetType().GetProperty(property).SetValue(Pilot.Achievements, value.HasValue ? startValue + (ulong)value : startValue + 1);
+
+        Debug.Log($"[AddAchievement] {property}");
+    }
+    public void AddAchievement(Expression<System.Func<Achievement, Dictionary<ulong, ulong>>> expression, ulong key, ulong? value = null)
+    {
+        var property = expression.Body.ToString().Remove(0, 2);
+
+        Dictionary<ulong, ulong> dictionary = (Dictionary<ulong, ulong>)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+
+        if (key > 0)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value.HasValue ? dictionary[key] + (ulong)value : dictionary[key] + 1;
+            }
+            else
+            {
+                dictionary.Add(key, value.HasValue ? dictionary[key] + (ulong)value : 1);
+            }
+        }
+        else
+            Server.Log("Nieprawidłowy format klucza kolekcji.", key);
+
+        Debug.Log($"[AddAchievement] {property} : {key}");
+    }
+
     public override ulong Id
     {
         get => Pilot.Id;
         protected set { }
     }
+    public override ulong ShipId
+    {
+        get => (ulong)Pilot.Ship.Id;
+        protected set { }
+    }
+
     public override string Name => Pilot.Nickname;
     protected override bool isDead
     {
