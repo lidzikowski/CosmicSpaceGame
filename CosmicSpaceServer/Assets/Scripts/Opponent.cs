@@ -226,14 +226,34 @@ public abstract class Opponent
             Killers = new List<Killer>()
         };
 
+        int players = 0, enemies = 0;
+
         for (int i = 0; i < AttackOpponents.Count; i++)
         {
+            if (AttackOpponents[i].Opponent.IsPlayer)
+                players++;
+            else
+                enemies++;
+
             someoneDead.Killers.Add(new Killer()
             {
                 Id = AttackOpponents[i].Opponent.Id,
                 IsPlayer = AttackOpponents[i].Opponent.IsPlayer,
                 Name = AttackOpponents[i].Opponent.Name,
             });
+        }
+
+        if (IsPlayer)
+        {
+            if (players > 0)
+            {
+                (this as PilotServer).AddAchievement(o => o.DeadByPlayer);
+            }
+
+            if (enemies > 0)
+            {
+                (this as PilotServer).AddAchievement(o => o.DeadByNPC);
+            }
         }
 
         SendToPilotsInArea(new CommandData()
@@ -736,7 +756,19 @@ public abstract class Opponent
     {
         if (NewPostion == Position)
             return;
+
+        //Vector3 oldPos;
+        //if (IsPlayer)
+        //{
+        //    oldPos = Position;
+        //}
+
         Position = Vector3.MoveTowards(Position, NewPostion, Time.deltaTime * Speed);
+
+        //if (IsPlayer)
+        //{
+        //    Vector3.Distance
+        //}
     }
 
     public virtual void CheckCover()

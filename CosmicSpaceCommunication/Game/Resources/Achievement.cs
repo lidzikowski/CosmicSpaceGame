@@ -32,7 +32,7 @@ namespace CosmicSpaceCommunication.Game.Resources
         /// <summary>
         /// Pokonany dystans w grze
         /// </summary>
-        public ulong TravelDistance { get; set; }
+        public ulong TravelDistance { get; set; } // Do przemyslenia
 
 
 
@@ -46,12 +46,12 @@ namespace CosmicSpaceCommunication.Game.Resources
         /// <summary>
         /// Zabicia przez NPC
         /// </summary>
-        public ulong DeadByNPC { get; set; }
+        public ulong DeadByNPC { get; set; } // OK
 
         /// <summary>
         /// Zabicia przez Gracza
         /// </summary>
-        public ulong DeadByPlayer { get; set; }
+        public ulong DeadByPlayer { get; set; } // TEST
 
 
 

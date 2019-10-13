@@ -1,4 +1,6 @@
 BUGI:
+- Zmiana statku = brak odswierzenia wyposazenia
+
 - wiadomosci z serwera podczas logowania/rejestracji w main menu
 - przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
