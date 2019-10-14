@@ -11,13 +11,13 @@ namespace CosmicSpaceCommunication.Game.Resources
         /// Ilosc zniszczen poszczegolnego NPC
         /// ID NPC : ILOSC ZABIC
         /// </summary>
-        public Dictionary<ulong, ulong> KillNPC { get; set; } = new Dictionary<ulong, ulong>(); // OK
+        public Dictionary<decimal, decimal> KillNPC { get; set; } = new Dictionary<decimal, decimal>(); // OK
 
         /// <summary>
         /// Ilosc zniszczen poszczegolnego Rodzaju statku (Gracza)
         /// ID RODZAJU STATKU : ILOSC ZABIC
         /// </summary>
-        public Dictionary<ulong, ulong> KillPlayer { get; set; } = new Dictionary<ulong, ulong>(); // TEST
+        public Dictionary<decimal, decimal> KillPlayer { get; set; } = new Dictionary<decimal, decimal>(); // TEST
 
 
 
@@ -25,136 +25,136 @@ namespace CosmicSpaceCommunication.Game.Resources
         /// Ilosc zebran poszczegolnego Rodzaju surowca
         /// ID RODZAJU SUROWCA : ILOSC ZEBRAN
         /// </summary>
-        public Dictionary<ulong, ulong> CollectResource { get; set; } = new Dictionary<ulong, ulong>();
+        public Dictionary<decimal, decimal> CollectResource { get; set; } = new Dictionary<decimal, decimal>();
 
 
 
         /// <summary>
         /// Pokonany dystans w grze
         /// </summary>
-        public ulong TravelDistance { get; set; } // Do przemyslenia
+        public decimal TravelDistance { get; set; } // OK
 
 
 
         /// <summary>
         /// Czas w grze w sekundach
         /// </summary>
-        public ulong TimeInGame { get; set; } // TEST
+        public decimal TimeInGame { get; set; } // OK ???
 
 
 
         /// <summary>
         /// Zabicia przez NPC
         /// </summary>
-        public ulong DeadByNPC { get; set; } // OK
+        public decimal DeadByNPC { get; set; } // OK
 
         /// <summary>
         /// Zabicia przez Gracza
         /// </summary>
-        public ulong DeadByPlayer { get; set; } // TEST
+        public decimal DeadByPlayer { get; set; } // TEST
 
 
 
         /// <summary>
         /// Zadane obrazenia w NPC
         /// </summary>
-        public ulong DamageDealNPC { get; set; }
+        public decimal DamageDealNPC { get; set; } // OK
 
         /// <summary>
         /// Przyjete obrazenia od NPC
         /// </summary>
-        public ulong DamageReceiveNPC { get; set; }
+        public decimal DamageReceiveNPC { get; set; } // OK
 
 
 
         /// <summary>
         /// Zadane obrazenia w Gracza
         /// </summary>
-        public ulong DamageDealPlayer { get; set; }
+        public decimal DamageDealPlayer { get; set; } // TEST
 
         /// <summary>
         /// Przyjete obrazenia od Gracza
         /// </summary>
-        public ulong DamageReceivePlayer { get; set; }
+        public decimal DamageReceivePlayer { get; set; } // TEST
 
 
 
         /// <summary>
         /// Naprawiona ilosc poszycia
         /// </summary>
-        public ulong HitpointRepair { get; set; }
+        public decimal HitpointRepair { get; set; } // OK
 
         /// <summary>
         /// Zniszczona ilosc poszycia
         /// </summary>
-        public ulong HitpointDestroy { get; set; }
+        public decimal HitpointDestroy { get; set; } // OK
 
 
 
         /// <summary>
         /// Naprawiona ilosc oslony
         /// </summary>
-        public ulong ShieldRepair { get; set; }
+        public decimal ShieldRepair { get; set; } // OK
 
         /// <summary>
         /// Zniszczona ilosc oslony
         /// </summary>
-        public ulong ShieldDestroy { get; set; }
+        public decimal ShieldDestroy { get; set; } // OK
 
 
 
         /// <summary>
-        /// Zakupiony przedmiot za Scrap
+        /// Zakupiona liczba przedmiotow za Scrap
         /// </summary>
-        public ulong ItemBuyScrap { get; set; }
+        public decimal ItemBuyScrap { get; set; } // OK
 
         /// <summary>
-        /// Sprzedany przedmiot za Scrap
+        /// Sprzedana liczba przedmiotow za Scrap
         /// </summary>
-        public ulong ItemSellScrap { get; set; }
+        public decimal ItemSellScrap { get; set; } // OK
 
 
 
         /// <summary>
-        /// Zakupiony przedmiot za Metal
+        /// Zakupiona liczba przedmiotow za Metal
         /// </summary>
-        public ulong ItemBuyMetal { get; set; }
+        public decimal ItemBuyMetal { get; set; } // OK
 
         /// <summary>
-        /// Sprzedany przedmiot za Metal
+        /// Sprzedana liczba przedmiotow za Metal
         /// </summary>
-        public ulong ItemSellMetal { get; set; }
+        public decimal ItemSellMetal { get; set; } // OK
 
 
 
         /// <summary>
         /// Zdobyty Scrap
         /// </summary>
-        public ulong ScrapReceive { get; set; }
+        public decimal ScrapReceive { get; set; } // SELL - OK, REWARD - OK
 
         /// <summary>
         /// Wydany Scrap
         /// </summary>
-        public ulong ScrapSpend { get; set; }
+        public decimal ScrapSpend { get; set; } // SHOP - OK
 
 
 
         /// <summary>
         /// Zdobyty Metal
         /// </summary>
-        public ulong MetalReceive { get; set; }
+        public decimal MetalReceive { get; set; } // REWARD - OK
 
         /// <summary>
         /// Wydany Metal
         /// </summary>
-        public ulong MetalSpend { get; set; }
+        public decimal MetalSpend { get; set; } // SHOP - OK
 
 
 
         /// <summary>
         /// Zdobyta ilosc doswiadczenia
         /// </summary>
-        public ulong ExpReceive { get; set; }
+        public decimal ExpReceive { get; set; } // REWARD - OK
 
 
 
@@ -162,7 +162,7 @@ namespace CosmicSpaceCommunication.Game.Resources
         /// Ilosc odwiedzi
         /// ID MAPY : ILOSC ODWIEDZIN
         /// </summary>
-        public Dictionary<ulong, ulong> Map { get; set; } = new Dictionary<ulong, ulong>();
+        public Dictionary<decimal, decimal> Map { get; set; } = new Dictionary<decimal, decimal>(); // OK
 
 
 

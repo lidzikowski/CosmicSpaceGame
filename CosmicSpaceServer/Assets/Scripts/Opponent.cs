@@ -581,6 +581,22 @@ public abstract class Opponent
 
         if (receivedDamage != null)
         {
+            if(IsPlayer)
+            {
+                if (opponent.IsPlayer)
+                    (this as PilotServer).AddAchievement(o => o.DamageReceivePlayer, receivedDamage);
+                else
+                    (this as PilotServer).AddAchievement(o => o.DamageReceiveNPC, receivedDamage);
+            }
+
+            if (opponent.IsPlayer)
+            {
+                if (IsPlayer)
+                    (opponent as PilotServer).AddAchievement(o => o.DamageDealPlayer, receivedDamage);
+                else
+                    (opponent as PilotServer).AddAchievement(o => o.DamageDealNPC, receivedDamage);
+            }
+
             TakeDamage((long)receivedDamage);
             CheckIfDead();
         }
@@ -594,11 +610,17 @@ public abstract class Opponent
             long dmgShd = (long)(damage * ShieldDivision);
             if (Shields - dmgShd >= 0)
             {
+                if (IsPlayer)
+                    (this as PilotServer).AddAchievement(o => o.ShieldDestroy, dmgShd);
+
                 dmgHp = damage - dmgShd;
                 Shields -= dmgShd;
             }
             else
             {
+                if (IsPlayer)
+                    (this as PilotServer).AddAchievement(o => o.ShieldDestroy, Shields);
+
                 dmgHp = damage - Shields;
                 Shields = 0;
             }
@@ -607,9 +629,19 @@ public abstract class Opponent
             dmgHp = damage;
         
         if (Hitpoints - dmgHp >= 0)
+        {
+            if (IsPlayer)
+                (this as PilotServer).AddAchievement(o => o.HitpointDestroy, dmgHp);
+
             Hitpoints -= dmgHp;
+        }
         else
+        {
+            if (IsPlayer)
+                (this as PilotServer).AddAchievement(o => o.HitpointDestroy, Hitpoints);
+
             Hitpoints = 0;
+        }
     }
     protected void CheckIfDead()
     {
@@ -757,18 +789,20 @@ public abstract class Opponent
         if (NewPostion == Position)
             return;
 
-        //Vector3 oldPos;
-        //if (IsPlayer)
-        //{
-        //    oldPos = Position;
-        //}
+        Vector2 oldPos = default;
+        if (IsPlayer)
+        {
+            oldPos = Position;
+        }
 
         Position = Vector3.MoveTowards(Position, NewPostion, Time.deltaTime * Speed);
 
-        //if (IsPlayer)
-        //{
-        //    Vector3.Distance
-        //}
+        if (IsPlayer)
+        {
+            decimal dist = new decimal(Vector2.Distance(oldPos, Position));
+            if (dist > 0)
+                (this as PilotServer).AddAchievement(o => o.TravelDistance, dist);
+        }
     }
 
     public virtual void CheckCover()
@@ -790,9 +824,19 @@ public abstract class Opponent
         {
             var hitpoint = MaxHitpoints / 30;
             if (Hitpoints + hitpoint <= MaxHitpoints)
+            {
+                if (IsPlayer)
+                    (this as PilotServer).AddAchievement(o => o.HitpointRepair, hitpoint);
+                
                 Hitpoints += hitpoint;
+            }
             else
+            {
+                if (IsPlayer)
+                    (this as PilotServer).AddAchievement(o => o.HitpointRepair, MaxHitpoints - Hitpoints);
+
                 Hitpoints = MaxHitpoints;
+            }
         }
 
         if (CanRepearShields)
@@ -805,9 +849,19 @@ public abstract class Opponent
             {
                 var shield = MaxShields / ShieldRepair;
                 if (Shields + shield <= MaxShields)
+                {
+                    if (IsPlayer)
+                        (this as PilotServer).AddAchievement(o => o.ShieldRepair, shield);
+
                     Shields += shield;
+                }
                 else
+                {
+                    if (IsPlayer)
+                        (this as PilotServer).AddAchievement(o => o.ShieldRepair, MaxShields - Shields);
+
                     Shields = MaxShields;
+                }
             }
         }
     }

@@ -120,12 +120,22 @@ public class PilotServer : Opponent
         localItem.IsEquipped = false;
         localItem.IsSold = true;
 
+        double? scrap = itemPilot.Item.ScrapPrice / 30;
+        double? metal = itemPilot.Item.MetalPrice / 5;
+
         TakeReward(new ServerReward()
         {
-            Scrap = itemPilot.Item.ScrapPrice / 20 ?? itemPilot.Item.MetalPrice * 5,
+            Scrap = scrap ?? metal,
             Reason = RewardReasons.SellItem,
             Data = itemPilot.Item.Name
         });
+
+        if (scrap.HasValue)
+            AddAchievement(o => o.ItemSellScrap);
+        else if (metal.HasValue)
+            AddAchievement(o => o.ItemSellMetal);
+
+        AddAchievement(o => o.ScrapReceive, new decimal((double)(scrap ?? metal)));
 
         CalculateStatistics();
 
@@ -156,6 +166,9 @@ public class PilotServer : Opponent
                 else if (item is Ammunition ammunition)
                     SaveAmmunition(ammunition, buyItem.Count);
 
+                AddAchievement(o => o.ItemBuyScrap, buyItem.Count);
+                AddAchievement(o => o.ScrapSpend, new decimal(price));
+
                 return ShopStatus.Buy;
             }
             else
@@ -179,6 +192,9 @@ public class PilotServer : Opponent
                     SaveShip(ship);
                 else if (item is Ammunition ammunition)
                     SaveAmmunition(ammunition, buyItem.Count);
+
+                AddAchievement(o => o.ItemBuyMetal, buyItem.Count);
+                AddAchievement(o => o.MetalSpend, new decimal(price));
 
                 return ShopStatus.Buy;
             }
@@ -228,37 +244,38 @@ public class PilotServer : Opponent
     #region Pilot / Id / Name / isDead
     public Pilot Pilot { get; set; }
 
-    public void AddAchievement(Expression<System.Func<Achievement, ulong>> expression, ulong? value = null)
+    public void AddAchievement(Expression<System.Func<Achievement, decimal>> expression, decimal? value = null)
     {
         var property = expression.Body.ToString().Remove(0, 2);
 
-        ulong startValue = (ulong)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+        decimal startValue = (decimal)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
 
-        Pilot.Achievements.GetType().GetProperty(property).SetValue(Pilot.Achievements, value.HasValue ? startValue + (ulong)value : startValue + 1);
+        Pilot.Achievements.GetType().GetProperty(property).SetValue(Pilot.Achievements, value.HasValue ? startValue + (decimal)value : startValue + 1);
 
-        Debug.Log($"[AddAchievement] {property}");
+        if (property != nameof(Achievement.TravelDistance))
+            Debug.Log($"[AddAchievement] {property} = {startValue} + {value ?? 1}");
     }
-    public void AddAchievement(Expression<System.Func<Achievement, Dictionary<ulong, ulong>>> expression, ulong key, ulong? value = null)
+    public void AddAchievement(Expression<System.Func<Achievement, Dictionary<decimal, decimal>>> expression, decimal key, decimal? value = null)
     {
         var property = expression.Body.ToString().Remove(0, 2);
 
-        Dictionary<ulong, ulong> dictionary = (Dictionary<ulong, ulong>)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+        Dictionary<decimal, decimal> dictionary = (Dictionary<decimal, decimal>)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
 
         if (key > 0)
         {
             if (dictionary.ContainsKey(key))
             {
-                dictionary[key] = value.HasValue ? dictionary[key] + (ulong)value : dictionary[key] + 1;
+                dictionary[key] = value.HasValue ? dictionary[key] + (decimal)value : dictionary[key] + 1;
             }
             else
             {
-                dictionary.Add(key, value.HasValue ? dictionary[key] + (ulong)value : 1);
+                dictionary.Add(key, value.HasValue ? dictionary[key] + (decimal)value : 1);
             }
         }
         else
             Server.Log("Nieprawidłowy format klucza kolekcji.", key);
 
-        Debug.Log($"[AddAchievement] {property} : {key}");
+        Debug.Log($"[AddAchievement] {property} : {key} = {dictionary[key]} + {value ?? 1}");
     }
 
     public override ulong Id
@@ -593,17 +610,22 @@ public class PilotServer : Opponent
     public override async void TakeReward(ServerReward reward)
     {
         if (reward.Experience > 0)
+        {
+            AddAchievement(o => o.ExpReceive, reward.Experience);
             Pilot.Experience += (ulong)reward.Experience;
+        }
 
         if (reward.Metal > 0)
         {
             reward.Metal = System.Math.Round((double)reward.Metal, 2);
+            AddAchievement(o => o.MetalReceive, new decimal((double)reward.Metal));
             Pilot.Metal += (double)reward.Metal;
         }
 
         if (reward.Scrap > 0)
         {
             reward.Scrap = System.Math.Round((double)reward.Scrap, 2);
+            AddAchievement(o => o.ScrapReceive, new decimal((double)reward.Scrap));
             Pilot.Scrap += (double)reward.Scrap;
         }
 
