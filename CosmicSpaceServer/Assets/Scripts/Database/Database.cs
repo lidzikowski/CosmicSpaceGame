@@ -53,6 +53,9 @@ public class Database
         saveplayeritems,
         saveplayeritem,
 
+        updatepilottaskquest,
+        updatepilottask,
+
         getplayerid,
         getplayerdata,
         getpilotresources,
@@ -639,6 +642,29 @@ public class Database
             return item;
         }
         return null;
+    }
+
+    public static async Task UpdatePilotTaskQuest(PilotTaskQuest pilotTaskQuest)
+    {
+        Dictionary<string, object> parameters = new Dictionary<string, object>()
+        {
+            { "inpilottaskquestid", pilotTaskQuest.Id },
+            { "inprogress", pilotTaskQuest.Progress },
+            { "inisdone", pilotTaskQuest.IsDone }
+        };
+
+        await ExecuteCommand(Commands.updatepilottaskquest, parameters);
+    }
+
+    public static async Task UpdatePilotTask(PilotTask pilotTask)
+    {
+        Dictionary<string, object> parameters = new Dictionary<string, object>()
+        {
+            { "inpilottaskid", pilotTask.Id },
+            { "inenddate", pilotTask.End }
+        };
+
+        await ExecuteCommand(Commands.updatepilottask, parameters);
     }
     #endregion
 

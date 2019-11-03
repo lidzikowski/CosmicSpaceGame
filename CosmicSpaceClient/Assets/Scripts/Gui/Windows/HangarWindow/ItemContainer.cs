@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemContainer : MonoBehaviour
 {
@@ -13,6 +14,9 @@ public class ItemContainer : MonoBehaviour
 
     public GameObject ItemPrefab;
     public HangarWindow.HangarPanels HangarType;
+
+    public string ContainerTitle { get; set; }
+    public Text ContainerTitleText { get; set; }
 
 
     public void ClearItems()
@@ -49,6 +53,7 @@ public class ItemContainer : MonoBehaviour
         if (InsertItemInEmptySlot(item))
         {
             Items.Add(item);
+            RefreshItemCount();
             return true;
         }
         return false;
@@ -93,8 +98,8 @@ public class ItemContainer : MonoBehaviour
         itemHandler.PilotResource = pilotResource;
         if (ResourcesUI.Instance.ShipSprites.ContainsKey(pilotResource.ColumnName))
             itemHandler.ItemTexture.sprite = ResourcesUI.Instance.ShipSprites[pilotResource.ColumnName];
-    }
 
+    }
 
     public bool RemoveItem(ItemPilot item)
     {
@@ -102,6 +107,7 @@ public class ItemContainer : MonoBehaviour
         if (itemInContainer != null)
         {
             Items.Remove(itemInContainer);
+            RefreshItemCount();
             StartCoroutine(RefreshItems());
             return true;
         }
@@ -129,6 +135,13 @@ public class ItemContainer : MonoBehaviour
             InsertItemInEmptySlot(itemPilot);
         }
     }
+
+
+    private void RefreshItemCount()
+    {
+        ContainerTitleText.text = $"  {ContainerTitle} [{Items.Count}/{Slots.Count}]";
+    }
+
 
     private void OnCollisionStay2D(Collision2D collision)
     {

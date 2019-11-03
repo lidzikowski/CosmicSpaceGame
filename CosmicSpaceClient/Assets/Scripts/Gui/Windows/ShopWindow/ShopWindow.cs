@@ -257,6 +257,8 @@ public class ShopWindow : GameWindow
                 Count = quantity
             }
         });
+
+        Client.Pilot.Items = null;
     }
 
     private void QuantityInputField_Changed(string text)

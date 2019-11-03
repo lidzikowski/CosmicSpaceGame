@@ -3,6 +3,7 @@ using CosmicSpaceCommunication.Game;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
+using CosmicSpaceCommunication.Game.Quest;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Data;
@@ -244,40 +245,6 @@ public class PilotServer : Opponent
     #region Pilot / Id / Name / isDead
     public Pilot Pilot { get; set; }
 
-    public void AddAchievement(Expression<System.Func<Achievement, decimal>> expression, decimal? value = null)
-    {
-        var property = expression.Body.ToString().Remove(0, 2);
-
-        decimal startValue = (decimal)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
-
-        Pilot.Achievements.GetType().GetProperty(property).SetValue(Pilot.Achievements, value.HasValue ? startValue + (decimal)value : startValue + 1);
-
-        if (property != nameof(Achievement.TravelDistance))
-            Debug.Log($"[AddAchievement] {property} = {startValue} + {value ?? 1}");
-    }
-    public void AddAchievement(Expression<System.Func<Achievement, Dictionary<decimal, decimal>>> expression, decimal key, decimal? value = null)
-    {
-        var property = expression.Body.ToString().Remove(0, 2);
-
-        Dictionary<decimal, decimal> dictionary = (Dictionary<decimal, decimal>)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
-
-        if (key > 0)
-        {
-            if (dictionary.ContainsKey(key))
-            {
-                dictionary[key] = value.HasValue ? dictionary[key] + (decimal)value : dictionary[key] + 1;
-            }
-            else
-            {
-                dictionary.Add(key, value.HasValue ? dictionary[key] + (decimal)value : 1);
-            }
-        }
-        else
-            Server.Log("Nieprawidłowy format klucza kolekcji.", key);
-
-        Debug.Log($"[AddAchievement] {property} : {key} = {dictionary[key]} + {value ?? 1}");
-    }
-
     public override ulong Id
     {
         get => Pilot.Id;
@@ -340,7 +307,14 @@ public class PilotServer : Opponent
             Send(new CommandData()
             {
                 Command = Commands.UserData,
-                Data = Pilot
+                Data = new AuthUserData()
+                {
+                    Pilot = Pilot,
+                    Enemies = Server.Enemies,
+                    Maps = Server.Maps,
+                    Resources = Server.ServerResources,
+                    Ships = Server.Ships
+                }
             });
         }
     }
@@ -670,6 +644,258 @@ public class PilotServer : Opponent
     }
     #endregion
 
+    #region Achievement / Sync
+    public void AddAchievement(Expression<System.Func<Achievement, decimal>> expression, decimal? value = null)
+    {
+        var property = expression.Body.ToString().Remove(0, 2);
+
+        decimal startValue = (decimal)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+
+        Pilot.Achievements.GetType().GetProperty(property).SetValue(Pilot.Achievements, value.HasValue ? startValue + (decimal)value : startValue + 1);
+
+        SyncQuestByAchievementAsync(property, null, value);
+
+        //if (property != nameof(Achievement.TravelDistance))
+        //    Debug.Log($"[AddAchievement] {property} = {startValue} + {value ?? 1}");
+    }
+    public void AddAchievement(Expression<System.Func<Achievement, Dictionary<decimal, decimal>>> expression, decimal key, decimal? value = null)
+    {
+        var property = expression.Body.ToString().Remove(0, 2);
+
+        Dictionary<decimal, decimal> dictionary = (Dictionary<decimal, decimal>)Pilot.Achievements.GetType().GetProperty(property).GetValue(Pilot.Achievements);
+
+        if (key > 0)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value.HasValue ? dictionary[key] + (decimal)value : dictionary[key] + 1;
+            }
+            else
+            {
+                dictionary.Add(key, value.HasValue ? dictionary[key] + (decimal)value : 1);
+            }
+        }
+        else
+        {
+            Server.Log("Nieprawidłowy format klucza kolekcji.", key);
+            return;
+        }
+
+        SyncQuestByAchievementAsync(property, key, value);
+
+        //Debug.Log($"[AddAchievement] {property} : {key} = {dictionary[key]} + {value ?? 1}");
+    }
+
+    private async Task SyncQuestByAchievementAsync(string property, decimal? key, decimal? value)
+    {
+        //Debug.Log($"[SyncAchievement] {property} [{key}] += {value ?? 1}");
+
+        foreach (PilotTask pilotTask in Pilot.Tasks)
+        {
+            if (pilotTask.End.HasValue)
+                continue;
+
+            foreach (PilotTaskQuest pilotTaskQuest in pilotTask.TaskQuest)
+            {
+                if (pilotTaskQuest.IsDone)
+                    continue;
+
+                if (CheckQuestAchievement(property, pilotTaskQuest, key))
+                {
+                    if (pilotTaskQuest.Quest.Maps == null ||
+                        pilotTaskQuest.Quest.Maps.Count == 0 || 
+                        pilotTaskQuest.Quest.Maps.Contains((ulong)Pilot.Map.Id))
+                    {
+                        pilotTaskQuest.Progress += value ?? 1;
+
+                        if (pilotTaskQuest.Progress >= pilotTaskQuest.Quest.Quantity)
+                        {
+                            pilotTaskQuest.IsDone = true;
+                        }
+
+                        Send(new CommandData()
+                        {
+                            Command = Commands.QuestProgress,
+                            Data = pilotTask
+                        });
+
+                        await Database.UpdatePilotTaskQuest(pilotTaskQuest);
+                    }
+                }
+            }
+
+            if (pilotTask.TaskQuest.All(o => o.IsDone))
+            {
+                //Debug.Log($"[QUEST] {property} => All(o => o.IsDone) [{pilotTask.End}]");
+
+                pilotTask.End = System.DateTime.Now;
+
+                Send(new CommandData()
+                {
+                    Command = Commands.QuestEndTask,
+                    Data = pilotTask
+                });
+
+                TakeReward(ServerReward.GetReward(
+                        pilotTask.Task.Reward,
+                        RewardReasons.CompleteQuest,
+                        pilotTask.Task.Name));
+
+                await Database.UpdatePilotTask(pilotTask);
+                Pilot.Tasks.Remove(pilotTask);
+            }
+        }
+    }
+
+    private bool CheckQuestAchievement(string property, PilotTaskQuest pilotTaskQuest, decimal? key)
+    {
+        QuestTypes questType = pilotTaskQuest.Quest.QuestType;
+
+        if (property == nameof(Pilot.Achievements.KillNPC) && 
+            questType == QuestTypes.ZabijNPC)
+        {
+            return pilotTaskQuest.Quest.TargetId == key;
+        }
+        else if (property == nameof(Pilot.Achievements.KillPlayer) && 
+            questType == QuestTypes.ZabijGracz)
+        {
+            return pilotTaskQuest.Quest.TargetId == key;
+        }
+
+        else if (property == nameof(Pilot.Achievements.CollectResource) && 
+            questType == QuestTypes.ZbierzSurowiec)
+        {
+            return pilotTaskQuest.Quest.TargetId == key;
+        }
+
+        else if (property == nameof(Pilot.Achievements.TravelDistance) && 
+            questType == QuestTypes.PokonajOdleglosc)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.TimeInGame) && 
+            questType == QuestTypes.Spedz)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.DeadByNPC) && 
+            questType == QuestTypes.ZniszczonyPrzezNPC)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.DeadByPlayer) && 
+            questType == QuestTypes.ZniszczonyPrzezGracz)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.DamageDealNPC) && 
+            questType == QuestTypes.ZadajObrazeniaNPC)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.DamageReceiveNPC) && 
+            questType == QuestTypes.OtrzymajObrazeniaNPC)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.DamageDealPlayer) && 
+            questType == QuestTypes.ZadajObrazeniaGracz)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.DamageReceivePlayer) && 
+            questType == QuestTypes.OtrzymajObrazeniaGracz)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.HitpointRepair) && 
+            questType == QuestTypes.NaprawPoszycie)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.HitpointDestroy) && 
+            questType == QuestTypes.UszkodzPoszycie)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.ShieldRepair) && 
+            questType == QuestTypes.NaprawOslone)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.ShieldDestroy) && 
+            questType == QuestTypes.UszkodzOslone)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.ItemBuyScrap) && 
+            questType == QuestTypes.ZakupPrzedmiotScrap)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.ItemSellScrap) && 
+            questType == QuestTypes.SprzedajPrzedmiotScrap)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.ItemBuyMetal) && 
+            questType == QuestTypes.ZakupPrzedmiotMetal)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.ItemSellMetal) && 
+            questType == QuestTypes.SprzedajPrzedmiotMetal)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.ScrapReceive) && 
+            questType == QuestTypes.ZdobadzScrap)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.ScrapSpend) && 
+            questType == QuestTypes.WydajScrap)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.MetalReceive) && 
+            questType == QuestTypes.ZdobadzMetal)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.MetalSpend) && 
+            questType == QuestTypes.WydajMetal)
+        {
+
+        }
+
+        else if (property == nameof(Pilot.Achievements.ExpReceive) && 
+            questType == QuestTypes.ZdobadzDoswiadczenie)
+        {
+
+        }
+        else if (property == nameof(Pilot.Achievements.Map) && 
+            questType == QuestTypes.PrzejdzNaMape)
+        {
+            return pilotTaskQuest.Quest.TargetId == key;
+        }
+
+        else
+            return false;
+
+        return true;
+    }
+    #endregion
 
 
     #region Komunikacja z graczem

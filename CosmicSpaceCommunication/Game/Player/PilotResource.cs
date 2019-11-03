@@ -14,11 +14,11 @@ namespace CosmicSpaceCommunication.Game.Player
         public static List<PilotResource> GetPilotResource(DataRow row)
         {
             List<PilotResource> pilotResources = new List<PilotResource>();
-            for (int i = 1; i < row.Table.Columns.Count; i++)
+            for (int i = 2; i < row.Table.Columns.Count; i++)
             {
                 pilotResources.Add(new PilotResource()
                 {
-                    AmmunitionId = 99 + i,
+                    AmmunitionId = 98 + i,
                     ColumnName = row.Table.Columns[i].ColumnName,
                     Count = ConvertRow.Row<long>(row[row.Table.Columns[i].ColumnName]),
                 });

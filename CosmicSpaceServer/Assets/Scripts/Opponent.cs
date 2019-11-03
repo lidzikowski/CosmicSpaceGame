@@ -677,7 +677,7 @@ public abstract class Opponent
                     opponentAttack.Opponent.TakeReward(ServerReward.GetReward(
                         reward,
                         RewardReason,
-                        Id));
+                        Name));
 
                     if (RewardReason == RewardReasons.KillEnemy)
                     {

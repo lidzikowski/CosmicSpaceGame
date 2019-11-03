@@ -270,6 +270,17 @@ public class GameService : WebSocket
 
 
 
+                else if (commandData.Command == Commands.QuestList)
+                {
+                    Server.Pilots[commandData.SenderId].Send(new CommandData()
+                    {
+                        Command = Commands.QuestList,
+                        Data = Server.Tasks
+                    });
+                }
+
+
+
 
 
                 else

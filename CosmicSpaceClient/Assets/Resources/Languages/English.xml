@@ -18,7 +18,7 @@
   <MINIMAP>Minimap</MINIMAP>
   <DEFEATED_PLAYER>You defeated the player {0}</DEFEATED_PLAYER>
   <DEFEATED_ENEMY>You defeated the enemy {0}</DEFEATED_ENEMY>
-  <EXPERIENCE>Experience {0}</EXPERIENCE>
+  <EXPERIENCE>Experience</EXPERIENCE>
   <COMMAND_NOT_FOUND>Command '{0}' not found, try use '/help'.</COMMAND_NOT_FOUND>
   <EMPTY_MESSAGE>You can't send an empty message.</EMPTY_MESSAGE>
   <CONNECTING_TO_CHAT>Connecting...</CONNECTING_TO_CHAT>
@@ -92,12 +92,44 @@
   <IS_AMMO_ROCKET>Rocket</IS_AMMO_ROCKET>
   <BASE_DAMAGE>Base damage</BASE_DAMAGE>
   <GALAXY>Map of the galaxy</GALAXY>
-  
-  
-  
-  
-  
-  
+  <TASK_COMPLETED>Task {0} was completed!</TASK_COMPLETED>
+  <QUEST_TITLE>Quests</QUEST_TITLE>
+  <CANCEL>Cancel</CANCEL>
+  <ACCEPT>Accept</ACCEPT>
+  <REWARDS>Rewards</REWARDS>
+  <CHANCE>Chance</CHANCE>
+
+
+
+
+
+  <Q_KILL_NPC>Kill NPC</Q_KILL_NPC>
+  <Q_KILL_PLAYER>Kill player ship</Q_KILL_PLAYER>
+  <Q_COLLECT_RESOURCE>Collect resource</Q_COLLECT_RESOURCE>
+  <Q_TRAVEL>Travel</Q_TRAVEL>
+  <Q_TIME>Spend time</Q_TIME>
+  <Q_DEAD_BY_NPC>Die of NPC</Q_DEAD_BY_NPC>
+  <Q_DEAD_BY_PLAYER>Die of Player</Q_DEAD_BY_PLAYER>
+  <Q_DAMAGE_DEAL_NPC>Deal damage NPC</Q_DAMAGE_DEAL_NPC>
+  <Q_DAMAGE_RECEIVE_NPC>Receive damage of NPC</Q_DAMAGE_RECEIVE_NPC>
+  <Q_DAMAGE_DEAL_PLAYER>Deal damage other Player</Q_DAMAGE_DEAL_PLAYER>
+  <Q_DAMAGE_RECEIVE_PLAYER>Receive damage of other Player</Q_DAMAGE_RECEIVE_PLAYER>
+  <Q_HITPOINT_REPAIR>Repair hitpoints</Q_HITPOINT_REPAIR>
+  <Q_HITPOINT_DESTROY>Destroy hitpoints</Q_HITPOINT_DESTROY>
+  <Q_SHIELD_REPAIR>Repair shields</Q_SHIELD_REPAIR>
+  <Q_SHIELD_DESTROY>Destroy shields</Q_SHIELD_DESTROY>
+  <Q_ITEM_BUY_SCRAP>Buy item for Scrap</Q_ITEM_BUY_SCRAP>
+  <Q_ITEM_SELL_SCRAP>Sell item for Scrap</Q_ITEM_SELL_SCRAP>
+  <Q_ITEM_BUY_METAL>Buy item for Metal</Q_ITEM_BUY_METAL>
+  <Q_ITEM_SELL_METAL>Sell item for Metal</Q_ITEM_SELL_METAL>
+  <Q_SCRAP_RECEIVE>Receive Scrap</Q_SCRAP_RECEIVE>
+  <Q_SCRAP_SPEND>Spend Scrap</Q_SCRAP_SPEND>
+  <Q_METAL_RECEIVE>Receive Metal</Q_METAL_RECEIVE>
+  <Q_METAL_SPEND>Spend Metal</Q_METAL_SPEND>
+  <Q_EXP_RECEIVE>Receive Experience</Q_EXP_RECEIVE>
+  <Q_MAP_TRAVEL>Visit a Map</Q_MAP_TRAVEL>
+  <Q_ON_MAP>On map</Q_ON_MAP>
+
 
 
 </Language>

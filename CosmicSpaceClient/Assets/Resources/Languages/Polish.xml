@@ -18,7 +18,7 @@
   <MINIMAP>Minimapa</MINIMAP>
   <DEFEATED_PLAYER>Pokonałeś gracza {0}</DEFEATED_PLAYER>
   <DEFEATED_ENEMY>Pokonałeś przeciwnika {0}</DEFEATED_ENEMY>
-  <EXPERIENCE>Doświadczenie {0}</EXPERIENCE>
+  <EXPERIENCE>Doświadczenie</EXPERIENCE>
   <COMMAND_NOT_FOUND>Komenda '{0}' nie istnieje, spróbuj użyć '/help'.</COMMAND_NOT_FOUND>
   <EMPTY_MESSAGE>Nie możesz wysłać pustej wiadomości.</EMPTY_MESSAGE>
   <CONNECTING_TO_CHAT>Trwa łączenie...</CONNECTING_TO_CHAT>
@@ -93,9 +93,41 @@
   <IS_AMMO_ROCKET>Rakieta</IS_AMMO_ROCKET>
   <BASE_DAMAGE>Bazowe obrażenia</BASE_DAMAGE>
   <GALAXY>Mapa galaktyki</GALAXY>
+  <TASK_COMPLETED>Zadanie {0} zostało wykonane!</TASK_COMPLETED>
+  <QUEST_TITLE>Zadania</QUEST_TITLE>
+  <CANCEL>Przerwij</CANCEL>
+  <ACCEPT>Akceptuj</ACCEPT>
+  <REWARDS>Nagrody</REWARDS>
+  <CHANCE>Szansa</CHANCE>
+
+
   
   
-  
-  
-  
+
+  <Q_KILL_NPC>Zniszcz NPC</Q_KILL_NPC>
+  <Q_KILL_PLAYER>Zniszcz statek Gracza</Q_KILL_PLAYER>
+  <Q_COLLECT_RESOURCE>Zbierz surowiec</Q_COLLECT_RESOURCE>
+  <Q_TRAVEL>Podróżuj</Q_TRAVEL>
+  <Q_TIME>Spędź czas</Q_TIME>
+  <Q_DEAD_BY_NPC>Zgiń od NPC</Q_DEAD_BY_NPC>
+  <Q_DEAD_BY_PLAYER>Zgiń od Gracza</Q_DEAD_BY_PLAYER>
+  <Q_DAMAGE_DEAL_NPC>Zadaj obrażenia NPC</Q_DAMAGE_DEAL_NPC>
+  <Q_DAMAGE_RECEIVE_NPC>Otrzymaj obrażenia od NPC</Q_DAMAGE_RECEIVE_NPC>
+  <Q_DAMAGE_DEAL_PLAYER>Zadaj obrażenia w innego Gracza</Q_DAMAGE_DEAL_PLAYER>
+  <Q_DAMAGE_RECEIVE_PLAYER>Otrzymaj obrażenia od innego Gracza</Q_DAMAGE_RECEIVE_PLAYER>
+  <Q_HITPOINT_REPAIR>Napraw poszycie</Q_HITPOINT_REPAIR>
+  <Q_HITPOINT_DESTROY>Uszkodź poszycie</Q_HITPOINT_DESTROY>
+  <Q_SHIELD_REPAIR>Napraw osłonę</Q_SHIELD_REPAIR>
+  <Q_SHIELD_DESTROY>Uszkodź osłonę</Q_SHIELD_DESTROY>
+  <Q_ITEM_BUY_SCRAP>Kup przedmiot za Scrap</Q_ITEM_BUY_SCRAP>
+  <Q_ITEM_SELL_SCRAP>Sprzedaj przedmiot za Scrap</Q_ITEM_SELL_SCRAP>
+  <Q_ITEM_BUY_METAL>Kup przedmiot za Metal</Q_ITEM_BUY_METAL>
+  <Q_ITEM_SELL_METAL>Sprzedaj przedmiot za Metal</Q_ITEM_SELL_METAL>
+  <Q_SCRAP_RECEIVE>Zdobądź Scrap</Q_SCRAP_RECEIVE>
+  <Q_SCRAP_SPEND>Wydaj Scrap</Q_SCRAP_SPEND>
+  <Q_METAL_RECEIVE>Zdobądź Metal</Q_METAL_RECEIVE>
+  <Q_METAL_SPEND>Wydaj Metal</Q_METAL_SPEND>
+  <Q_EXP_RECEIVE>Zdobądź Doświadczenie</Q_EXP_RECEIVE>
+  <Q_MAP_TRAVEL>Odwiedź Mapę</Q_MAP_TRAVEL>
+  <Q_ON_MAP>Na mapie</Q_ON_MAP>
 </Language>

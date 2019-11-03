@@ -10,5 +10,7 @@ namespace CosmicSpaceCommunication.Game.Resources
 
         BuyItem,
         SellItem,
+
+        CompleteQuest,
     }
 }

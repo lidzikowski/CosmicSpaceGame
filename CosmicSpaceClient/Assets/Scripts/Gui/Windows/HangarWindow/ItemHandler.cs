@@ -94,6 +94,8 @@ public class ItemHandler : MonoBehaviour, IDragHandler, IEndDragHandler, IBeginD
                         }
                     });
                     Destroy(gameObject);
+
+                    // ADD
                 }
             }
         }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.EventSystems;
 using TMPro;
+using CosmicSpaceCommunication.Game.Quest;
 
 public class UserInterfaceWindow : GameWindow
 {
@@ -51,11 +52,18 @@ public class UserInterfaceWindow : GameWindow
     public GameObject ChatGameObject;
     public Button CloseChatWindowButton;
 
+    [Header("Quests")]
+    public Transform QuestsContentTransform;
+    public TextMeshProUGUI QuestWindowTitleText;
+    public GameObject QuestGameObject;
+    public Button CloseQuestWindowButton;
+
     [Header("Menu Buttons")]
     public Button HangerButton;
     public Button ShopButton;
     public Button GalacticButton;
-    public Button MissionButton;
+    public Button MissionsButton;
+    public Button QuestsButton;
     public Button MapButton;
     public Button ChatButton;
     public Button SettingsButton;
@@ -82,17 +90,23 @@ public class UserInterfaceWindow : GameWindow
 
         ButtonListener(GalacticButton, GalacticButton_Clicked);
 
-        ButtonListener(MissionButton, () => SetActiveWindow(WindowTypes.MissionWindow));
+        ButtonListener(MissionsButton, MissionsButton_Clicked);
 
         ButtonListener(SettingsButton, () => SetActiveWindow(WindowTypes.SettingsWindow));
 
         ButtonListener(QuitButton, () => SetActiveWindow(WindowTypes.QuitWindow));
-
+        
+        MapGameObject.SetActive(true);
         ButtonListener(CloseMapWindowButton, CloseMapWindowButton_Clicked);
         ButtonListener(MapButton, CloseMapWindowButton_Clicked);
 
+        ChatGameObject.SetActive(true);
         ButtonListener(CloseChatWindowButton, CloseChatWindowButton_Clicked);
         ButtonListener(ChatButton, CloseChatWindowButton_Clicked);
+
+        QuestGameObject.SetActive(true);
+        ButtonListener(CloseQuestWindowButton, CloseQuestWindowButton_Clicked);
+        ButtonListener(QuestsButton, CloseQuestWindowButton_Clicked);
 
         EventTrigger.Entry entry = new EventTrigger.Entry()
         {
@@ -116,8 +130,10 @@ public class UserInterfaceWindow : GameWindow
             position += $" > {(int)Player.LocalShipController.TargetPosition.x};{-(int)Player.LocalShipController.TargetPosition.y}";
         }
         SetText(MapPositionText, $"{Client.Pilot.Map.Name} [{position}]");
+        SetText(QuestWindowTitleText, GameSettings.UserLanguage.QUEST_TITLE);
 
         RefreshButtonStatus();
+        RefreshQuests();
     }
 
     public override void ChangeLanguage()
@@ -485,6 +501,11 @@ public class UserInterfaceWindow : GameWindow
         SetActiveWindow(ChatGameObject, ChatButton);
     }
 
+    private void CloseQuestWindowButton_Clicked()
+    {
+        SetActiveWindow(QuestGameObject, QuestsButton);
+    }
+
 
 
     private void HangerButton_Clicked()
@@ -553,8 +574,30 @@ public class UserInterfaceWindow : GameWindow
         });
     }
 
+    private void MissionsButton_Clicked()
+    {
+        if (GuiScript.Windows[WindowTypes.MissionWindow].Active)
+        {
+            GuiScript.CloseWindow(WindowTypes.MissionWindow);
+            RefreshButtonStatus();
+            return;
+        }
+
+        if (MissionWindow.Tasks?.Count > 0)
+        {
+            SetActiveWindow(WindowTypes.MissionWindow);
+            return;
+        }
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.QuestList,
+            SenderId = Client.Pilot.Id
+        });
+    }
 
 
+    
 
     private void SetActiveWindow(GameObject windowGameObject, Button windowButton)
     {
@@ -595,10 +638,154 @@ public class UserInterfaceWindow : GameWindow
     {
         SetActiveButton(HangerButton, GuiScript.Windows[WindowTypes.HangarWindow].Active);
         SetActiveButton(ShopButton, GuiScript.Windows[WindowTypes.ShopWindow].Active);
-        SetActiveButton(MissionButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
+        SetActiveButton(MissionsButton, GuiScript.Windows[WindowTypes.MissionWindow].Active);
         SetActiveButton(GalacticButton, GuiScript.Windows[WindowTypes.GalacticWindow].Active);
         SetActiveButton(SettingsButton, GuiScript.Windows[WindowTypes.SettingsWindow].Active);
         SetActiveButton(QuitButton, GuiScript.Windows[WindowTypes.QuitWindow].Active);
+    }
+
+    public void RefreshQuests()
+    {
+        Player.DestroyChilds(QuestsContentTransform);
+
+        foreach (PilotTask task in Client.Pilot.Tasks.Where(o => !o.End.HasValue))
+        {
+            GameObject taskName = Instantiate(MessageGameObject, QuestsContentTransform);
+            Text taskNameText = taskName.GetComponent<Text>();
+            taskNameText.text = task.Task.Name;
+            taskNameText.fontSize = 16;
+
+            GameObject taskLevel = Instantiate(MessageGameObject, QuestsContentTransform);
+            Text taskLevelText = taskLevel.GetComponent<Text>();
+            taskLevelText.text = $"{GameSettings.UserLanguage.REQUIRED_LEVEL} {task.Task.Level}";
+            taskLevelText.fontSize = 10;
+            taskLevelText.alignment = TextAnchor.MiddleRight;
+
+            foreach (PilotTaskQuest pilotTask in task.TaskQuest)
+            {
+                GameObject questType = Instantiate(MessageGameObject, QuestsContentTransform);
+                Text questTypeText = questType.GetComponent<Text>();
+                questTypeText.text = $"{FindQuestType(pilotTask.Quest.QuestType, pilotTask.Quest.TargetId)} {pilotTask.Progress}/{pilotTask.Quest.Quantity}";
+                questTypeText.fontSize = 12;
+                
+                if (pilotTask.Quest.Maps?.Count > 0)
+                {
+                    foreach (var item in pilotTask.Quest.Maps)
+                    {
+                        GameObject map = Instantiate(MessageGameObject, QuestsContentTransform);
+                        Text mapText = map.GetComponent<Text>();
+                        mapText.text = $"{GameSettings.UserLanguage.Q_ON_MAP}: {Client.ServerResources.Maps[long.Parse(item.ToString())].Name}";
+                        mapText.fontSize = 10;
+                        mapText.alignment = TextAnchor.MiddleRight;
+                    }
+                }
+            }
+        }
+    }
+
+    public static string FindQuestType(QuestTypes questType, decimal? key)
+    {
+        string text = null;
+
+        switch(questType)
+        {
+            case QuestTypes.ZabijNPC:
+                text = $"{GameSettings.UserLanguage.Q_KILL_NPC}: {Client.ServerResources.Enemies[long.Parse(key.ToString())].Name}";
+                break;
+            case QuestTypes.ZabijGracz:
+                text = $"{GameSettings.UserLanguage.Q_KILL_PLAYER}: {Client.ServerResources.Ships[long.Parse(key.ToString())].Name}";
+                break;
+
+            case QuestTypes.ZbierzSurowiec:
+                text = $"{GameSettings.UserLanguage.Q_COLLECT_RESOURCE}: {Client.ServerResources.Resources[long.Parse(key.ToString())].Name}";
+                break;
+
+            case QuestTypes.PokonajOdleglosc:
+                text = GameSettings.UserLanguage.Q_TRAVEL;
+                break;
+
+            case QuestTypes.Spedz:
+                text = GameSettings.UserLanguage.Q_TIME;
+                break;
+
+            case QuestTypes.ZniszczonyPrzezNPC:
+                text = GameSettings.UserLanguage.Q_DEAD_BY_NPC;
+                break;
+            case QuestTypes.ZniszczonyPrzezGracz:
+                text = GameSettings.UserLanguage.Q_DEAD_BY_PLAYER;
+                break;
+
+            case QuestTypes.ZadajObrazeniaNPC:
+                text = GameSettings.UserLanguage.Q_DAMAGE_DEAL_NPC;
+                break;
+            case QuestTypes.OtrzymajObrazeniaNPC:
+                text = GameSettings.UserLanguage.Q_DAMAGE_RECEIVE_NPC;
+                break;
+
+            case QuestTypes.ZadajObrazeniaGracz:
+                text = GameSettings.UserLanguage.Q_DAMAGE_DEAL_PLAYER;
+                break;
+            case QuestTypes.OtrzymajObrazeniaGracz:
+                text = GameSettings.UserLanguage.Q_DAMAGE_RECEIVE_PLAYER;
+                break;
+
+            case QuestTypes.NaprawPoszycie:
+                text = GameSettings.UserLanguage.Q_HITPOINT_REPAIR;
+                break;
+            case QuestTypes.UszkodzPoszycie:
+                text = GameSettings.UserLanguage.Q_HITPOINT_DESTROY;
+                break;
+
+            case QuestTypes.NaprawOslone:
+                text = GameSettings.UserLanguage.Q_SHIELD_REPAIR;
+                break;
+            case QuestTypes.UszkodzOslone:
+                text = GameSettings.UserLanguage.Q_SHIELD_DESTROY;
+                break;
+
+            case QuestTypes.ZakupPrzedmiotScrap:
+                text = GameSettings.UserLanguage.Q_ITEM_BUY_SCRAP;
+                break;
+            case QuestTypes.SprzedajPrzedmiotScrap:
+                text = GameSettings.UserLanguage.Q_ITEM_SELL_SCRAP;
+                break;
+                
+            case QuestTypes.ZakupPrzedmiotMetal:
+                text = GameSettings.UserLanguage.Q_ITEM_BUY_METAL;
+                break;
+            case QuestTypes.SprzedajPrzedmiotMetal:
+                text = GameSettings.UserLanguage.Q_ITEM_SELL_METAL;
+                break;
+
+            case QuestTypes.ZdobadzScrap:
+                text = GameSettings.UserLanguage.Q_SCRAP_RECEIVE;
+                break;
+            case QuestTypes.WydajScrap:
+                text = GameSettings.UserLanguage.Q_SCRAP_SPEND;
+                break;
+
+            case QuestTypes.ZdobadzMetal:
+                text = GameSettings.UserLanguage.Q_METAL_RECEIVE;
+                break;
+            case QuestTypes.WydajMetal:
+                text = GameSettings.UserLanguage.Q_METAL_SPEND;
+                break;
+
+            case QuestTypes.ZdobadzDoswiadczenie:
+                text = GameSettings.UserLanguage.Q_EXP_RECEIVE;
+                break;
+
+            case QuestTypes.PrzejdzNaMape:
+                text = $"{GameSettings.UserLanguage.Q_MAP_TRAVEL}: {Client.ServerResources.Maps[long.Parse(key.ToString())].Name}";
+                break;
+
+
+            default:
+                text = nameof(NotImplementedException);
+                break;
+        }
+
+        return $"- {text}";
     }
     
 

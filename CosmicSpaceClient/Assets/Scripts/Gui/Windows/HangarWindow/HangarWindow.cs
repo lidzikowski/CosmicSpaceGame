@@ -188,12 +188,13 @@ public class HangarWindow : GameWindow
 
         GameObject go = Instantiate(TitlePanelPrefab, content);
         go.GetComponent<Text>().text = $"  {title}";
-        if(itemSlot > 0)
-            go.GetComponent<Text>().text += $"  [{itemCount}/{itemSlot}]";
 
         Transform panel = Instantiate(SlotPanelPrefab, content).transform;
         panel.name = hangarPanel.ToString();
         Panels.Add(hangarPanel, panel.GetComponent<ItemContainer>());
+
+        panel.GetComponent<ItemContainer>().ContainerTitle = title;
+        panel.GetComponent<ItemContainer>().ContainerTitleText = go.GetComponent<Text>();
 
         return panel;
     }

@@ -1,16 +1,10 @@
 BUGI:
-- Zmiana statku = brak odswierzenia wyposazenia
-
 - wiadomosci z serwera podczas logowania/rejestracji w main menu
-- przy pisaniu na czacie zablokowac obsluge klawiszy
 - strefa ochronna
 - obsluga klawiszy podczas pisania na czacie - zablokowac
-- rodzaje npc w bazie
 
 
 TODO:
-- Osiagniecia
-- Zadania (obsluga z osiagniec)
 - Surowce na mapie (surowce jako materialy na mapie oraz z pokonanego przeciwnika)
 - System grup
 - Zadania grupowe
@@ -20,6 +14,3 @@ TODO:
 - Po wyjsciu z gry - logout czasowy
 - Wzmacniacze czasowe poszycia / oslony / obrazen
 - Ekwipowanie statku tylko w gwiezdnej bazie
-
-
-

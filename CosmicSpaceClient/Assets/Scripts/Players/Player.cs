@@ -65,13 +65,12 @@ public class Player : MonoBehaviour
     float timer = 0;
     private void PlayerNewPosition()
     {
-        if (timer <= 0.1f)
+        timer += Time.deltaTime;
+        if (timer >= 0.1f)
         {
-            timer += Time.deltaTime;
-            return;
+            timer = 0;
+            LocalShipController.TargetPosition = TargetPosition;
         }
-        timer = 0;
-        LocalShipController.TargetPosition = TargetPosition;
     }
 
     private void MouseControl()
@@ -541,12 +540,19 @@ public class Player : MonoBehaviour
             case RewardReasons.BuyItem:
                 messages.Add(string.Format(GameSettings.UserLanguage.ITEM_PURCHASED, reward.Data));
                 break;
+            case RewardReasons.CompleteQuest:
+                messages.Add(string.Format(GameSettings.UserLanguage.TASK_COMPLETED, reward.Data));
+                break;
+
+            default:
+                Debug.LogError(nameof(System.NotImplementedException));
+                break;
         }
 
         if (reward.Experience != null)
         {
             Client.Pilot.Experience += (ulong)reward.Experience;
-            messages.Add(string.Format(GameSettings.UserLanguage.EXPERIENCE, reward.Experience));
+            messages.Add($"{GameSettings.UserLanguage.EXPERIENCE} {reward.Experience}");
         }
         if (reward.Metal != null)
         {

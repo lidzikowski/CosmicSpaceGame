@@ -298,7 +298,109 @@ public class Language
     [XmlElement("GALAXY")]
     public string GALAXY { get; set; }
 
+    [XmlElement("TASK_COMPLETED")]
+    public string TASK_COMPLETED { get; set; }
+
+    [XmlElement("QUEST_TITLE")]
+    public string QUEST_TITLE { get; set; }
+
+    [XmlElement("CANCEL")]
+    public string CANCEL { get; set; }
+
+    [XmlElement("ACCEPT")]
+    public string ACCEPT { get; set; }
+
+    [XmlElement("REWARDS")]
+    public string REWARDS { get; set; }
+
+    [XmlElement("CHANCE")]
+    public string CHANCE { get; set; }
 
 
+
+
+
+
+
+    #endregion
+
+    #region QUESTS
+    [XmlElement("Q_KILL_NPC")]
+    public string Q_KILL_NPC { get; set; }
+
+    [XmlElement("Q_KILL_PLAYER")]
+    public string Q_KILL_PLAYER { get; set; }
+
+    [XmlElement("Q_COLLECT_RESOURCE")]
+    public string Q_COLLECT_RESOURCE { get; set; }
+
+    [XmlElement("Q_TRAVEL")]
+    public string Q_TRAVEL { get; set; }
+
+    [XmlElement("Q_TIME")]
+    public string Q_TIME { get; set; }
+
+    [XmlElement("Q_DEAD_BY_NPC")]
+    public string Q_DEAD_BY_NPC { get; set; }
+
+    [XmlElement("Q_DEAD_BY_PLAYER")]
+    public string Q_DEAD_BY_PLAYER { get; set; }
+
+    [XmlElement("Q_DAMAGE_DEAL_NPC")]
+    public string Q_DAMAGE_DEAL_NPC { get; set; }
+
+    [XmlElement("Q_DAMAGE_RECEIVE_NPC")]
+    public string Q_DAMAGE_RECEIVE_NPC { get; set; }
+
+    [XmlElement("Q_DAMAGE_DEAL_PLAYER")]
+    public string Q_DAMAGE_DEAL_PLAYER { get; set; }
+
+    [XmlElement("Q_DAMAGE_RECEIVE_PLAYER")]
+    public string Q_DAMAGE_RECEIVE_PLAYER { get; set; }
+
+    [XmlElement("Q_HITPOINT_REPAIR")]
+    public string Q_HITPOINT_REPAIR { get; set; }
+
+    [XmlElement("Q_HITPOINT_DESTROY")]
+    public string Q_HITPOINT_DESTROY { get; set; }
+
+    [XmlElement("Q_SHIELD_REPAIR")]
+    public string Q_SHIELD_REPAIR { get; set; }
+
+    [XmlElement("Q_SHIELD_DESTROY")]
+    public string Q_SHIELD_DESTROY { get; set; }
+
+    [XmlElement("Q_ITEM_BUY_SCRAP")]
+    public string Q_ITEM_BUY_SCRAP { get; set; }
+
+    [XmlElement("Q_ITEM_SELL_SCRAP")]
+    public string Q_ITEM_SELL_SCRAP { get; set; }
+
+    [XmlElement("Q_ITEM_BUY_METAL")]
+    public string Q_ITEM_BUY_METAL { get; set; }
+
+    [XmlElement("Q_ITEM_SELL_METAL")]
+    public string Q_ITEM_SELL_METAL { get; set; }
+
+    [XmlElement("Q_SCRAP_RECEIVE")]
+    public string Q_SCRAP_RECEIVE { get; set; }
+
+    [XmlElement("Q_SCRAP_SPEND")]
+    public string Q_SCRAP_SPEND { get; set; }
+
+    [XmlElement("Q_METAL_RECEIVE")]
+    public string Q_METAL_RECEIVE { get; set; }
+
+    [XmlElement("Q_METAL_SPEND")]
+    public string Q_METAL_SPEND { get; set; }
+
+    [XmlElement("Q_EXP_RECEIVE")]
+    public string Q_EXP_RECEIVE { get; set; }
+
+    [XmlElement("Q_MAP_TRAVEL")]
+    public string Q_MAP_TRAVEL { get; set; }
+
+    [XmlElement("Q_ON_MAP")]
+    public string Q_ON_MAP { get; set; }
     #endregion
 }

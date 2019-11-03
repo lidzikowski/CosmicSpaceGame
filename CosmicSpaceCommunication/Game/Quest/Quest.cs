@@ -9,8 +9,8 @@ namespace CosmicSpaceCommunication.Game.Quest
     {
         public uint Id { get; set; }
         public QuestTypes QuestType { get; set; }
-        public ulong TargetId { get; set; }
-        public ulong Quantity { get; set; }
+        public decimal TargetId { get; set; }
+        public decimal Quantity { get; set; }
 
         public List<ulong> Maps { get; set; }
 
@@ -22,8 +22,8 @@ namespace CosmicSpaceCommunication.Game.Quest
             {
                 Id = ConvertRow.Row<uint>(row["questid"]),
                 QuestType = (QuestTypes)ConvertRow.Row<uint>(row["questtypeid"]),
-                TargetId = ConvertRow.Row<ulong>(row["targetid"]),
-                Quantity = ConvertRow.Row<ulong>(row["quantity"]),
+                TargetId = ConvertRow.Row<decimal>(row["targetid"]),
+                Quantity = ConvertRow.Row<decimal>(row["quantity"]),
             };
         }
     }

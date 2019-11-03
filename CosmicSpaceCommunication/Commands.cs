@@ -46,6 +46,13 @@ namespace CosmicSpaceCommunication
 
         ChangeAmmunition = 400,
 
+        QuestProgress = 410,
+        QuestEndTask = 411,
+
+        QuestList = 420,
+        QuestAccept = 421,
+        QuestCancel = 422,
+
 
 
 

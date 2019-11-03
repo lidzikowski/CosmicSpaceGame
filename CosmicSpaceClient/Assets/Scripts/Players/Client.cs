@@ -9,6 +9,7 @@ using CosmicSpaceCommunication.Game.Enemy;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
 using System.Linq;
+using CosmicSpaceCommunication.Game.Quest;
 
 public class Client : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class Client : MonoBehaviour
                 GuiScript.CloseAllWindow();
                 if (value == null)
                 {
+                    ServerResources = null;
                     GuiScript.OpenWindow(WindowTypes.MainMenu);
                     PlayerScript?.ClearGameArea();
                 }
@@ -48,6 +50,7 @@ public class Client : MonoBehaviour
             });
         }
     }
+    public static AuthUserData ServerResources;
 
     private static bool socketConnected = false;
     public static bool SocketConnected
@@ -84,7 +87,7 @@ public class Client : MonoBehaviour
 
     private void Awake()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 144;
     }
 
     void Start()
@@ -223,9 +226,10 @@ public class Client : MonoBehaviour
         #region INICJALIZACJA ZALOGOWANEGO GRACZA
         else if (commandData.Command == Commands.UserData)
         {
-            if (commandData.Data is Pilot data)
+            if (commandData.Data is AuthUserData data)
             {
-                Pilot = data;
+                Pilot = data.Pilot;
+                ServerResources = data;
             }
         }
         #endregion
@@ -489,6 +493,55 @@ public class Client : MonoBehaviour
             {
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.GalacticWindow);
                 GalacticWindow.ServerMaps = data;
+            }
+        }
+        #endregion
+
+
+        #region ZADANIA - POSTEP
+        else if (commandData.Command == Commands.QuestProgress)
+        {
+            if (commandData.Data is PilotTask data)
+            {
+                PilotTask localTask = Pilot.Tasks.FirstOrDefault(o => o.Id == data.Id);
+                if(localTask == null)
+                {
+                    Debug.LogError($"{nameof(PilotTask)} => {nameof(NullReferenceException)}");
+                    return;
+                }
+
+                localTask.TaskQuest = data.TaskQuest;
+            }
+        }
+        #endregion
+
+
+        #region ZADANIA - ZAKONCZENIE
+        else if (commandData.Command == Commands.QuestEndTask)
+        {
+            if (commandData.Data is PilotTask data)
+            {
+                PilotTask localTask = Pilot.Tasks.FirstOrDefault(o => o.Id == data.Id);
+                if (localTask == null)
+                {
+                    Debug.LogError($"{nameof(PilotTask)} => {nameof(NullReferenceException)}");
+                    return;
+                }
+
+                localTask.End = data.End;
+                Pilot.Tasks.Remove(localTask);
+            }
+        }
+        #endregion
+
+
+        #region POBRANIE ZADAN
+        else if (commandData.Command == Commands.QuestList)
+        {
+            if (commandData.Data is Dictionary<uint, QuestTask> data)
+            {
+                (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.MissionWindow);
+                MissionWindow.Tasks = data;
             }
         }
         #endregion
