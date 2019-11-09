@@ -248,7 +248,6 @@ public class ShopWindow : GameWindow
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.BuyShopItem,
-            SenderId = Client.Pilot.Id,
             Data = new BuyShopItem()
             {
                 ItemType = item.ItemType,

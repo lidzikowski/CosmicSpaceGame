@@ -525,8 +525,7 @@ public class UserInterfaceWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.GetEquipment,
-            SenderId = Client.Pilot.Id
+            Command = Commands.GetEquipment
         });
     }
 
@@ -547,8 +546,7 @@ public class UserInterfaceWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.GetShopItems,
-            SenderId = Client.Pilot.Id
+            Command = Commands.GetShopItems
         });
     }
 
@@ -569,8 +567,7 @@ public class UserInterfaceWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.GetAllMaps,
-            SenderId = Client.Pilot.Id
+            Command = Commands.GetAllMaps
         });
     }
 
@@ -591,8 +588,7 @@ public class UserInterfaceWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.QuestList,
-            SenderId = Client.Pilot.Id
+            Command = Commands.QuestList
         });
     }
 

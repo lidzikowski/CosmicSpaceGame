@@ -72,7 +72,6 @@ public class ItemInformationWindow : GameWindow
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.SellEquipmentItem,
-            SenderId = Client.Pilot.Id,
             Data = itemPilot
         });
 

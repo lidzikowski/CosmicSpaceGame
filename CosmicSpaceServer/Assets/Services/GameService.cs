@@ -8,6 +8,8 @@ using CosmicSpaceCommunication.Game.Player.ClientToServer;
 using CosmicSpaceCommunication.Game.Player.ServerToClient;
 using CosmicSpaceCommunication.Game.Player;
 using CosmicSpaceCommunication.Game.Resources;
+using CosmicSpaceCommunication.Game.Quest;
+using System.Collections.Generic;
 
 public class GameService : WebSocket
 {
@@ -277,6 +279,71 @@ public class GameService : WebSocket
                         Command = Commands.QuestList,
                         Data = Server.Tasks
                     });
+                }
+
+
+
+                else if (commandData.Command == Commands.GetProgressTasks)
+                {
+                    Server.Pilots[commandData.SenderId].Send(new CommandData()
+                    {
+                        Command = Commands.GetProgressTasks,
+                        Data = Database.GetPilotProgressTasks(commandData.SenderId).Result
+                    });
+                }
+
+
+
+                else if (commandData.Command == Commands.QuestAccept)
+                {
+                    if (commandData.Data is QuestTask data)
+                    {
+                        PilotTask pilotTask = Server.Pilots[commandData.SenderId].Pilot.Tasks.FirstOrDefault(o => o.Task.Id == data.Id);
+
+                        if (pilotTask == null)
+                        {
+                            List<PilotProgressTask> pilotProgressTasks = Database.GetPilotProgressTasks(commandData.SenderId).Result;
+
+                            if (pilotProgressTasks.Any(o => o.Id == data.Id && !o.End.HasValue))
+                            {
+
+                            }
+                            else
+                            {
+                                Server.Log("Zadanie zostalo juz wykonane.", pilotTask.Id);
+                            }
+                        }
+                        else
+                        {
+                            Server.Log("Zadanie jest w trakcy wykonywania.", pilotTask.Id);
+                        }
+
+                        Server.Pilots[commandData.SenderId].Send(new CommandData()
+                        {
+                            Command = Commands.GetProgressTasks,
+                            Data = Database.GetPilotProgressTasks(commandData.SenderId).Result
+                        });
+                    }
+                    else
+                        errorStatus = 2;
+                }
+
+
+
+                else if (commandData.Command == Commands.QuestCancel)
+                {
+                    if (commandData.Data is QuestTask data)
+                    {
+
+
+                        //Server.Pilots[commandData.SenderId].Send(new CommandData()
+                        //{
+                        //    Command = Commands.GetProgressTasks,
+                        //    Data = Database.GetPilotProgressTasks(commandData.SenderId).Result
+                        //});
+                    }
+                    else
+                        errorStatus = 2;
                 }
 
 

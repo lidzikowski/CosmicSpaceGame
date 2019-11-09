@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public delegate void ShowQuestInformation(QuestTask item);
+public delegate void ShowQuestInformation(QuestTask item, PilotProgressTask pilotProgressTask);
 
 public class QuestItem : MonoBehaviour
 {
@@ -13,9 +13,11 @@ public class QuestItem : MonoBehaviour
         set
         {
             quest = value;
-            GetComponent<Text>().text = value?.Name;
+            GetComponent<Text>().text = $"{value?.Name} {PilotProgressTask?.End}";
         }
     }
+
+    public PilotProgressTask PilotProgressTask { get; set; }
 
     private ShowQuestInformation onShowInformation;
     public ShowQuestInformation OnShowInformation
@@ -32,6 +34,6 @@ public class QuestItem : MonoBehaviour
     private void ClickEvent()
     {
         if (Quest != null)
-            OnShowInformation?.Invoke(Quest);
+            OnShowInformation?.Invoke(Quest, PilotProgressTask);
     }
 }

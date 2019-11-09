@@ -34,6 +34,11 @@ public class Client : MonoBehaviour
                 if (value == null)
                 {
                     ServerResources = null;
+
+                    ShopWindow.ServerItems = null;
+                    GalacticWindow.ServerMaps = null;
+                    MissionWindow.Tasks = null;
+
                     GuiScript.OpenWindow(WindowTypes.MainMenu);
                     PlayerScript?.ClearGameArea();
                 }
@@ -204,6 +209,8 @@ public class Client : MonoBehaviour
                 bool status = data;
                 //Debug.Log($"LOG_IN_STATUS: {status}");
             }
+            else
+                WrongDataLog(typeof(bool), commandData.Data?.GetType());
         }
         else if (commandData.Command == Commands.Register)
         {
@@ -212,6 +219,8 @@ public class Client : MonoBehaviour
                 bool status = data;
                 //Debug.Log($"REGISTER_STATUS: {status}");
             }
+            else
+                WrongDataLog(typeof(bool), commandData.Data?.GetType());
         }
         else if (commandData.Command == Commands.AccountOccupied)
         {
@@ -231,6 +240,8 @@ public class Client : MonoBehaviour
                 Pilot = data.Pilot;
                 ServerResources = data;
             }
+            else
+                WrongDataLog(typeof(AuthUserData), commandData.Data?.GetType());
         }
         #endregion
 
@@ -241,6 +252,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().InitPlayer(data);
             }
+            else
+                WrongDataLog(typeof(PlayerJoin), commandData.Data?.GetType());
         }
         else if (commandData.Command == Commands.PlayerLeave)
         {
@@ -248,6 +261,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().LeavePlayer(data);
             }
+            else
+                WrongDataLog(typeof(ulong), commandData.Data?.GetType());
         }
         #endregion
 
@@ -258,6 +273,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().ChangePosition(data);
             }
+            else
+                WrongDataLog(typeof(NewPosition), commandData.Data?.GetType());
         }
         #endregion
 
@@ -268,6 +285,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().HitpointsOrShields(data, commandData.Command == Commands.ChangeHitpoints);
             }
+            else
+                WrongDataLog(typeof(NewHitpointsOrShields), commandData.Data?.GetType());
         }
         #endregion
 
@@ -278,6 +297,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SelectTarget(data);
             }
+            else
+                WrongDataLog(typeof(NewTarget), commandData.Data?.GetType());
         }
         #endregion
 
@@ -288,6 +309,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().AttackTarget(data);
             }
+            else
+                WrongDataLog(typeof(AttackTarget), commandData.Data?.GetType());
         }
         #endregion
 
@@ -299,6 +322,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SomeoneTakeDamage(data);
             }
+            else
+                WrongDataLog(typeof(TakeDamage), commandData.Data?.GetType());
         }
         #endregion
 
@@ -310,6 +335,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SomeoneDead(data);
             }
+            else
+                WrongDataLog(typeof(SomeoneDead), commandData.Data?.GetType());
         }
         #endregion
 
@@ -321,6 +348,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SomeoneAlive(data);
             }
+            else
+                WrongDataLog(typeof(ulong), commandData.Data?.GetType());
         }
         #endregion
 
@@ -332,6 +361,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().InitEnemy(data);
             }
+            else
+                WrongDataLog(typeof(EnemyJoin), commandData.Data?.GetType());
         }
         else if (commandData.Command == Commands.EnemyLeave)
         {
@@ -339,6 +370,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().LeaveEnemy(data);
             }
+            else
+                WrongDataLog(typeof(ulong), commandData.Data?.GetType());
         }
         #endregion
 
@@ -350,6 +383,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().TakeReward(data);
             }
+            else
+                WrongDataLog(typeof(ServerReward), commandData.Data?.GetType());
         }
         #endregion
 
@@ -365,6 +400,8 @@ public class Client : MonoBehaviour
             {
                 Player.LocalShipController.TargetGameObject = null;
                 GetComponent<Player>().ClearGameArea(false);
+
+                WrongDataLog(typeof(Pilot), commandData.Data?.GetType());
             }
         }
         #endregion
@@ -377,6 +414,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SafeZone(data);
             }
+            else
+                WrongDataLog(typeof(SafeZone), commandData.Data?.GetType());
         }
         #endregion
 
@@ -390,6 +429,8 @@ public class Client : MonoBehaviour
                 Pilot.Items = data.Items;
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.HangarWindow);
             }
+            else
+                WrongDataLog(typeof(Pilot), commandData.Data?.GetType());
         }
         #endregion
 
@@ -402,6 +443,8 @@ public class Client : MonoBehaviour
                 ShopWindow.ServerItems = data;
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.ShopWindow);
             }
+            else
+                WrongDataLog(typeof(ShopItems), commandData.Data?.GetType());
         }
         #endregion
 
@@ -433,6 +476,8 @@ public class Client : MonoBehaviour
                         break;
                 }
             }
+            else
+                WrongDataLog(typeof(ShoppingStatus), commandData.Data?.GetType());
         }
         #endregion
 
@@ -444,6 +489,8 @@ public class Client : MonoBehaviour
             {
                 GetComponent<Player>().SomeoneChangeShip(commandData.SenderId, data);
             }
+            else
+                WrongDataLog(typeof(Ship), commandData.Data?.GetType());
         }
         #endregion
 
@@ -467,6 +514,8 @@ public class Client : MonoBehaviour
                         GameSettings.UserLanguage.SELL_ITEM_ERROR
                     });
             }
+            else
+                WrongDataLog(typeof(ulong), commandData.Data?.GetType());
         }
         #endregion
 
@@ -482,6 +531,8 @@ public class Client : MonoBehaviour
                 if (Pilot.Resources.ContainsKey(data.ResourceId))
                     Pilot.Resources[data.ResourceId].Count = data.Count;
             }
+            else
+                WrongDataLog(typeof(ChangeAmmunition), commandData.Data?.GetType());
         }
         #endregion
 
@@ -494,6 +545,8 @@ public class Client : MonoBehaviour
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.GalacticWindow);
                 GalacticWindow.ServerMaps = data;
             }
+            else
+                WrongDataLog(typeof(Dictionary<long, Map>), commandData.Data?.GetType());
         }
         #endregion
 
@@ -512,6 +565,8 @@ public class Client : MonoBehaviour
 
                 localTask.TaskQuest = data.TaskQuest;
             }
+            else
+                WrongDataLog(typeof(PilotTask), commandData.Data?.GetType());
         }
         #endregion
 
@@ -531,6 +586,8 @@ public class Client : MonoBehaviour
                 localTask.End = data.End;
                 Pilot.Tasks.Remove(localTask);
             }
+            else
+                WrongDataLog(typeof(PilotTask), commandData.Data?.GetType());
         }
         #endregion
 
@@ -543,6 +600,21 @@ public class Client : MonoBehaviour
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.MissionWindow);
                 MissionWindow.Tasks = data;
             }
+            else
+                WrongDataLog(typeof(Dictionary<uint, QuestTask>), commandData.Data?.GetType());
+        }
+        #endregion
+
+
+        #region POBRANIE POSTEPU ZADAN
+        else if (commandData.Command == Commands.GetProgressTasks)
+        {
+            if (commandData.Data is List<PilotProgressTask> data)
+            {
+                (GuiScript.Windows[WindowTypes.MissionWindow].Script as MissionWindow).ProgressTasks = data;
+            }
+            else
+                WrongDataLog(typeof(List<PilotProgressTask>), commandData.Data?.GetType());
         }
         #endregion
 
@@ -578,6 +650,9 @@ public class Client : MonoBehaviour
 
         try
         {
+            if (Pilot != null)
+                commandData.SenderId = Pilot.Id;
+
             Socket.Send(GameData.Serialize(commandData));
         }
         catch (Exception ex)
@@ -603,5 +678,10 @@ public class Client : MonoBehaviour
                 Debug.LogError($"OnClose {Environment.NewLine} {e.Code} {Environment.NewLine} {e.WasClean} {Environment.NewLine} {e.Reason}");
                 break;
         }
+    }
+
+    private void WrongDataLog(Type expectedType, Type receivedType)
+    {
+        Debug.LogError($"[{nameof(Client.SocketMessage)}] Nieoczekiwany typ danych => Oczekiwany: '{expectedType?.Name}', Otrzymany: '{receivedType?.Name}'");
     }
 }

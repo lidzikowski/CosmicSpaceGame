@@ -52,7 +52,7 @@ namespace CosmicSpaceCommunication
         QuestList = 420,
         QuestAccept = 421,
         QuestCancel = 422,
-
+        GetProgressTasks = 423,
 
 
 

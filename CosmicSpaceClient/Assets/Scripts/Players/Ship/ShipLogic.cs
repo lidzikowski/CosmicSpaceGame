@@ -133,7 +133,6 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.NewPosition,
-                SenderId = Client.Pilot.Id,
                 Data = new NewPosition()
                 {
                     PlayerId = Client.Pilot.Id,
@@ -203,7 +202,6 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.SelectTarget,
-                SenderId = Client.Pilot.Id,
                 Data = new NewTarget()
                 {
                     PlayerId = Client.Pilot.Id,
@@ -238,7 +236,6 @@ public class ShipLogic : MonoBehaviour
             Client.SendToSocket(new CommandData()
             {
                 Command = Commands.AttackTarget,
-                SenderId = Client.Pilot.Id,
                 Data = new AttackTarget()
                 {
                     PlayerId = Client.Pilot.Id,

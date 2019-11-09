@@ -56,10 +56,13 @@ public class Database
         updatepilottaskquest,
         updatepilottask,
 
+        pilottasks,
+
         getplayerid,
         getplayerdata,
         getpilotresources,
         getpilottasks,
+        getpilotprogresstasks,
         getitems,
         getpilotitems,
         getpilottaskquests,
@@ -72,30 +75,65 @@ public class Database
         {
             using (MySqlConnection Connection = new MySqlConnection(connectionString))
             {
-                using (MySqlCommand cmd = new MySqlCommand(command.ToString(), Connection))
+                try
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    foreach (KeyValuePair<string, object> parameter in parameters)
+                    using (MySqlCommand cmd = new MySqlCommand(command.ToString(), Connection))
                     {
-                        cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
-                    }
+                        try
+                        {
+                            cmd.CommandType = CommandType.StoredProcedure;
 
-                    await Connection.OpenAsync();
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        DataTable dataTable = new DataTable("Result");
-                        dataTable.Load(reader);
-                        return dataTable;
+                            foreach (KeyValuePair<string, object> parameter in parameters)
+                            {
+                                cmd.Parameters.AddWithValue(parameter.Key, parameter.Value);
+                            }
+
+                            await Connection.OpenAsync();
+
+                            using (MySqlDataReader reader = cmd.ExecuteReader())
+                            {
+                                try
+                                {
+                                    DataTable dataTable = new DataTable("Result");
+                                    dataTable.Load(reader);
+                                    return dataTable;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Server.Log("Blad odczytu danych.", ex.Message);
+                                }
+                                finally
+                                {
+                                    reader.Dispose();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Server.Log("Blad komendy.", ex.Message);
+                        }
+                        finally
+                        {
+                            cmd.Dispose();
+                        }
                     }
+                }
+                catch(Exception ex)
+                {
+                    Server.Log("Blad polaczenia.", ex.Message);
+                }
+                finally
+                {
+                    Connection.Dispose();
                 }
             }
         }
         catch (MySqlException ex)
         {
             Server.Log("Blad bazy danych.", ex.Message);
-            return null;
         }
+
+        return null;
     }
 
     /// <summary>
@@ -242,6 +280,44 @@ public class Database
             return pilotTasks;
         }
         return null;
+    }
+
+    public static async Task<List<PilotProgressTask>> GetPilotProgressTasks(ulong userId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.getpilotprogresstasks, new Dictionary<string, object>()
+        {
+            { "inpilotid", userId }
+        });
+
+        if (dt != null && dt.Rows.Count != 0)
+        {
+            List<PilotProgressTask> pilotProgressTasks = new List<PilotProgressTask>();
+            foreach (DataRow row in dt.Rows)
+            {
+                pilotProgressTasks.Add(PilotProgressTask.GetPilotProgressTask(row));
+            }
+            return pilotProgressTasks;
+        }
+        return null;
+    }
+
+    public static async Task<PilotProgressTask> AddQuest(QuestTask questTask)
+    {
+        //DataTable dt = await ExecuteCommand(Commands.getpilotprogresstasks, new Dictionary<string, object>()
+        //{
+        //    { "inpilotid", userId }
+        //});
+
+        //if (dt != null && dt.Rows.Count != 0)
+        //{
+        //    List<PilotProgressTask> pilotProgressTasks = new List<PilotProgressTask>();
+        //    foreach (DataRow row in dt.Rows)
+        //    {
+        //        pilotProgressTasks.Add(PilotProgressTask.GetPilotProgressTask(row));
+        //    }
+        //    return pilotProgressTasks;
+        //}
+        //return null;
     }
 
     public static async Task<List<PilotTaskQuest>> GetPilotTaskQuests(uint id)

@@ -1,12 +1,33 @@
-﻿using CosmicSpaceCommunication.Game.Quest;
+﻿using CosmicSpaceCommunication;
+using CosmicSpaceCommunication.Game.Quest;
 using CosmicSpaceCommunication.Game.Resources;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MissionWindow : GameWindow
 {
     public static Dictionary<uint, QuestTask> Tasks;
+    private List<PilotProgressTask> progressTasks;
+    public List<PilotProgressTask> ProgressTasks
+    {
+        get => progressTasks;
+        set
+        {
+            progressTasks = value;
+
+            if(value == null)
+            {
+                Debug.LogError(nameof(System.NullReferenceException));
+                return;
+            }
+
+            StopCoroutine(nameof(DisableButtons));
+
+            CreateQuestList();
+        }
+    }
 
     [Header("Buttons")]
     public Button CancelButton;
@@ -34,11 +55,17 @@ public class MissionWindow : GameWindow
     {
         base.Start();
 
+        Player.DestroyChilds(TasksTransform);
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.GetProgressTasks
+        });
+
         ButtonListener(CancelButton, CancelButton_Cliecked);
         ButtonListener(AcceptButton, AcceptButton_Cliecked);
 
-        ShowInformation(null);
-        CreateQuestList();
+        ShowInformation(null, null);
     }
 
     public override void Refresh()
@@ -65,24 +92,27 @@ public class MissionWindow : GameWindow
         {
             GameObject go = Instantiate(TaskPrefab, TasksTransform);
 
-            go.GetComponent<QuestItem>().Quest = task;
-            go.GetComponent<QuestItem>().OnShowInformation = ShowInformation;
+            QuestItem questItem = go.GetComponent<QuestItem>();
+            questItem.PilotProgressTask = ProgressTasks.Single(o => o.Id == task.Id);
+            questItem.Quest = task;
+            questItem.OnShowInformation = ShowInformation;
         }
     }
 
     QuestTask SelectedTask = null;
-    private void ShowInformation(QuestTask task)
+    private void ShowInformation(QuestTask task, PilotProgressTask pilotProgressTask)
     {
         SelectedTask = task;
 
-        if (SelectedTask == null)
+        if (SelectedTask == null || pilotProgressTask == null)
         {
             SelectedTaskTransform.gameObject.SetActive(false);
             return;
         }
         SelectedTaskTransform.gameObject.SetActive(true);
 
-        SetText(TaskNameText, SelectedTask.Name);
+        string taskName = $"{SelectedTask.Name} {(pilotProgressTask.End.HasValue ? "Completed" : string.Empty)}";
+        SetText(TaskNameText, taskName);
 
         Player.DestroyChilds(ContentQuestsTransform);
         foreach (Quest quest in SelectedTask.Quests)
@@ -126,15 +156,50 @@ public class MissionWindow : GameWindow
                 Instantiate(PropertyPrefab, ContentRewardsTransform).GetComponent<ToolTipProperty>().SetProperty($"{item.Item.Name} [{item.UpgradeLevel} lvl]", $"{GameSettings.UserLanguage.CHANCE} {item.Chance/10}%");
             }
         }
+
+        CancelButton.interactable = pilotProgressTask.Start.HasValue && !pilotProgressTask.End.HasValue;
+        AcceptButton.interactable = !pilotProgressTask.Start.HasValue && !pilotProgressTask.End.HasValue;
     }
 
     private void CancelButton_Cliecked()
     {
-        Debug.LogError(nameof(CancelButton_Cliecked));
+        if (SelectedTask == null)
+            Debug.LogError(nameof(System.NullReferenceException));
+
+        StartCoroutine(nameof(DisableButtons));
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.QuestAccept,
+            Data = SelectedTask
+        });
     }
 
     private void AcceptButton_Cliecked()
     {
-        Debug.LogError(nameof(AcceptButton_Cliecked));
+        if (SelectedTask == null)
+            Debug.LogError(nameof(System.NullReferenceException));
+
+        StartCoroutine(nameof(DisableButtons));
+
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.QuestCancel,
+            Data = SelectedTask
+        });
+    }
+
+    System.Collections.IEnumerator DisableButtons()
+    {
+        bool cancel = CancelButton.interactable;
+        bool accept = AcceptButton.interactable;
+
+        CancelButton.interactable = false;
+        AcceptButton.interactable = false;
+
+        yield return new WaitForSeconds(5);
+
+        CancelButton.interactable = cancel;
+        AcceptButton.interactable = accept;
     }
 }

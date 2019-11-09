@@ -161,7 +161,6 @@ public class Player : MonoBehaviour
                 Client.SendToSocket(new CommandData()
                 {
                     Command = Commands.ChangeMap,
-                    SenderId = Client.Pilot.Id,
                     Data = new PlayerChangeMap()
                     {
                         Portal = portal
@@ -212,7 +211,6 @@ public class Player : MonoBehaviour
         Client.SendToSocket(new CommandData()
         {
             Command = Commands.ChangeAmmunition,
-            SenderId = Client.Pilot.Id,
             Data = new ChangeAmmunition()
             {
                 SelectedAmmunitionId = ammunitionId,
