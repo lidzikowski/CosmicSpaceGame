@@ -8,7 +8,7 @@ namespace CosmicSpaceCommunication.Game.Quest
     public class PilotTask
     {
         public uint Id { get; set; }
-        public DateTime Start { get; set; }
+        public DateTime? Start { get; set; }
         public DateTime? End { get; set; }
 
         public QuestTask Task { get; set; }

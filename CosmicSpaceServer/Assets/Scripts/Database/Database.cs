@@ -53,8 +53,14 @@ public class Database
         saveplayeritems,
         saveplayeritem,
 
+        checkpilottask,
         updatepilottaskquest,
+        addpilottaskquest,
+
         updatepilottask,
+        addpilottask,
+
+        cancelpilottask,
 
         pilottasks,
 
@@ -274,7 +280,7 @@ public class Database
             {
                 PilotTask pilotTask = PilotTask.GetPilotTask(row);
                 pilotTask.Task = Server.Tasks[ConvertRow.Row<uint>(row["taskid"])];
-                pilotTask.TaskQuest = await GetPilotTaskQuests(pilotTask.Id);
+                pilotTask.TaskQuest = await GetPilotTaskQuests(pilotTask.Id, pilotTask.Task);
                 pilotTasks.Add(pilotTask);
             }
             return pilotTasks;
@@ -301,26 +307,68 @@ public class Database
         return null;
     }
 
-    public static async Task<PilotProgressTask> AddQuest(QuestTask questTask)
+    public static async Task<PilotProgressTask> AddPilotTask(QuestTask questTask, ulong userId)
     {
-        //DataTable dt = await ExecuteCommand(Commands.getpilotprogresstasks, new Dictionary<string, object>()
-        //{
-        //    { "inpilotid", userId }
-        //});
+        DateTime dateTime = DateTime.Now;
 
-        //if (dt != null && dt.Rows.Count != 0)
-        //{
-        //    List<PilotProgressTask> pilotProgressTasks = new List<PilotProgressTask>();
-        //    foreach (DataRow row in dt.Rows)
-        //    {
-        //        pilotProgressTasks.Add(PilotProgressTask.GetPilotProgressTask(row));
-        //    }
-        //    return pilotProgressTasks;
-        //}
-        //return null;
+        DataTable dt = await ExecuteCommand(Commands.addpilottask, new Dictionary<string, object>()
+        {
+            { "inpilotid", userId },
+            { "intaskid", questTask.Id },
+            { "instartdate", dateTime }
+        });
+
+        if (dt != null && dt.Rows.Count != 0)
+        {
+            foreach (Quest quest in Server.Tasks[questTask.Id].Quests)
+            {
+                await AddPilotTaskQuest(new PilotTaskQuest()
+                {
+                    TaskId = ConvertRow.Row<uint>(dt.Rows[0][0]),
+                    Quest = quest
+                }, userId);
+            }
+
+            return new PilotProgressTask()
+            {
+                Id = ConvertRow.Row<uint>(dt.Rows[0][0]),
+                Start = dateTime
+            };
+        }
+        return null;
     }
 
-    public static async Task<List<PilotTaskQuest>> GetPilotTaskQuests(uint id)
+    public static async Task<ulong?> CheckPilotTask(QuestTask questTask, ulong userId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.checkpilottask, new Dictionary<string, object>()
+        {
+            { "inpilotid", userId },
+            { "intaskid", questTask.Id }
+        });
+
+        if (dt != null && dt.Rows.Count != 0)
+        {
+            return ConvertRow.Row<ulong>(dt.Rows[0][0]);
+        }
+        return null;
+    }
+
+    public static async Task<bool> CancelPilotTask(QuestTask questTask, ulong userId)
+    {
+        DataTable dt = await ExecuteCommand(Commands.cancelpilottask, new Dictionary<string, object>()
+        {
+            { "inpilotid", userId },
+            { "intaskid", questTask.Id }
+        });
+
+        if (dt != null && dt.Rows.Count != 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public static async Task<List<PilotTaskQuest>> GetPilotTaskQuests(uint id, QuestTask questTask)
     {
         DataTable dt = await ExecuteCommand(Commands.getpilottaskquests, new Dictionary<string, object>()
         {
@@ -334,6 +382,7 @@ public class Database
             {
                 PilotTaskQuest pilotTaskQuest = PilotTaskQuest.GetPilotTaskQuest(row);
                 pilotTaskQuest.Quest = Server.Quests[ConvertRow.Row<uint>(row["questid"])];
+                pilotTaskQuest.TaskId = questTask.Id;
                 pilotTaskQuests.Add(pilotTaskQuest);
             }
             return pilotTaskQuests;
@@ -732,15 +781,46 @@ public class Database
         await ExecuteCommand(Commands.updatepilottaskquest, parameters);
     }
 
-    public static async Task UpdatePilotTask(PilotTask pilotTask)
+    public static async Task<PilotTaskQuest> AddPilotTaskQuest(PilotTaskQuest pilotTaskQuest, ulong pilotId)
+    {
+        Dictionary<string, object> parameters = new Dictionary<string, object>()
+        {
+            { "inpilottaskid", pilotTaskQuest.TaskId },
+            { "inquestid", pilotTaskQuest.Quest.Id }
+        };
+
+        DataTable dt = await ExecuteCommand(Commands.addpilottaskquest, parameters);
+
+        if (dt != null)
+        {
+            pilotTaskQuest.Id = ConvertRow.Row<ulong>(dt.Rows[0][0]);
+            return pilotTaskQuest;
+        }
+        return null;
+    }
+
+    public static async Task<PilotTask> UpdatePilotTask(PilotTask pilotTask)
     {
         Dictionary<string, object> parameters = new Dictionary<string, object>()
         {
             { "inpilottaskid", pilotTask.Id },
+            { "instartdate", pilotTask.Start },
             { "inenddate", pilotTask.End }
         };
 
-        await ExecuteCommand(Commands.updatepilottask, parameters);
+        DataTable dt = await ExecuteCommand(Commands.updatepilottask, parameters);
+
+        if (dt != null)
+        {
+            foreach (DataRow row in dt.Rows)
+            {
+                PilotTask pt = PilotTask.GetPilotTask(row);
+                pt.Task = Server.Tasks[ConvertRow.Row<uint>(row["taskid"])];
+                pt.TaskQuest = await GetPilotTaskQuests(pilotTask.Id, pilotTask.Task);
+                return pt;
+            }
+        }
+        return null;
     }
     #endregion
 

@@ -401,7 +401,7 @@ public class Client : MonoBehaviour
                 Player.LocalShipController.TargetGameObject = null;
                 GetComponent<Player>().ClearGameArea(false);
 
-                WrongDataLog(typeof(Pilot), commandData.Data?.GetType());
+                //WrongDataLog(typeof(Pilot), commandData.Data?.GetType());
             }
         }
         #endregion
@@ -600,8 +600,16 @@ public class Client : MonoBehaviour
                 (GuiScript.Windows[WindowTypes.UserInterface].Script as UserInterfaceWindow).SetActiveWindow(WindowTypes.MissionWindow);
                 MissionWindow.Tasks = data;
             }
+            else if (commandData.Data is List<PilotTask> dataTasks)
+            {
+                Pilot.Tasks = dataTasks;
+                GuiScript.RefreshAllActiveWindow();
+            }
             else
+            {
                 WrongDataLog(typeof(Dictionary<uint, QuestTask>), commandData.Data?.GetType());
+                WrongDataLog(typeof(List<PilotTask>), commandData.Data?.GetType());
+            }
         }
         #endregion
 

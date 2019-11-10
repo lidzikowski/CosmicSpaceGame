@@ -10,6 +10,7 @@ namespace CosmicSpaceCommunication.Game.Quest
         public decimal Progress { get; set; }
         public bool IsDone { get; set; }
 
+        public ulong TaskId { get; set; }
         public Quest Quest { get; set; }
 
 

@@ -57,22 +57,20 @@ public class MissionWindow : GameWindow
 
         Player.DestroyChilds(TasksTransform);
 
-        Client.SendToSocket(new CommandData()
-        {
-            Command = Commands.GetProgressTasks
-        });
-
         ButtonListener(CancelButton, CancelButton_Cliecked);
         ButtonListener(AcceptButton, AcceptButton_Cliecked);
-
-        ShowInformation(null, null);
     }
 
     public override void Refresh()
     {
         base.Refresh();
 
-        SetText(TaskNameText, GameSettings.UserLanguage.CANCEL);
+        Client.SendToSocket(new CommandData()
+        {
+            Command = Commands.GetProgressTasks
+        });
+
+        ShowInformation(null, null);
     }
 
     public override void ChangeLanguage()
@@ -93,7 +91,7 @@ public class MissionWindow : GameWindow
             GameObject go = Instantiate(TaskPrefab, TasksTransform);
 
             QuestItem questItem = go.GetComponent<QuestItem>();
-            questItem.PilotProgressTask = ProgressTasks.Single(o => o.Id == task.Id);
+            questItem.PilotProgressTask = ProgressTasks.FirstOrDefault(o => o.Id == task.Id);
             questItem.Quest = task;
             questItem.OnShowInformation = ShowInformation;
         }
@@ -170,7 +168,7 @@ public class MissionWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.QuestAccept,
+            Command = Commands.QuestCancel,
             Data = SelectedTask
         });
     }
@@ -184,7 +182,7 @@ public class MissionWindow : GameWindow
 
         Client.SendToSocket(new CommandData()
         {
-            Command = Commands.QuestCancel,
+            Command = Commands.QuestAccept,
             Data = SelectedTask
         });
     }

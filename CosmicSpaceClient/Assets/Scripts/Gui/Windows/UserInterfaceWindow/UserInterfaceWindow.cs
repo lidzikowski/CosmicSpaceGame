@@ -644,7 +644,7 @@ public class UserInterfaceWindow : GameWindow
     {
         Player.DestroyChilds(QuestsContentTransform);
 
-        foreach (PilotTask task in Client.Pilot.Tasks.Where(o => !o.End.HasValue))
+        foreach (PilotTask task in Client.Pilot.Tasks.Where(o => o.Start.HasValue && !o.End.HasValue))
         {
             GameObject taskName = Instantiate(MessageGameObject, QuestsContentTransform);
             Text taskNameText = taskName.GetComponent<Text>();

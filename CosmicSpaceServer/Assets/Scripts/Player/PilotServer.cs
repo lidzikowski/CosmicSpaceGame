@@ -940,10 +940,10 @@ public class PilotServer : Opponent
 
         pilot.Map = Server.Maps[ConvertRow.Row<int>(row["mapid"])];
         pilot.Ship = Server.Ships[ConvertRow.Row<int>(row["shipid"])];
-        pilot.Items = await Database.GetPilotItems(pilot.Id);
+        pilot.Items = await Database.GetPilotItems(pilot.Id) ?? new List<ItemPilot>();
         pilot.Resources = await Database.GetPilotResources(pilot.Id);
         pilot.ServerResources = Server.ServerResources;
-        pilot.Tasks = await Database.GetPilotTasks(pilot.Id);
+        pilot.Tasks = await Database.GetPilotTasks(pilot.Id) ?? new List<PilotTask>();
 
         return pilot;
     }

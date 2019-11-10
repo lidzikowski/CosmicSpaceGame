@@ -67,6 +67,8 @@ public class GameService : WebSocket
                         return;
                 }
 
+
+
                 if (commandData.Command == Commands.LogIn)
                 {
                     if (commandData.Data is LogInUser data)
@@ -300,28 +302,69 @@ public class GameService : WebSocket
                     {
                         PilotTask pilotTask = Server.Pilots[commandData.SenderId].Pilot.Tasks.FirstOrDefault(o => o.Task.Id == data.Id);
 
+                        List<PilotProgressTask> pilotProgressTasks = Database.GetPilotProgressTasks(commandData.SenderId).Result;
+
                         if (pilotTask == null)
                         {
-                            List<PilotProgressTask> pilotProgressTasks = Database.GetPilotProgressTasks(commandData.SenderId).Result;
-
                             if (pilotProgressTasks.Any(o => o.Id == data.Id && !o.End.HasValue))
                             {
+                                PilotProgressTask pilotProgressTask;
 
+                                ulong? pilotTaskId = Database.CheckPilotTask(data, commandData.SenderId).Result;
+                                if (pilotTaskId != null)
+                                {
+                                    PilotTask pt = Database.UpdatePilotTask(new PilotTask()
+                                    {
+                                        Id = (uint)pilotTaskId,
+                                        Start = DateTime.Now,
+                                        Task = new QuestTask()
+                                        {
+                                            Id = data.Id
+                                        }
+                                    }).Result;
+
+                                    pilotProgressTask = new PilotProgressTask()
+                                    {
+                                        Id = pt.Task.Id,
+                                        Start = pt.Start
+                                    };
+                                }
+                                else
+                                {
+                                    pilotProgressTask = Database.AddPilotTask(data, commandData.SenderId).Result;
+                                }
+
+                                Server.Pilots[commandData.SenderId].Pilot.Tasks = Database.GetPilotTasks(commandData.SenderId).Result ?? new List<PilotTask>();
+
+                                Server.Pilots[commandData.SenderId].Send(new CommandData()
+                                {
+                                    Command = Commands.QuestList,
+                                    Data = Server.Pilots[commandData.SenderId].Pilot.Tasks
+                                });
+
+                                if (pilotProgressTask != null)
+                                {
+                                    pilotProgressTasks.Add(pilotProgressTask);
+                                }
+                                else
+                                {
+                                    Server.Log("Blad podczas akceptacji zadania.", commandData.SenderId, data.Id);
+                                }
                             }
                             else
                             {
-                                Server.Log("Zadanie zostalo juz wykonane.", pilotTask.Id);
+                                Server.Log("Zadanie zostalo juz wykonane.", commandData.SenderId, data.Id);
                             }
                         }
                         else
                         {
-                            Server.Log("Zadanie jest w trakcy wykonywania.", pilotTask.Id);
+                            Server.Log("Zadanie jest w trakcie wykonywania.", commandData.SenderId, pilotTask.Id);
                         }
 
                         Server.Pilots[commandData.SenderId].Send(new CommandData()
                         {
                             Command = Commands.GetProgressTasks,
-                            Data = Database.GetPilotProgressTasks(commandData.SenderId).Result
+                            Data = pilotProgressTasks
                         });
                     }
                     else
@@ -334,13 +377,55 @@ public class GameService : WebSocket
                 {
                     if (commandData.Data is QuestTask data)
                     {
+                        PilotTask pilotTask = Server.Pilots[commandData.SenderId].Pilot.Tasks.FirstOrDefault(o => o.Task.Id == data.Id);
 
+                        List<PilotProgressTask> pilotProgressTasks = Database.GetPilotProgressTasks(commandData.SenderId).Result;
 
-                        //Server.Pilots[commandData.SenderId].Send(new CommandData()
-                        //{
-                        //    Command = Commands.GetProgressTasks,
-                        //    Data = Database.GetPilotProgressTasks(commandData.SenderId).Result
-                        //});
+                        if (pilotTask != null)
+                        {
+                            PilotProgressTask pilotProgressTask = pilotProgressTasks.FirstOrDefault(o => o.Id == data.Id && !o.End.HasValue);
+
+                            if (pilotProgressTask != null)
+                            {
+                                if (Database.CancelPilotTask(data, commandData.SenderId).Result)
+                                {
+                                    foreach (PilotTaskQuest pilotTaskQuest in pilotTask.TaskQuest)
+                                    {
+                                        pilotTaskQuest.Progress = default;
+                                        pilotTaskQuest.IsDone = false;
+                                        Database.UpdatePilotTaskQuest(pilotTaskQuest).ConfigureAwait(false);
+                                    }
+
+                                    pilotProgressTask.Start = default;
+
+                                    Server.Pilots[commandData.SenderId].Pilot.Tasks = Database.GetPilotTasks(commandData.SenderId).Result ?? new List<PilotTask>();
+
+                                    Server.Pilots[commandData.SenderId].Send(new CommandData()
+                                    {
+                                        Command = Commands.QuestList,
+                                        Data = Server.Pilots[commandData.SenderId].Pilot.Tasks
+                                    });
+                                }
+                                else
+                                {
+                                    Server.Log("Blad podczas anulowania zadania.", commandData.SenderId, data.Id);
+                                }
+                            }
+                            else
+                            {
+                                Server.Log("Zadanie zostalo juz wykonane.", commandData.SenderId, data.Id);
+                            }
+                        }
+                        else
+                        {
+                            Server.Log("Zadanie nie jest wykonywane.", commandData.SenderId, data.Id);
+                        }
+
+                        Server.Pilots[commandData.SenderId].Send(new CommandData()
+                        {
+                            Command = Commands.GetProgressTasks,
+                            Data = pilotProgressTasks
+                        });
                     }
                     else
                         errorStatus = 2;
@@ -358,7 +443,7 @@ public class GameService : WebSocket
             }
             catch (Exception ex)
             {
-                Server.Log("Nieoczekiwane dane wejsciowe.", ex.Message);
+                Server.Log("Nieoczekiwane dane wejsciowe.", ex.Message, ex.InnerException);
             }
         });
     }
