@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 10 Lis 2019, 19:09
+-- Czas generowania: 12 Lis 2019, 21:19
 -- Wersja serwera: 10.1.37-MariaDB
 -- Wersja PHP: 7.3.0
 
@@ -473,7 +473,10 @@ INSERT INTO `itemreward` (`itemrewardid`, `rewardid`, `itemid`, `upgradelevel`, 
 (3, 11, 3, 1, 400),
 (4, 12, 4, 1, 350),
 (5, 13, 5, 1, 300),
-(6, 14, 6, 1, 250);
+(6, 14, 6, 1, 250),
+(7, 31, 1, 1, 500),
+(8, 32, 1, 1, 600),
+(9, 32, 1, 1, 350);
 
 -- --------------------------------------------------------
 
@@ -611,7 +614,7 @@ CREATE TABLE `pilotresources` (
 INSERT INTO `pilotresources` (`pilotresourceid`, `userid`, `ammunition0`, `ammunition1`, `ammunition2`, `ammunition3`, `rocket0`, `rocket1`, `rocket2`) VALUES
 (1, 100, 500, 0, 0, 0, 0, 0, 0),
 (2, 101, 433, 0, 0, 0, 0, 0, 0),
-(3, 102, 1000037777, 16998, 15614, 1000015623, 17000, 1000016999, 17000),
+(3, 102, 1000037777, 16998, 15614, 1000015616, 17000, 1000016999, 17000),
 (4, 103, 500, 0, 0, 0, 0, 0, 0),
 (5, 104, 500, 0, 0, 0, 0, 0, 0),
 (6, 105, 500, 0, 0, 0, 0, 0, 0),
@@ -655,7 +658,7 @@ CREATE TABLE `pilots` (
 INSERT INTO `pilots` (`primarykeyid`, `userid`, `nickname`, `mapid`, `positionx`, `positiony`, `shipid`, `experience`, `level`, `scrap`, `metal`, `hitpoints`, `shields`, `ammunitionid`, `rocketid`, `isdead`, `killerby`, `achievement`) VALUES
 (1, 100, 'test1', 100, 319.613, -275.955, 100, 2, 1, 0, 0, 874, 706, 100, 104, 0, NULL, NULL),
 (2, 101, 'test2', 100, 924.193, -318.088, 101, 7558, 1, 185, 35, 1413, 0, 100, 104, 0, NULL, '{\"KillNPC\":{\"2\":10.0,\"1\":5.0,\"3\":1.0,\"4\":1.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":2244.96180665,\"TimeInGame\":146.0,\"DeadByNPC\":0.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":11924.0,\"DamageReceiveNPC\":1861.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":1674.0,\"HitpointDestroy\":1861.0,\"ShieldRepair\":0.0,\"ShieldDestroy\":0.0,\"ItemBuyScrap\":0.0,\"ItemSellScrap\":0.0,\"ItemBuyMetal\":0.0,\"ItemSellMetal\":0.0,\"ScrapReceive\":128.0,\"ScrapSpend\":0.0,\"MetalReceive\":32.0,\"MetalSpend\":0.0,\"ExpReceive\":6202.0,\"Map\":{\"101\":3.0,\"100\":3.0}}'),
-(3, 102, 'test3', 100, 922, -322, 129, 319269, 100, 69999905948.63002, 8869994232, 200000, 1300, 103, 105, 0, NULL, '{\"KillNPC\":{\"2\":111.0,\"3\":62.0,\"1\":139.0,\"7\":2.0,\"8\":4.0,\"4\":23.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":84263.2840261913,\"TimeInGame\":8515.0,\"DeadByNPC\":23625.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":877339.0,\"DamageReceiveNPC\":35317.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":410203.0,\"HitpointDestroy\":24866.0,\"ShieldRepair\":10757.0,\"ShieldDestroy\":8707.0,\"ItemBuyScrap\":607.0,\"ItemSellScrap\":60.83333333333332,\"ItemBuyMetal\":411.0,\"ItemSellMetal\":40.0,\"ScrapReceive\":2699.993333333333313,\"ScrapSpend\":75600.0,\"MetalReceive\":642.0,\"MetalSpend\":278201.0,\"ExpReceive\":123530.0,\"Map\":{\"101\":91.0,\"100\":89.0,\"114\":2.0,\"116\":2.0,\"102\":2.0}}'),
+(3, 102, 'test3', 100, 913, -302, 129, 319711, 100, 69999905960.63002, 8869994235, 200000, 1300, 103, 105, 0, NULL, '{\"KillNPC\":{\"2\":111.0,\"3\":63.0,\"1\":139.0,\"7\":2.0,\"8\":4.0,\"4\":23.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":84373.9748149913,\"TimeInGame\":8559.0,\"DeadByNPC\":23625.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":881146.0,\"DamageReceiveNPC\":35317.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":410203.0,\"HitpointDestroy\":24866.0,\"ShieldRepair\":10757.0,\"ShieldDestroy\":8707.0,\"ItemBuyScrap\":607.0,\"ItemSellScrap\":60.83333333333332,\"ItemBuyMetal\":411.0,\"ItemSellMetal\":40.0,\"ScrapReceive\":2711.993333333333313,\"ScrapSpend\":75600.0,\"MetalReceive\":645.0,\"MetalSpend\":278201.0,\"ExpReceive\":123972.0,\"Map\":{\"101\":91.0,\"100\":89.0,\"114\":2.0,\"116\":2.0,\"102\":2.0}}'),
 (4, 103, 'test4', 101, 64, -57, 103, 28355, 1, 57, 0, 3700, 0, 100, 104, 0, NULL, '{\"KillNPC\":{},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":24.77565107,\"TimeInGame\":8.0,\"DeadByNPC\":0.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":0.0,\"DamageReceiveNPC\":0.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":0.0,\"HitpointDestroy\":0.0,\"ShieldRepair\":0.0,\"ShieldDestroy\":0.0,\"ItemBuyScrap\":0.0,\"ItemSellScrap\":0.0,\"ItemBuyMetal\":0.0,\"ItemSellMetal\":0.0,\"ScrapReceive\":0.0,\"ScrapSpend\":0.0,\"MetalReceive\":0.0,\"MetalSpend\":0.0,\"ExpReceive\":0.0,\"Map\":{}}'),
 (5, 104, 'test5', 100, 910, -929, 104, 791, 1, 36, 1, 5000, 150, 100, 104, 0, NULL, NULL),
 (6, 105, 'test6', 100, 284.76, -360.721, 105, 0, 1, 0, 0, 41166, 0, 100, 104, 0, NULL, NULL),
@@ -1219,7 +1222,8 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (533, 101, 1, 1, 0, 0),
 (534, 101, 2, 1, 0, 0),
 (535, 101, 3, 1, 0, 0),
-(536, 102, 2, 1, 0, 0);
+(536, 102, 2, 1, 0, 0),
+(537, 102, 4, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1243,7 +1247,9 @@ INSERT INTO `pilottask` (`pilottaskid`, `pilotid`, `taskid`, `startdate`, `endda
 (1, 102, 1, '2019-11-10 18:37:10', NULL),
 (2, 102, 2, '2019-11-10 18:42:01', NULL),
 (3, 101, 2, '2019-11-10 18:38:03', '2019-11-10 18:40:12'),
-(4, 101, 1, '2019-11-10 18:41:13', NULL);
+(4, 101, 1, '2019-11-10 18:41:13', NULL),
+(5, 102, 7, '2019-11-11 20:49:06', NULL),
+(6, 102, 4, '2019-11-11 20:49:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -1266,14 +1272,17 @@ CREATE TABLE `pilottaskquest` (
 INSERT INTO `pilottaskquest` (`pilottaskquestid`, `pilottaskid`, `questid`, `progress`, `isdone`) VALUES
 (1, 1, 1, 2, 0),
 (2, 1, 3, 5, 0),
-(3, 1, 4, 8, 0),
-(4, 1, 5, 32, 0),
+(3, 1, 4, 11, 0),
+(4, 1, 5, 44, 0),
 (5, 2, 2, 0, 0),
 (6, 3, 2, 10, 1),
 (7, 4, 1, 0, 0),
 (8, 4, 3, 3, 0),
 (9, 4, 4, 4, 0),
-(10, 4, 5, 16, 0);
+(10, 4, 5, 16, 0),
+(11, 5, 10, 0, 0),
+(12, 5, 9, 0, 0),
+(13, 6, 6, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1664,7 +1673,10 @@ INSERT INTO `questmap` (`questmapid`, `questid`, `mapid`) VALUES
 (1, 1, 100),
 (2, 1, 101),
 (3, 4, 100),
-(4, 5, 100);
+(4, 5, 100),
+(5, 8, 101),
+(6, 9, 101),
+(7, 10, 100);
 
 -- --------------------------------------------------------
 
@@ -1688,7 +1700,12 @@ INSERT INTO `quests` (`questid`, `questtypeid`, `targetid`, `quantity`) VALUES
 (2, 1, 2, 10),
 (3, 20, 100, 50),
 (4, 16, NULL, 1000),
-(5, 18, NULL, 1000);
+(5, 18, NULL, 1000),
+(6, 1, 1, 30),
+(7, 1, 1, 50),
+(8, 1, 3, 10),
+(9, 1, 2, 15),
+(10, 1, 2, 25);
 
 -- --------------------------------------------------------
 
@@ -1781,7 +1798,11 @@ INSERT INTO `rewards` (`rewardid`, `experience`, `metal`, `scrap`, `ammunitionid
 (27, 5250, 41, 308, NULL, NULL),
 (28, 5775, 44, 352, NULL, NULL),
 (29, 6352, 47, 400, NULL, NULL),
-(30, 6987, 50, 450, NULL, NULL);
+(30, 6987, 50, 450, NULL, NULL),
+(31, 150, 10, 80, NULL, NULL),
+(32, 250, NULL, 500, 100, 50),
+(33, 300, NULL, 500, 100, 70),
+(35, NULL, NULL, NULL, 101, 200);
 
 -- --------------------------------------------------------
 
@@ -1886,7 +1907,14 @@ INSERT INTO `taskquest` (`taskquestid`, `taskid`, `questid`) VALUES
 (2, 2, 2),
 (3, 1, 3),
 (4, 1, 4),
-(5, 1, 5);
+(5, 1, 5),
+(6, 3, 6),
+(7, 4, 6),
+(8, 5, 7),
+(9, 6, 1),
+(10, 6, 5),
+(11, 7, 10),
+(12, 7, 9);
 
 -- --------------------------------------------------------
 
@@ -1907,7 +1935,12 @@ CREATE TABLE `tasks` (
 
 INSERT INTO `tasks` (`taskid`, `taskname`, `level`, `rewardid`) VALUES
 (1, 'TASK_1', 1, 10),
-(2, 'TASK_2', 1, 3);
+(2, 'TASK_2', 1, 3),
+(3, 'TASK_3', 1, 12),
+(4, 'TASK_4', 1, 13),
+(5, 'TASK_5', 1, 14),
+(6, 'TASK_6', 1, 10),
+(7, 'TASK_7', 1, 19);
 
 -- --------------------------------------------------------
 
@@ -1934,7 +1967,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`userid`, `usernamehash`, `passwordhash`, `email`, `emailnewsletter`, `acceptrules`, `ban`, `registerdate`, `authtoken`) VALUES
 (100, '22C9E677EA7905AB18A8DE3535BB0D4730685795EB1FA26ABC2E2F4B12ED6C8198D979C8F3B61C43FEBCB714BBFAFDD89F4955F6D7FE541722193ED908A3BA1A', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test1', 0, 1, 0, '2018-12-29 20:22:19', NULL),
 (101, '8E70E934E70EC8DA6BA82C2C6FDF8007ACA4AE8CAAD7FE945AEEAF243D43E5CFB2A65CBCFA6E68ABBDB61143B895B05D8B3075FE40502FB804C2DCC8077EB017', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test2', 0, 1, 0, '2018-12-29 20:25:12', '4952DBAFB87C3567A418606942D9F7DA5C444A7EF5FA24C30EE4E90AA1BF2AA7F5A5684E0C4A7D3AC8390BBEB52EBAB2C900349E05D69A7092BF4DDF30E1E58C'),
-(102, '9E31434171A164405F2D3546498AE755DBDE85EE9FFC4553AEA816919C6FB6D9868ADF5BD59E26D9686A281AC5ECF5368511DC8D3EB584D1C44EA57197B4FA64', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test3', 1, 1, 0, '2018-12-29 20:27:35', '7A97A5AEE1486FE7EEDA3775EEA11F6A4F23CB4199DEB33B6BD53B9A038F0AAE487CB213909810C4B4EE5650B63A530E12784597D5E91B9C6DE5CAF41CFCB75E'),
+(102, '9E31434171A164405F2D3546498AE755DBDE85EE9FFC4553AEA816919C6FB6D9868ADF5BD59E26D9686A281AC5ECF5368511DC8D3EB584D1C44EA57197B4FA64', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test3', 1, 1, 0, '2018-12-29 20:27:35', '90AFDCE0EC46A3733E7C6825B4E5045A0617104795214AEA34ED380BCD30952F5BF347DF04C8ACE496A95D5AFDA4C8009C96797C8194615F8B22AD6022C3E4B4'),
 (103, 'F9DE02FC94D0261D27A2B54210D5FC8795D2BAE4E6A229C8EAC9158999142E3301267F591640BE08C1507889760634A3872D93BCFC13459CB7D7D0D2B593E127', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test4', 0, 1, 0, '2018-12-29 21:00:23', NULL),
 (104, '368E28420D2F469DFA61A8775A049F5D33E8D498EF4173BA945F2CE73D027C309A450651B7DF73609F8EC2F7BFEDC3DC21EDE8E89BAE5227C6A680A1942EFFB6', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test5', 1, 1, 0, '2018-12-29 21:49:24', NULL),
 (105, 'B4FDF8DD90B9FF39276EF1C959D08DED6369FD6FF36E231924AD3A8F5A3689DB93CAF54DF37A63A07C64E2F712190379AEC9399A2189439ACC7829B1486D1B93', '6FD332AD992E8A0DC450533F2729EB8DFBAAFF697911546F495AD6E7E60772136724594626C81BED60188277F506800FB962198F7BD3021A251FCEFC30089EB3', 'test6', 1, 1, 0, '2018-12-29 21:49:37', NULL),
@@ -4346,7 +4379,8 @@ INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `userage
 (2375, 102, '2019-11-10 18:41:37', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2376, 103, '2019-11-10 18:42:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2377, 101, '2019-11-10 18:42:18', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
-(2378, 102, '2019-11-10 18:42:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+(2378, 102, '2019-11-10 18:42:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2379, 102, '2019-11-11 20:48:56', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -4592,7 +4626,7 @@ ALTER TABLE `gamesettings`
 -- AUTO_INCREMENT dla tabeli `itemreward`
 --
 ALTER TABLE `itemreward`
-  MODIFY `itemrewardid` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `itemrewardid` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT dla tabeli `items`
@@ -4628,19 +4662,19 @@ ALTER TABLE `pilots`
 -- AUTO_INCREMENT dla tabeli `pilotsitems`
 --
 ALTER TABLE `pilotsitems`
-  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=537;
+  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=538;
 
 --
 -- AUTO_INCREMENT dla tabeli `pilottask`
 --
 ALTER TABLE `pilottask`
-  MODIFY `pilottaskid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `pilottaskid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT dla tabeli `pilottaskquest`
 --
 ALTER TABLE `pilottaskquest`
-  MODIFY `pilottaskquestid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `pilottaskquestid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT dla tabeli `portalpositions`
@@ -4670,13 +4704,13 @@ ALTER TABLE `prefabs_types`
 -- AUTO_INCREMENT dla tabeli `questmap`
 --
 ALTER TABLE `questmap`
-  MODIFY `questmapid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `questmapid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT dla tabeli `quests`
 --
 ALTER TABLE `quests`
-  MODIFY `questid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `questid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT dla tabeli `questtypes`
@@ -4688,7 +4722,7 @@ ALTER TABLE `questtypes`
 -- AUTO_INCREMENT dla tabeli `rewards`
 --
 ALTER TABLE `rewards`
-  MODIFY `rewardid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `rewardid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT dla tabeli `rockets`
@@ -4706,13 +4740,13 @@ ALTER TABLE `ships`
 -- AUTO_INCREMENT dla tabeli `taskquest`
 --
 ALTER TABLE `taskquest`
-  MODIFY `taskquestid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `taskquestid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT dla tabeli `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `taskid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `taskid` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT dla tabeli `users`
@@ -4724,7 +4758,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT dla tabeli `userslog`
 --
 ALTER TABLE `userslog`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2379;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2380;
 
 --
 -- Ograniczenia dla zrzutów tabel
