@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 12 Lis 2019, 21:19
+-- Czas generowania: 24 Lis 2019, 21:33
 -- Wersja serwera: 10.1.37-MariaDB
 -- Wersja PHP: 7.3.0
 
@@ -614,7 +614,7 @@ CREATE TABLE `pilotresources` (
 INSERT INTO `pilotresources` (`pilotresourceid`, `userid`, `ammunition0`, `ammunition1`, `ammunition2`, `ammunition3`, `rocket0`, `rocket1`, `rocket2`) VALUES
 (1, 100, 500, 0, 0, 0, 0, 0, 0),
 (2, 101, 433, 0, 0, 0, 0, 0, 0),
-(3, 102, 1000037777, 16998, 15614, 1000015616, 17000, 1000016999, 17000),
+(3, 102, 1000037785, 16991, 15544, 1000015609, 17000, 1000016999, 17000),
 (4, 103, 500, 0, 0, 0, 0, 0, 0),
 (5, 104, 500, 0, 0, 0, 0, 0, 0),
 (6, 105, 500, 0, 0, 0, 0, 0, 0),
@@ -658,7 +658,7 @@ CREATE TABLE `pilots` (
 INSERT INTO `pilots` (`primarykeyid`, `userid`, `nickname`, `mapid`, `positionx`, `positiony`, `shipid`, `experience`, `level`, `scrap`, `metal`, `hitpoints`, `shields`, `ammunitionid`, `rocketid`, `isdead`, `killerby`, `achievement`) VALUES
 (1, 100, 'test1', 100, 319.613, -275.955, 100, 2, 1, 0, 0, 874, 706, 100, 104, 0, NULL, NULL),
 (2, 101, 'test2', 100, 924.193, -318.088, 101, 7558, 1, 185, 35, 1413, 0, 100, 104, 0, NULL, '{\"KillNPC\":{\"2\":10.0,\"1\":5.0,\"3\":1.0,\"4\":1.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":2244.96180665,\"TimeInGame\":146.0,\"DeadByNPC\":0.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":11924.0,\"DamageReceiveNPC\":1861.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":1674.0,\"HitpointDestroy\":1861.0,\"ShieldRepair\":0.0,\"ShieldDestroy\":0.0,\"ItemBuyScrap\":0.0,\"ItemSellScrap\":0.0,\"ItemBuyMetal\":0.0,\"ItemSellMetal\":0.0,\"ScrapReceive\":128.0,\"ScrapSpend\":0.0,\"MetalReceive\":32.0,\"MetalSpend\":0.0,\"ExpReceive\":6202.0,\"Map\":{\"101\":3.0,\"100\":3.0}}'),
-(3, 102, 'test3', 100, 913, -302, 129, 319711, 100, 69999905960.63002, 8869994235, 200000, 1300, 103, 105, 0, NULL, '{\"KillNPC\":{\"2\":111.0,\"3\":63.0,\"1\":139.0,\"7\":2.0,\"8\":4.0,\"4\":23.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":84373.9748149913,\"TimeInGame\":8559.0,\"DeadByNPC\":23625.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":881146.0,\"DamageReceiveNPC\":35317.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":410203.0,\"HitpointDestroy\":24866.0,\"ShieldRepair\":10757.0,\"ShieldDestroy\":8707.0,\"ItemBuyScrap\":607.0,\"ItemSellScrap\":60.83333333333332,\"ItemBuyMetal\":411.0,\"ItemSellMetal\":40.0,\"ScrapReceive\":2711.993333333333313,\"ScrapSpend\":75600.0,\"MetalReceive\":645.0,\"MetalSpend\":278201.0,\"ExpReceive\":123972.0,\"Map\":{\"101\":91.0,\"100\":89.0,\"114\":2.0,\"116\":2.0,\"102\":2.0}}'),
+(3, 102, 'test3', 100, 905, -333, 129, 324913, 100, 69999906068.63002, 8869994262, 200000, 1300, 103, 105, 0, NULL, '{\"KillNPC\":{\"2\":114.0,\"3\":65.0,\"1\":146.0,\"7\":2.0,\"8\":4.0,\"4\":25.0},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":94222.8602330053,\"TimeInGame\":8889.0,\"DeadByNPC\":23625.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":913243.0,\"DamageReceiveNPC\":36563.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":410584.0,\"HitpointDestroy\":25247.0,\"ShieldRepair\":11622.0,\"ShieldDestroy\":9572.0,\"ItemBuyScrap\":607.0,\"ItemSellScrap\":60.83333333333332,\"ItemBuyMetal\":411.0,\"ItemSellMetal\":40.0,\"ScrapReceive\":2819.993333333333313,\"ScrapSpend\":75600.0,\"MetalReceive\":672.0,\"MetalSpend\":278201.0,\"ExpReceive\":129174.0,\"Map\":{\"101\":162.0,\"100\":160.0,\"114\":2.0,\"116\":2.0,\"102\":2.0}}'),
 (4, 103, 'test4', 101, 64, -57, 103, 28355, 1, 57, 0, 3700, 0, 100, 104, 0, NULL, '{\"KillNPC\":{},\"KillPlayer\":{},\"CollectResource\":{},\"TravelDistance\":24.77565107,\"TimeInGame\":8.0,\"DeadByNPC\":0.0,\"DeadByPlayer\":0.0,\"DamageDealNPC\":0.0,\"DamageReceiveNPC\":0.0,\"DamageDealPlayer\":0.0,\"DamageReceivePlayer\":0.0,\"HitpointRepair\":0.0,\"HitpointDestroy\":0.0,\"ShieldRepair\":0.0,\"ShieldDestroy\":0.0,\"ItemBuyScrap\":0.0,\"ItemSellScrap\":0.0,\"ItemBuyMetal\":0.0,\"ItemSellMetal\":0.0,\"ScrapReceive\":0.0,\"ScrapSpend\":0.0,\"MetalReceive\":0.0,\"MetalSpend\":0.0,\"ExpReceive\":0.0,\"Map\":{}}'),
 (5, 104, 'test5', 100, 910, -929, 104, 791, 1, 36, 1, 5000, 150, 100, 104, 0, NULL, NULL),
 (6, 105, 'test6', 100, 284.76, -360.721, 105, 0, 1, 0, 0, 41166, 0, 100, 104, 0, NULL, NULL),
@@ -699,12 +699,12 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (9, 102, 2, 1, 0, 0),
 (10, 102, 1, 1, 0, 0),
 (11, 102, 2, 1, 0, 0),
-(12, 102, 1, 1, 1, 0),
+(12, 102, 1, 1, 0, 0),
 (13, 102, 1, 1, 0, 1),
 (14, 102, 2, 1, 0, 1),
 (15, 102, 3, 1, 0, 0),
 (16, 102, 2, 1, 0, 0),
-(17, 102, 1, 1, 1, 0),
+(17, 102, 1, 1, 0, 0),
 (18, 102, 3, 1, 0, 1),
 (19, 102, 2, 1, 0, 0),
 (20, 106, 1, 1, 1, 0),
@@ -714,7 +714,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (24, 102, 1, 1, 1, 0),
 (25, 102, 2, 1, 0, 1),
 (26, 102, 2, 1, 0, 1),
-(27, 102, 1, 1, 1, 0),
+(27, 102, 1, 1, 0, 0),
 (28, 102, 3, 1, 0, 1),
 (29, 102, 3, 1, 0, 1),
 (30, 102, 2, 1, 1, 0),
@@ -740,7 +740,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (50, 102, 2, 1, 0, 1),
 (51, 102, 2, 1, 0, 1),
 (52, 102, 3, 1, 1, 0),
-(53, 102, 1, 1, 0, 0),
+(53, 102, 1, 1, 1, 0),
 (54, 102, 3, 1, 1, 0),
 (55, 102, 2, 1, 0, 1),
 (56, 102, 3, 1, 1, 0),
@@ -781,7 +781,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (91, 102, 3, 1, 0, 0),
 (92, 102, 3, 1, 0, 0),
 (93, 102, 1, 1, 0, 0),
-(94, 102, 1, 1, 1, 0),
+(94, 102, 1, 1, 0, 0),
 (95, 102, 2, 1, 0, 0),
 (96, 102, 1, 1, 0, 1),
 (97, 102, 3, 1, 0, 0),
@@ -819,7 +819,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (130, 102, 6, 1, 0, 0),
 (131, 102, 5, 1, 0, 0),
 (132, 102, 5, 1, 0, 0),
-(133, 102, 1, 1, 0, 0),
+(133, 102, 1, 1, 1, 0),
 (134, 102, 3, 1, 0, 1),
 (135, 101, 1, 1, 1, 0),
 (136, 101, 2, 1, 0, 0),
@@ -861,7 +861,7 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (172, 102, 2, 1, 0, 0),
 (173, 102, 22, 1, 0, 1),
 (174, 102, 24, 1, 0, 0),
-(175, 102, 7, 1, 0, 0),
+(175, 102, 7, 1, 1, 0),
 (176, 102, 7, 1, 0, 1),
 (177, 102, 15, 1, 1, 0),
 (178, 102, 15, 1, 0, 1),
@@ -1223,7 +1223,18 @@ INSERT INTO `pilotsitems` (`relationid`, `userid`, `itemid`, `upgradelevel`, `is
 (534, 101, 2, 1, 0, 0),
 (535, 101, 3, 1, 0, 0),
 (536, 102, 2, 1, 0, 0),
-(537, 102, 4, 1, 0, 0);
+(537, 102, 4, 1, 0, 0),
+(538, 102, 4, 1, 0, 0),
+(539, 102, 1, 1, 0, 0),
+(540, 102, 2, 1, 0, 0),
+(541, 102, 1, 1, 0, 0),
+(542, 102, 1, 1, 0, 0),
+(543, 102, 1, 1, 0, 0),
+(544, 102, 1, 1, 0, 0),
+(545, 102, 2, 1, 0, 0),
+(546, 102, 1, 1, 0, 0),
+(547, 102, 1, 1, 0, 0),
+(548, 102, 2, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -1235,7 +1246,7 @@ CREATE TABLE `pilottask` (
   `pilottaskid` bigint(20) UNSIGNED NOT NULL,
   `pilotid` bigint(20) UNSIGNED NOT NULL,
   `taskid` int(10) UNSIGNED NOT NULL,
-  `startdate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `startdate` datetime DEFAULT NULL,
   `enddate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
@@ -1244,12 +1255,12 @@ CREATE TABLE `pilottask` (
 --
 
 INSERT INTO `pilottask` (`pilottaskid`, `pilotid`, `taskid`, `startdate`, `enddate`) VALUES
-(1, 102, 1, '2019-11-10 18:37:10', NULL),
+(1, 102, 1, '2019-11-23 13:23:46', NULL),
 (2, 102, 2, '2019-11-10 18:42:01', NULL),
 (3, 101, 2, '2019-11-10 18:38:03', '2019-11-10 18:40:12'),
 (4, 101, 1, '2019-11-10 18:41:13', NULL),
 (5, 102, 7, '2019-11-11 20:49:06', NULL),
-(6, 102, 4, '2019-11-11 20:49:13', NULL);
+(6, 102, 4, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1270,17 +1281,17 @@ CREATE TABLE `pilottaskquest` (
 --
 
 INSERT INTO `pilottaskquest` (`pilottaskquestid`, `pilottaskid`, `questid`, `progress`, `isdone`) VALUES
-(1, 1, 1, 2, 0),
-(2, 1, 3, 5, 0),
-(3, 1, 4, 11, 0),
-(4, 1, 5, 44, 0),
-(5, 2, 2, 0, 0),
+(1, 1, 1, 1, 0),
+(2, 1, 3, 2, 0),
+(3, 1, 4, 14, 0),
+(4, 1, 5, 56, 0),
+(5, 2, 2, 3, 0),
 (6, 3, 2, 10, 1),
 (7, 4, 1, 0, 0),
 (8, 4, 3, 3, 0),
 (9, 4, 4, 4, 0),
 (10, 4, 5, 16, 0),
-(11, 5, 10, 0, 0),
+(11, 5, 10, 3, 0),
 (12, 5, 9, 0, 0),
 (13, 6, 6, 0, 0);
 
@@ -4380,7 +4391,14 @@ INSERT INTO `userslog` (`id`, `userid`, `datetime`, `action`, `result`, `userage
 (2376, 103, '2019-11-10 18:42:09', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2377, 101, '2019-11-10 18:42:18', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
 (2378, 102, '2019-11-10 18:42:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
-(2379, 102, '2019-11-11 20:48:56', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
+(2379, 102, '2019-11-11 20:48:56', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2380, 102, '2019-11-23 10:10:12', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2381, 102, '2019-11-23 11:26:17', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2382, 102, '2019-11-23 11:28:52', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2383, 102, '2019-11-23 13:22:03', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2384, 102, '2019-11-23 15:39:26', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2385, 102, '2019-11-23 15:41:46', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231'),
+(2386, 102, '2019-11-23 16:42:54', 'LogIn', 1, 'websocket-sharp/1.0', '127.0.0.1:24231');
 
 --
 -- Indeksy dla zrzutów tabel
@@ -4662,7 +4680,7 @@ ALTER TABLE `pilots`
 -- AUTO_INCREMENT dla tabeli `pilotsitems`
 --
 ALTER TABLE `pilotsitems`
-  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=538;
+  MODIFY `relationid` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=549;
 
 --
 -- AUTO_INCREMENT dla tabeli `pilottask`
@@ -4758,7 +4776,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT dla tabeli `userslog`
 --
 ALTER TABLE `userslog`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2380;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2387;
 
 --
 -- Ograniczenia dla zrzutów tabel
