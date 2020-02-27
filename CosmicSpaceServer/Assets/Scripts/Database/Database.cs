@@ -18,7 +18,15 @@ public class Database
         Server = "127.0.0.1",
         Port = 3306,
         UserID = "root",
-        //Password = "pHqD6wxEeuZTuSk5FDhpBcwf4R7Z5LCgaSN5vCa2",
+
+        #region PUBLIKACJA
+        Password = "jr6DPj9Wp3",
+        #endregion
+
+        #region DEBUG
+
+        #endregion
+
         Database = "cosmicspace",
         SslMode = MySqlSslMode.None
     }.ToString();

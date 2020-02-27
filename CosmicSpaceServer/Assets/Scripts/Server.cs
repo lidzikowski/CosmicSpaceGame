@@ -92,8 +92,14 @@ public class Server : MonoBehaviour
 
         try
         {
-            //WebSocket = new WebSocketServer("ws://77.55.212.240:24231");
-            WebSocket = new WebSocketServer("ws://127.0.0.1:24231");
+            #region PUBLIKACJA
+            WebSocket = new WebSocketServer("ws://77.55.215.236:24231");
+            #endregion
+
+            #region DEBUG
+            //WebSocket = new WebSocketServer("ws://127.0.0.1:24231");
+            #endregion
+
             WebSocket.AddWebSocketService<GameService>("/Game");
             WebSocket.AddWebSocketService<ChatService>("/Chat");
             WebSocket.Start();
