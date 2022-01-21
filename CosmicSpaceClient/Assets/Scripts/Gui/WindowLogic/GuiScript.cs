@@ -1,0 +1,93 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class GuiScript : MonoBehaviour
+{
+    public static Dictionary<WindowTypes, WindowInstance> Windows = new Dictionary<WindowTypes, WindowInstance>();
+    protected static Transform canvas;
+    public static bool Ready = false;
+
+    void Start()
+    {
+        for (int i = 0; i < WindowTypes.GetNames(typeof(WindowTypes)).Length; i++)
+        {
+            Windows.Add((WindowTypes)i, new WindowInstance());
+        }
+
+        canvas = transform;
+
+        foreach (Transform t in transform)
+            Destroy(t.gameObject);
+
+        Ready = true;
+    }
+
+    public static void OpenWindow(WindowTypes windowType)
+    {
+        InstantiateWindow(windowType, true);
+    }
+
+    public static void CloseWindow(WindowTypes windowType)
+    {
+        InstantiateWindow(windowType, false);
+    }
+
+    public static void CloseAllWindow()
+    {
+        foreach (WindowInstance window in Windows.Values.Where(o => o.Active))
+        {
+            window.Window = null;
+        }
+    }
+
+    public static void RefreshAllActiveWindow()
+    {
+        foreach (WindowInstance window in Windows.Values.Where(o => o.Active))
+        {
+            window.Script.Refresh();
+        }
+    }
+
+    private static void InstantiateWindow(WindowTypes windowType, bool showWindow, bool closeAllWindow = false)
+    {
+        WindowInstance window = Windows[windowType];
+
+        if (window.Active == showWindow)
+            return;
+
+        if (closeAllWindow)
+            CloseAllWindow();
+
+        if (showWindow)
+        {
+            GameObject go = Instantiate(Resources.Load<GameObject>("GameWindows/" + windowType), canvas);
+            window.Window = go;
+            window.Script.WindowType = windowType;
+        }
+        else
+            window.Window = null;
+    }
+
+    public static void CreateLogMessage(List<string> messages, float time = 3)
+    {
+        string message = string.Empty;
+
+        for (int i = 0; i < messages.Count; i++)
+        {
+            message += messages[i];
+            if (i != messages.Count - 1)
+                message += "\n";
+        }
+
+        if(Windows[WindowTypes.UserInterface].Script is UserInterfaceWindow userInterface)
+        {
+            userInterface.CreateLogMessage(message, time);
+        }
+    }
+
+    public static string IsPlayer(ShipLogic shipLogic, bool isPlayer)
+    {
+        return $"{shipLogic.ObjectName} [ID: {(isPlayer ? "P" : "E")} {shipLogic.ID}]";
+    }
+}

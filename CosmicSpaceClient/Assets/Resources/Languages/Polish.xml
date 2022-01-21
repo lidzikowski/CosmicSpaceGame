@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Language>
+  <SIGN_IN>Logowanie</SIGN_IN>
+  <USERNAME>Nazwa użytkownika</USERNAME>
+  <PASSWORD>Hasło</PASSWORD>
+  <REMEMBER>Zapamiętaj mnie.</REMEMBER>
+  <LOG_IN>Zaloguj</LOG_IN>
+  <CREATE_ACCOUNT>Stwórz konto</CREATE_ACCOUNT>
+  <EMAIL>Email</EMAIL>
+  <NICKNAME>Nazwa pilota</NICKNAME>
+  <RULES>Akceptuję regulamin.</RULES>
+  <REGISTER>Rejestruj</REGISTER>
+  <NEWSLETTER>Nowości</NEWSLETTER>
+  <GAME_VERSION>v. {0}</GAME_VERSION>
+  <SERVER_STATUS>Serwer jest {0}</SERVER_STATUS>
+  <REPAIR>Napraw</REPAIR>
+  <DESTROYED>Nie żyjesz</DESTROYED>
+  <MINIMAP>Minimapa</MINIMAP>
+  <DEFEATED_PLAYER>Pokonałeś gracza {0}</DEFEATED_PLAYER>
+  <DEFEATED_ENEMY>Pokonałeś przeciwnika {0}</DEFEATED_ENEMY>
+  <EXPERIENCE>Doświadczenie</EXPERIENCE>
+  <COMMAND_NOT_FOUND>Komenda '{0}' nie istnieje, spróbuj użyć '/help'.</COMMAND_NOT_FOUND>
+  <EMPTY_MESSAGE>Nie możesz wysłać pustej wiadomości.</EMPTY_MESSAGE>
+  <CONNECTING_TO_CHAT>Trwa łączenie...</CONNECTING_TO_CHAT>
+  <CHAT_CONNECTED>Połączono {0}</CHAT_CONNECTED>
+  <CHAT_DISCONNECTED>Rozłączono {0}</CHAT_DISCONNECTED>
+  <YOU>Ty</YOU>
+  <CHAT_USER_NOT_FOUND>Nie znalazłem użytkownika '{0}' :&lt;</CHAT_USER_NOT_FOUND>
+  <CHAT_HELP_LIST>Lista komend.</CHAT_HELP_LIST>
+  <CHAT_HELP_ONLINE>Aktywni użytkownicy kanału.</CHAT_HELP_ONLINE>
+  <CHAT_HELP_PRIVATE>Prywatna wiadomość do innego użytkownika (/pw &lt;użytkownik&gt; &lt;wiadomość&gt;).</CHAT_HELP_PRIVATE>
+  <PORTAL_NOT_FOUND>Portal nie został znaleziony.</PORTAL_NOT_FOUND>
+  <PORTAL_FOUND>Skok międzygalaktyczny na mapę {0}</PORTAL_FOUND>
+  <PORTAL_FOUND>Intergalactic jump .</PORTAL_FOUND>
+  <TARGET_NOT_FOUND>Żaden cel nie został wybrany do przeprowadzenia ataku.</TARGET_NOT_FOUND>
+  <SAFE_ZONE_ACTIVE>Ochrona jest Aktywna, jesteś bezpieczny.</SAFE_ZONE_ACTIVE>
+  <SAFE_ZONE_INACTIVE>Ochrona jest Nieaktywna, NIE jesteś bezpieczny.</SAFE_ZONE_INACTIVE>
+  <TARGET_IS_COVER>Wybrany cel jest bezpieczny od ataków.</TARGET_IS_COVER>
+  <QUIT>Wyjście</QUIT>
+  <SETTINGS>Ustawienia</SETTINGS>
+  <MISSIONS>Zadania</MISSIONS>
+  <HANGAR>Hangar</HANGAR>
+  <EXIT>Wyjście</EXIT>
+  <EXIT_QUESTION>Czy chcesz opuścić grę?</EXIT_QUESTION>
+  <YES>Tak</YES>
+  <NO>Nie</NO>
+  <LANGUAGE>Język</LANGUAGE>
+  <LASER>Laser</LASER>
+  <LASERS>Lasery</LASERS>
+  <GENERATOR>Generator</GENERATOR>
+  <GENERATORS>Generatory</GENERATORS>
+  <EXTRA>Dodatek</EXTRA>
+  <EXTRAS>Dodatki</EXTRAS>
+  <WAREHOUSE>Magazyn</WAREHOUSE>
+  <DAMAGE>Obrażenia</DAMAGE>
+  <DAMAGE_PVP>Obrażenia PvP</DAMAGE_PVP>
+  <DAMAGE_PVE>Obrażenia PvE</DAMAGE_PVE>
+  <SHOT_RANGE>Zasięg strzału</SHOT_RANGE>
+  <SHOT_DISPERSION>Rozproszenie strzału</SHOT_DISPERSION>
+  <SPEED>Prędkość</SPEED>
+  <SHIELD>Osłona</SHIELD>
+  <SHIELD_DIVISION>Moc osłony</SHIELD_DIVISION>
+  <SHIELD_REPAIR>Naprawa osłony</SHIELD_REPAIR>
+  <RECEIVE_ITEM>Otrzymano przedmiot {0}</RECEIVE_ITEM>
+  <NO_EQUIP>Brak laserów - wyposaż je w hangarze.</NO_EQUIP>
+  <SHOP>Sklep</SHOP>
+  <SHIPS>Statki</SHIPS>
+  <CARGO>Ładownia</CARGO>
+  <HITPOINTS>Poszycie</HITPOINTS>
+  <BUY_FOR>Kup za</BUY_FOR>
+  <UNAVAILABLE>NIEDOSTĘPNE</UNAVAILABLE>
+  <NOT_HAVE_ENOUGH>Nie masz wystarczająco {0}</NOT_HAVE_ENOUGH>
+  <ITEM_PURCHASED>Przedmiot został zakupiony {0}</ITEM_PURCHASED>
+  <ITEM_ERROR>Błąd przy zakupie przedmiotu.</ITEM_ERROR>
+  <NO_REQUIRED_LEVEL>Brak wymaganego poziomu.</NO_REQUIRED_LEVEL>
+  <NEED>Potrzebujesz {0}</NEED>
+  <YOU_HAVE_SHIP>Posiadasz już ten statek.</YOU_HAVE_SHIP>
+  <REQUIRED_LEVEL>Wymagany poziom</REQUIRED_LEVEL>
+  <ITEM_INFO>Przedmiot</ITEM_INFO>
+  <SELL_ITEM>Sprzedaj</SELL_ITEM>
+  <SELL_ITEM_ERROR>Wystąpił problem ze sprzedażą przedmiotu.</SELL_ITEM_ERROR>
+  <RESOURCES>Zasoby</RESOURCES>
+  <RESOURCE>Zasób</RESOURCE>
+  <QUANTITY>Ilość</QUANTITY>
+  <ITEM_SOLD>Sprzedano przedmiot {0}</ITEM_SOLD>
+  <RECEIVE_RESOURCE>Otrzymano zasób {0} ({1})</RECEIVE_RESOURCE>
+  <NO_AMMO>Brak amunicji.</NO_AMMO>
+  <MULTIPLIER>Mnożnik obrażeń</MULTIPLIER>
+  <MULTIPLIER_PLAYER>Mnożnik w Gracza</MULTIPLIER_PLAYER>
+  <MULTIPLIER_ENEMY>Mnożnik w Przeciwnika</MULTIPLIER_ENEMY>
+  <IS_AMMO>Typ zasobu</IS_AMMO>
+  <IS_AMMO_LASER>Laser</IS_AMMO_LASER>
+  <IS_AMMO_ROCKET>Rakieta</IS_AMMO_ROCKET>
+  <BASE_DAMAGE>Bazowe obrażenia</BASE_DAMAGE>
+  <GALAXY>Mapa galaktyki</GALAXY>
+  <TASK_COMPLETED>Zadanie {0} zostało wykonane!</TASK_COMPLETED>
+  <QUEST_TITLE>Zadania</QUEST_TITLE>
+  <CANCEL>Przerwij</CANCEL>
+  <ACCEPT>Akceptuj</ACCEPT>
+  <REWARDS>Nagrody</REWARDS>
+  <CHANCE>Szansa</CHANCE>
+
+
+  
+  
+
+  <Q_KILL_NPC>Zniszcz NPC</Q_KILL_NPC>
+  <Q_KILL_PLAYER>Zniszcz statek Gracza</Q_KILL_PLAYER>
+  <Q_COLLECT_RESOURCE>Zbierz surowiec</Q_COLLECT_RESOURCE>
+  <Q_TRAVEL>Podróżuj</Q_TRAVEL>
+  <Q_TIME>Spędź czas</Q_TIME>
+  <Q_DEAD_BY_NPC>Zgiń od NPC</Q_DEAD_BY_NPC>
+  <Q_DEAD_BY_PLAYER>Zgiń od Gracza</Q_DEAD_BY_PLAYER>
+  <Q_DAMAGE_DEAL_NPC>Zadaj obrażenia NPC</Q_DAMAGE_DEAL_NPC>
+  <Q_DAMAGE_RECEIVE_NPC>Otrzymaj obrażenia od NPC</Q_DAMAGE_RECEIVE_NPC>
+  <Q_DAMAGE_DEAL_PLAYER>Zadaj obrażenia w innego Gracza</Q_DAMAGE_DEAL_PLAYER>
+  <Q_DAMAGE_RECEIVE_PLAYER>Otrzymaj obrażenia od innego Gracza</Q_DAMAGE_RECEIVE_PLAYER>
+  <Q_HITPOINT_REPAIR>Napraw poszycie</Q_HITPOINT_REPAIR>
+  <Q_HITPOINT_DESTROY>Uszkodź poszycie</Q_HITPOINT_DESTROY>
+  <Q_SHIELD_REPAIR>Napraw osłonę</Q_SHIELD_REPAIR>
+  <Q_SHIELD_DESTROY>Uszkodź osłonę</Q_SHIELD_DESTROY>
+  <Q_ITEM_BUY_SCRAP>Kup przedmiot za Scrap</Q_ITEM_BUY_SCRAP>
+  <Q_ITEM_SELL_SCRAP>Sprzedaj przedmiot za Scrap</Q_ITEM_SELL_SCRAP>
+  <Q_ITEM_BUY_METAL>Kup przedmiot za Metal</Q_ITEM_BUY_METAL>
+  <Q_ITEM_SELL_METAL>Sprzedaj przedmiot za Metal</Q_ITEM_SELL_METAL>
+  <Q_SCRAP_RECEIVE>Zdobądź Scrap</Q_SCRAP_RECEIVE>
+  <Q_SCRAP_SPEND>Wydaj Scrap</Q_SCRAP_SPEND>
+  <Q_METAL_RECEIVE>Zdobądź Metal</Q_METAL_RECEIVE>
+  <Q_METAL_SPEND>Wydaj Metal</Q_METAL_SPEND>
+  <Q_EXP_RECEIVE>Zdobądź Doświadczenie</Q_EXP_RECEIVE>
+  <Q_MAP_TRAVEL>Odwiedź Mapę</Q_MAP_TRAVEL>
+  <Q_ON_MAP>Na mapie</Q_ON_MAP>
+</Language>

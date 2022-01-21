@@ -1,0 +1,406 @@
+﻿using System.IO;
+using System.Xml;
+using System.Xml.Serialization;
+using UnityEngine;
+
+public class Language
+{
+    public static Language Load(Languages language)
+    {
+        TextAsset textAsset = (TextAsset)Resources.Load($"Languages/{language}");
+
+        Language lang;
+        using (TextReader sr = new StringReader(textAsset.text))
+        {
+            var serializer = new XmlSerializer(typeof(Language));
+            lang = (Language)serializer.Deserialize(sr);
+        }
+        return lang;
+    }
+
+    #region StartWindow
+    #region SignInWindow
+    [XmlElement("SIGN_IN")]
+    public string SIGN_IN { get; set; }
+    [XmlElement("USERNAME")]
+    public string USERNAME { get; set; }
+    [XmlElement("PASSWORD")]
+    public string PASSWORD { get; set; }
+    [XmlElement("REMEMBER")]
+    public string REMEMBER { get; set; }
+    [XmlElement("LOG_IN")]
+    public string LOG_IN { get; set; }
+    [XmlElement("CREATE_ACCOUNT")]
+    public string CREATE_ACCOUNT { get; set; }
+    #endregion
+
+    #region CreateAccountWindow
+    [XmlElement("EMAIL")]
+    public string EMAIL { get; set; }
+    [XmlElement("NICKNAME")]
+    public string NICKNAME { get; set; }
+    [XmlElement("RULES")]
+    public string RULES { get; set; }
+    [XmlElement("REGISTER")]
+    public string REGISTER { get; set; }
+    #endregion
+
+    #region Newsletter
+    [XmlElement("NEWSLETTER")]
+    public string NEWSLETTER { get; set; }
+    #endregion
+
+    [XmlElement("GAME_VERSION")]
+    public string GAME_VERSION { get; set; }
+    [XmlElement("SERVER_STATUS")]
+    public string SERVER_STATUS { get; set; }
+    #endregion
+
+
+    #region RepairShipWindow
+    [XmlElement("REPAIR")]
+    public string REPAIR { get; set; }
+    [XmlElement("DESTROYED")]
+    public string DESTROYED { get; set; }
+    #endregion
+
+
+    [XmlElement("MINIMAP")]
+    public string MINIMAP { get; set; }
+
+    #region Game
+
+    [XmlElement("DEFEATED_PLAYER")]
+    public string DEFEATED_PLAYER { get; set; }
+
+    [XmlElement("DEFEATED_ENEMY")]
+    public string DEFEATED_ENEMY { get; set; }
+
+    [XmlElement("EXPERIENCE")]
+    public string EXPERIENCE { get; set; }
+
+    [XmlElement("COMMAND_NOT_FOUND")]
+    public string COMMAND_NOT_FOUND { get; set; }
+
+    [XmlElement("EMPTY_MESSAGE")]
+    public string EMPTY_MESSAGE { get; set; }
+
+    [XmlElement("CONNECTING_TO_CHAT")]
+    public string CONNECTING_TO_CHAT { get; set; }
+
+    [XmlElement("CHAT_CONNECTED")]
+    public string CHAT_CONNECTED { get; set; }
+
+    [XmlElement("CHAT_DISCONNECTED")]
+    public string CHAT_DISCONNECTED { get; set; }
+
+    [XmlElement("YOU")]
+    public string YOU { get; set; }
+
+    [XmlElement("CHAT_USER_NOT_FOUND")]
+    public string CHAT_USER_NOT_FOUND { get; set; }
+
+    [XmlElement("CHAT_HELP_LIST")]
+    public string CHAT_HELP_LIST { get; set; }
+
+    [XmlElement("CHAT_HELP_ONLINE")]
+    public string CHAT_HELP_ONLINE { get; set; }
+
+    [XmlElement("CHAT_HELP_PRIVATE")]
+    public string CHAT_HELP_PRIVATE { get; set; }
+
+    [XmlElement("PORTAL_NOT_FOUND")]
+    public string PORTAL_NOT_FOUND { get; set; }
+
+    [XmlElement("PORTAL_FOUND")]
+    public string PORTAL_FOUND { get; set; }
+
+    [XmlElement("TARGET_NOT_FOUND")]
+    public string TARGET_NOT_FOUND { get; set; }
+
+    [XmlElement("SAFE_ZONE_ACTIVE")]
+    public string SAFE_ZONE_ACTIVE { get; set; }
+
+    [XmlElement("SAFE_ZONE_INACTIVE")]
+    public string SAFE_ZONE_INACTIVE { get; set; }
+
+    [XmlElement("TARGET_IS_COVER")]
+    public string TARGET_IS_COVER { get; set; }
+
+    [XmlElement("QUIT")]
+    public string QUIT { get; set; }
+
+    [XmlElement("SETTINGS")]
+    public string SETTINGS { get; set; }
+
+    [XmlElement("MISSIONS")]
+    public string MISSIONS { get; set; }
+
+    [XmlElement("HANGAR")]
+    public string HANGAR { get; set; }
+
+    [XmlElement("EXIT")]
+    public string EXIT { get; set; }
+
+    [XmlElement("EXIT_QUESTION")]
+    public string EXIT_QUESTION { get; set; }
+
+    [XmlElement("YES")]
+    public string YES { get; set; }
+
+    [XmlElement("NO")]
+    public string NO { get; set; }
+
+    [XmlElement("LANGUAGE")]
+    public string LANGUAGE { get; set; }
+
+    [XmlElement("LASER")]
+    public string LASER { get; set; }
+
+    [XmlElement("LASERS")]
+    public string LASERS { get; set; }
+
+    [XmlElement("GENERATOR")]
+    public string GENERATOR { get; set; }
+
+    [XmlElement("GENERATORS")]
+    public string GENERATORS { get; set; }
+
+    [XmlElement("EXTRA")]
+    public string EXTRA { get; set; }
+
+    [XmlElement("EXTRAS")]
+    public string EXTRAS { get; set; }
+
+    [XmlElement("WAREHOUSE")]
+    public string WAREHOUSE { get; set; }
+
+    [XmlElement("DAMAGE")]
+    public string DAMAGE { get; set; }
+
+    [XmlElement("DAMAGE_PVP")]
+    public string DAMAGE_PVP { get; set; }
+
+    [XmlElement("DAMAGE_PVE")]
+    public string DAMAGE_PVE { get; set; }
+
+    [XmlElement("SHOT_RANGE")]
+    public string SHOT_RANGE { get; set; }
+
+    [XmlElement("SHOT_DISPERSION")]
+    public string SHOT_DISPERSION { get; set; }
+
+    [XmlElement("SPEED")]
+    public string SPEED { get; set; }
+
+    [XmlElement("SHIELD")]
+    public string SHIELD { get; set; }
+
+    [XmlElement("SHIELD_DIVISION")]
+    public string SHIELD_DIVISION { get; set; }
+
+    [XmlElement("SHIELD_REPAIR")]
+    public string SHIELD_REPAIR { get; set; }
+
+    [XmlElement("RECEIVE_ITEM")]
+    public string RECEIVE_ITEM { get; set; }
+
+    [XmlElement("NO_EQUIP")]
+    public string NO_EQUIP { get; set; }
+
+    [XmlElement("SHOP")]
+    public string SHOP { get; set; }
+
+    [XmlElement("SHIPS")]
+    public string SHIPS { get; set; }
+
+    [XmlElement("CARGO")]
+    public string CARGO { get; set; }
+
+    [XmlElement("HITPOINTS")]
+    public string HITPOINTS { get; set; }
+
+    [XmlElement("BUY_FOR")]
+    public string BUY_FOR { get; set; }
+
+    [XmlElement("UNAVAILABLE")]
+    public string UNAVAILABLE { get; set; }
+
+    [XmlElement("NOT_HAVE_ENOUGH")]
+    public string NOT_HAVE_ENOUGH { get; set; }
+
+    [XmlElement("ITEM_PURCHASED")]
+    public string ITEM_PURCHASED { get; set; }
+
+    [XmlElement("ITEM_ERROR")]
+    public string ITEM_ERROR { get; set; }
+
+    [XmlElement("NO_REQUIRED_LEVEL")]
+    public string NO_REQUIRED_LEVEL { get; set; }
+
+    [XmlElement("NEED")]
+    public string NEED { get; set; }
+
+    [XmlElement("YOU_HAVE_SHIP")]
+    public string YOU_HAVE_SHIP { get; set; }
+
+    [XmlElement("REQUIRED_LEVEL")]
+    public string REQUIRED_LEVEL { get; set; }
+
+    [XmlElement("ITEM_INFO")]
+    public string ITEM_INFO { get; set; }
+
+    [XmlElement("SELL_ITEM")]
+    public string SELL_ITEM { get; set; }
+
+    [XmlElement("SELL_ITEM_ERROR")]
+    public string SELL_ITEM_ERROR { get; set; }
+
+    [XmlElement("RESOURCES")]
+    public string RESOURCES { get; set; }
+
+    [XmlElement("RESOURCE")]
+    public string RESOURCE { get; set; }
+
+    [XmlElement("QUANTITY")]
+    public string QUANTITY { get; set; }
+
+    [XmlElement("ITEM_SOLD")]
+    public string ITEM_SOLD { get; set; }
+
+    [XmlElement("RECEIVE_RESOURCE")]
+    public string RECEIVE_RESOURCE { get; set; }
+
+    [XmlElement("NO_AMMO")]
+    public string NO_AMMO { get; set; }
+
+    [XmlElement("MULTIPLIER")]
+    public string MULTIPLIER { get; set; }
+
+    [XmlElement("MULTIPLIER_PLAYER")]
+    public string MULTIPLIER_PLAYER { get; set; }
+
+    [XmlElement("MULTIPLIER_ENEMY")]
+    public string MULTIPLIER_ENEMY { get; set; }
+
+    [XmlElement("IS_AMMO")]
+    public string IS_AMMO { get; set; }
+
+    [XmlElement("IS_AMMO_LASER")]
+    public string IS_AMMO_LASER { get; set; }
+
+    [XmlElement("IS_AMMO_ROCKET")]
+    public string IS_AMMO_ROCKET { get; set; }
+
+    [XmlElement("BASE_DAMAGE")]
+    public string BASE_DAMAGE { get; set; }
+
+    [XmlElement("GALAXY")]
+    public string GALAXY { get; set; }
+
+    [XmlElement("TASK_COMPLETED")]
+    public string TASK_COMPLETED { get; set; }
+
+    [XmlElement("QUEST_TITLE")]
+    public string QUEST_TITLE { get; set; }
+
+    [XmlElement("CANCEL")]
+    public string CANCEL { get; set; }
+
+    [XmlElement("ACCEPT")]
+    public string ACCEPT { get; set; }
+
+    [XmlElement("REWARDS")]
+    public string REWARDS { get; set; }
+
+    [XmlElement("CHANCE")]
+    public string CHANCE { get; set; }
+
+
+
+
+
+
+
+    #endregion
+
+    #region QUESTS
+    [XmlElement("Q_KILL_NPC")]
+    public string Q_KILL_NPC { get; set; }
+
+    [XmlElement("Q_KILL_PLAYER")]
+    public string Q_KILL_PLAYER { get; set; }
+
+    [XmlElement("Q_COLLECT_RESOURCE")]
+    public string Q_COLLECT_RESOURCE { get; set; }
+
+    [XmlElement("Q_TRAVEL")]
+    public string Q_TRAVEL { get; set; }
+
+    [XmlElement("Q_TIME")]
+    public string Q_TIME { get; set; }
+
+    [XmlElement("Q_DEAD_BY_NPC")]
+    public string Q_DEAD_BY_NPC { get; set; }
+
+    [XmlElement("Q_DEAD_BY_PLAYER")]
+    public string Q_DEAD_BY_PLAYER { get; set; }
+
+    [XmlElement("Q_DAMAGE_DEAL_NPC")]
+    public string Q_DAMAGE_DEAL_NPC { get; set; }
+
+    [XmlElement("Q_DAMAGE_RECEIVE_NPC")]
+    public string Q_DAMAGE_RECEIVE_NPC { get; set; }
+
+    [XmlElement("Q_DAMAGE_DEAL_PLAYER")]
+    public string Q_DAMAGE_DEAL_PLAYER { get; set; }
+
+    [XmlElement("Q_DAMAGE_RECEIVE_PLAYER")]
+    public string Q_DAMAGE_RECEIVE_PLAYER { get; set; }
+
+    [XmlElement("Q_HITPOINT_REPAIR")]
+    public string Q_HITPOINT_REPAIR { get; set; }
+
+    [XmlElement("Q_HITPOINT_DESTROY")]
+    public string Q_HITPOINT_DESTROY { get; set; }
+
+    [XmlElement("Q_SHIELD_REPAIR")]
+    public string Q_SHIELD_REPAIR { get; set; }
+
+    [XmlElement("Q_SHIELD_DESTROY")]
+    public string Q_SHIELD_DESTROY { get; set; }
+
+    [XmlElement("Q_ITEM_BUY_SCRAP")]
+    public string Q_ITEM_BUY_SCRAP { get; set; }
+
+    [XmlElement("Q_ITEM_SELL_SCRAP")]
+    public string Q_ITEM_SELL_SCRAP { get; set; }
+
+    [XmlElement("Q_ITEM_BUY_METAL")]
+    public string Q_ITEM_BUY_METAL { get; set; }
+
+    [XmlElement("Q_ITEM_SELL_METAL")]
+    public string Q_ITEM_SELL_METAL { get; set; }
+
+    [XmlElement("Q_SCRAP_RECEIVE")]
+    public string Q_SCRAP_RECEIVE { get; set; }
+
+    [XmlElement("Q_SCRAP_SPEND")]
+    public string Q_SCRAP_SPEND { get; set; }
+
+    [XmlElement("Q_METAL_RECEIVE")]
+    public string Q_METAL_RECEIVE { get; set; }
+
+    [XmlElement("Q_METAL_SPEND")]
+    public string Q_METAL_SPEND { get; set; }
+
+    [XmlElement("Q_EXP_RECEIVE")]
+    public string Q_EXP_RECEIVE { get; set; }
+
+    [XmlElement("Q_MAP_TRAVEL")]
+    public string Q_MAP_TRAVEL { get; set; }
+
+    [XmlElement("Q_ON_MAP")]
+    public string Q_ON_MAP { get; set; }
+    #endregion
+}

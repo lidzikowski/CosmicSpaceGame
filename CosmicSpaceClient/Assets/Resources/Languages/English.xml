@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<Language>
+  <SIGN_IN>Sign In</SIGN_IN>
+  <USERNAME>Username</USERNAME>
+  <PASSWORD>Password</PASSWORD>
+  <REMEMBER>Remember me.</REMEMBER>
+  <LOG_IN>Log In</LOG_IN>
+  <CREATE_ACCOUNT>Create account</CREATE_ACCOUNT>
+  <EMAIL>Email</EMAIL>
+  <NICKNAME>Pilot name</NICKNAME>
+  <RULES>Accept rules.</RULES>
+  <REGISTER>Register</REGISTER>
+  <NEWSLETTER>Newsletter</NEWSLETTER>
+  <GAME_VERSION>v. {0}</GAME_VERSION>
+  <SERVER_STATUS>Server is {0}</SERVER_STATUS>
+  <REPAIR>Repair</REPAIR>
+  <DESTROYED>You're Dead</DESTROYED>
+  <MINIMAP>Minimap</MINIMAP>
+  <DEFEATED_PLAYER>You defeated the player {0}</DEFEATED_PLAYER>
+  <DEFEATED_ENEMY>You defeated the enemy {0}</DEFEATED_ENEMY>
+  <EXPERIENCE>Experience</EXPERIENCE>
+  <COMMAND_NOT_FOUND>Command '{0}' not found, try use '/help'.</COMMAND_NOT_FOUND>
+  <EMPTY_MESSAGE>You can't send an empty message.</EMPTY_MESSAGE>
+  <CONNECTING_TO_CHAT>Connecting...</CONNECTING_TO_CHAT>
+  <CHAT_CONNECTED>Connected {0}</CHAT_CONNECTED>
+  <CHAT_DISCONNECTED>Disconnected {0}</CHAT_DISCONNECTED>
+  <YOU>You</YOU>
+  <CHAT_USER_NOT_FOUND>I did not find a user '{0}' :&lt;</CHAT_USER_NOT_FOUND>
+  <CHAT_HELP_LIST>List of commands.</CHAT_HELP_LIST>
+  <CHAT_HELP_ONLINE>Online users on this channel.</CHAT_HELP_ONLINE>
+  <CHAT_HELP_PRIVATE>A private message to another user (/pw &lt;username&gt; &lt;message&gt;).</CHAT_HELP_PRIVATE>
+  <PORTAL_NOT_FOUND>Portal was not found.</PORTAL_NOT_FOUND>
+  <PORTAL_FOUND>Intergalactic jump on the map {0}</PORTAL_FOUND>
+  <TARGET_NOT_FOUND>No target has been selected to perform the attack.</TARGET_NOT_FOUND>
+  <SAFE_ZONE_ACTIVE>Protection is Active, you are safe.</SAFE_ZONE_ACTIVE>
+  <SAFE_ZONE_INACTIVE>Protection is Inactive, you are NOT safe.</SAFE_ZONE_INACTIVE>
+  <TARGET_IS_COVER>The selected target is safe from the attack.</TARGET_IS_COVER>
+  <QUIT>Exit</QUIT>
+  <SETTINGS>Settings</SETTINGS>
+  <MISSIONS>Missions</MISSIONS>
+  <HANGAR>Hangar</HANGAR>
+  <EXIT>Exit</EXIT>
+  <EXIT_QUESTION>Do you want to leave the game?</EXIT_QUESTION>
+  <YES>Yes</YES>
+  <NO>No</NO>
+  <LANGUAGE>Language</LANGUAGE>
+  <LASER>Laser</LASER>
+  <LASERS>Lasers</LASERS>
+  <GENERATOR>Generator</GENERATOR>
+  <GENERATORS>Generators</GENERATORS>
+  <EXTRA>Extra</EXTRA>
+  <EXTRAS>Extras</EXTRAS>
+  <WAREHOUSE>Warehouse</WAREHOUSE>
+  <DAMAGE>Damage</DAMAGE>
+  <DAMAGE_PVP>Damage PvP</DAMAGE_PVP>
+  <DAMAGE_PVE>Damage PvE</DAMAGE_PVE>
+  <SHOT_RANGE>Shot range</SHOT_RANGE>
+  <SHOT_DISPERSION>Shot dispersion</SHOT_DISPERSION>
+  <SPEED>Speed</SPEED>
+  <SHIELD>Shield</SHIELD>
+  <SHIELD_DIVISION>Shield division</SHIELD_DIVISION>
+  <SHIELD_REPAIR>Shield repair</SHIELD_REPAIR>
+  <RECEIVE_ITEM>Receive the item {0}</RECEIVE_ITEM>
+  <NO_EQUIP>No lasers - equip them in the hangar.</NO_EQUIP>
+  <SHOP>Shop</SHOP>
+  <SHIPS>Ships</SHIPS>
+  <CARGO>Cargo</CARGO>
+  <HITPOINTS>Hitpoints</HITPOINTS>
+  <BUY_FOR>Buy for</BUY_FOR>
+  <UNAVAILABLE>UNAVAILABLE</UNAVAILABLE>
+  <NOT_HAVE_ENOUGH>You do not have enough {0}</NOT_HAVE_ENOUGH>
+  <ITEM_PURCHASED>Item was purchased {0}</ITEM_PURCHASED>
+  <ITEM_ERROR>Error when buying the item.</ITEM_ERROR>
+  <NO_REQUIRED_LEVEL>No required level.</NO_REQUIRED_LEVEL>
+  <NEED>You need {0}</NEED>
+  <YOU_HAVE_SHIP>You already have this ship.</YOU_HAVE_SHIP>
+  <REQUIRED_LEVEL>Required level</REQUIRED_LEVEL>
+  <ITEM_INFO>Item</ITEM_INFO>
+  <SELL_ITEM>Sell</SELL_ITEM>
+  <SELL_ITEM_ERROR>There was a problem with the sale of the item.</SELL_ITEM_ERROR>
+  <RESOURCES>Resources</RESOURCES>
+  <RESOURCE>Resource</RESOURCE>
+  <QUANTITY>Quantity</QUANTITY>
+  <ITEM_SOLD>Item sold {0}</ITEM_SOLD>
+  <RECEIVE_RESOURCE>Receive resource {0} ({1})</RECEIVE_RESOURCE>
+  <NO_AMMO>No ammunition.</NO_AMMO>
+  <MULTIPLIER>Multiplier of damage</MULTIPLIER>
+  <MULTIPLIER_PLAYER>Multiplier in Player</MULTIPLIER_PLAYER>
+  <MULTIPLIER_ENEMY>Multiplier in Enemy</MULTIPLIER_ENEMY>
+  <IS_AMMO>Resource type</IS_AMMO>
+  <IS_AMMO_LASER>Laser</IS_AMMO_LASER>
+  <IS_AMMO_ROCKET>Rocket</IS_AMMO_ROCKET>
+  <BASE_DAMAGE>Base damage</BASE_DAMAGE>
+  <GALAXY>Map of the galaxy</GALAXY>
+  <TASK_COMPLETED>Task {0} was completed!</TASK_COMPLETED>
+  <QUEST_TITLE>Quests</QUEST_TITLE>
+  <CANCEL>Cancel</CANCEL>
+  <ACCEPT>Accept</ACCEPT>
+  <REWARDS>Rewards</REWARDS>
+  <CHANCE>Chance</CHANCE>
+
+
+
+
+
+  <Q_KILL_NPC>Kill NPC</Q_KILL_NPC>
+  <Q_KILL_PLAYER>Kill player ship</Q_KILL_PLAYER>
+  <Q_COLLECT_RESOURCE>Collect resource</Q_COLLECT_RESOURCE>
+  <Q_TRAVEL>Travel</Q_TRAVEL>
+  <Q_TIME>Spend time</Q_TIME>
+  <Q_DEAD_BY_NPC>Die of NPC</Q_DEAD_BY_NPC>
+  <Q_DEAD_BY_PLAYER>Die of Player</Q_DEAD_BY_PLAYER>
+  <Q_DAMAGE_DEAL_NPC>Deal damage NPC</Q_DAMAGE_DEAL_NPC>
+  <Q_DAMAGE_RECEIVE_NPC>Receive damage of NPC</Q_DAMAGE_RECEIVE_NPC>
+  <Q_DAMAGE_DEAL_PLAYER>Deal damage other Player</Q_DAMAGE_DEAL_PLAYER>
+  <Q_DAMAGE_RECEIVE_PLAYER>Receive damage of other Player</Q_DAMAGE_RECEIVE_PLAYER>
+  <Q_HITPOINT_REPAIR>Repair hitpoints</Q_HITPOINT_REPAIR>
+  <Q_HITPOINT_DESTROY>Destroy hitpoints</Q_HITPOINT_DESTROY>
+  <Q_SHIELD_REPAIR>Repair shields</Q_SHIELD_REPAIR>
+  <Q_SHIELD_DESTROY>Destroy shields</Q_SHIELD_DESTROY>
+  <Q_ITEM_BUY_SCRAP>Buy item for Scrap</Q_ITEM_BUY_SCRAP>
+  <Q_ITEM_SELL_SCRAP>Sell item for Scrap</Q_ITEM_SELL_SCRAP>
+  <Q_ITEM_BUY_METAL>Buy item for Metal</Q_ITEM_BUY_METAL>
+  <Q_ITEM_SELL_METAL>Sell item for Metal</Q_ITEM_SELL_METAL>
+  <Q_SCRAP_RECEIVE>Receive Scrap</Q_SCRAP_RECEIVE>
+  <Q_SCRAP_SPEND>Spend Scrap</Q_SCRAP_SPEND>
+  <Q_METAL_RECEIVE>Receive Metal</Q_METAL_RECEIVE>
+  <Q_METAL_SPEND>Spend Metal</Q_METAL_SPEND>
+  <Q_EXP_RECEIVE>Receive Experience</Q_EXP_RECEIVE>
+  <Q_MAP_TRAVEL>Visit a Map</Q_MAP_TRAVEL>
+  <Q_ON_MAP>On map</Q_ON_MAP>
+
+
+
+</Language>
